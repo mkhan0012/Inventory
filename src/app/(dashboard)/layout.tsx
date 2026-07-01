@@ -1,5 +1,6 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import AutoLogout from "@/components/AutoLogout";
 import "../layout.css";
 
 export default function DashboardLayout({
@@ -9,6 +10,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className="app-layout">
+      <AutoLogout />
       <Sidebar />
       <div className="main-content">
         <Header />

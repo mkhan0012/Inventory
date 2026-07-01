@@ -11,10 +11,21 @@ export async function getCustomers() {
   });
 }
 
+import { z } from "zod";
+
+const customerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters long"),
+  phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits")
+});
+
 export async function createCustomer(data: {
   name: string;
   phone: string;
 }) {
+  const result = customerSchema.safeParse(data);
+  if (!result.success) {
+    throw new Error(result.error.issues.map(e => e.message).join(", "));
+  }
   const customer = await prisma.customer.create({
     data: {
       ...data,

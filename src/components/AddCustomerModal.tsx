@@ -7,20 +7,26 @@ import './AddProductModal.css';
 export default function AddCustomerModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
     const formData = new FormData(e.currentTarget);
     
-    await createCustomer({
-      name: formData.get('name') as string,
-      phone: formData.get('phone') as string,
-    });
-
-    setLoading(false);
-    setIsOpen(false);
+    try {
+      await createCustomer({
+        name: formData.get('name') as string,
+        phone: formData.get('phone') as string,
+      });
+      setIsOpen(false);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,6 +44,7 @@ export default function AddCustomerModal() {
             </div>
             
             <form onSubmit={handleSubmit} className="modal-form">
+              {error && <div style={{ color: 'var(--danger)', fontSize: '13px', marginBottom: '12px', background: 'rgba(239, 68, 68, 0.1)', padding: '8px', borderRadius: '4px' }}>{error}</div>}
               <div className="form-group">
                 <label>Customer Name</label>
                 <input name="name" required placeholder="e.g. M/s Shakti Engineering" />

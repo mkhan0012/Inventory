@@ -52,6 +52,18 @@ export async function getProducts(search?: string) {
   });
 }
 
+import { z } from "zod";
+
+const productSchema = z.object({
+  code: z.string().min(1, "Item Code is required"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  category: z.string().min(1, "Category is required"),
+  stock: z.number().min(0, "Stock cannot be negative"),
+  location: z.string().min(1, "Location is required"),
+  unit: z.string().min(1, "Unit is required"),
+  price: z.number().min(0.01, "Price must be at least 0.01")
+});
+
 export async function createProduct(data: {
   code: string;
   name: string;
@@ -61,6 +73,10 @@ export async function createProduct(data: {
   unit: string;
   price: number;
 }) {
+  const result = productSchema.safeParse(data);
+  if (!result.success) {
+    throw new Error(result.error.issues.map(e => e.message).join(", "));
+  }
   const status = data.stock > 10 ? 'In Stock' : data.stock > 0 ? 'Low Stock' : 'Out of Stock';
   
   const product = await prisma.product.create({

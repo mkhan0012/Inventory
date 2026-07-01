@@ -7,6 +7,7 @@ import './AddProductModal.css';
 export default function AddProductModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [category, setCategory] = useState('');
   const [stock, setStock] = useState(0);
   const [location, setLocation] = useState('Store Front');
@@ -15,21 +16,26 @@ export default function AddProductModal() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
     const formData = new FormData(e.currentTarget);
     
-    await createProduct({
-      code: formData.get('code') as string,
-      name: formData.get('name') as string,
-      category: formData.get('category') as string,
-      stock,
-      location,
-      unit: formData.get('unit') as string,
-      price: parseFloat(formData.get('price') as string),
-    });
-
-    setLoading(false);
-    setIsOpen(false);
+    try {
+      await createProduct({
+        code: formData.get('code') as string,
+        name: formData.get('name') as string,
+        category: formData.get('category') as string,
+        stock,
+        location,
+        unit: formData.get('unit') as string,
+        price: parseFloat(formData.get('price') as string),
+      });
+      setIsOpen(false);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,6 +53,7 @@ export default function AddProductModal() {
             </div>
             
             <form onSubmit={handleSubmit} className="modal-form">
+              {error && <div style={{ color: 'var(--danger)', fontSize: '13px', marginBottom: '12px', background: 'rgba(239, 68, 68, 0.1)', padding: '8px', borderRadius: '4px' }}>{error}</div>}
               <div className="form-group">
                 <label>Item Code</label>
                 <input name="code" required placeholder="e.g. HP-1008" />
