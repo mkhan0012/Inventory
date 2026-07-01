@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏭 Bharat Hydraulics Inventory System
 
-## Getting Started
+A modern, full-stack inventory and sales management system built exclusively for Bharat Hydraulics. This application is designed to handle stock tracking, invoice generation, customer credit limits, automated communications, and financial reporting with an intuitive, dynamic user interface.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Inventory Management**: Track products, stock levels, locations, and pricing.
+- **Sales & Invoices**: Generate invoices dynamically. Stock is automatically deducted from inventory upon sale.
+- **Purchases & Suppliers**: Log new stock purchases from suppliers. Stock automatically increments.
+- **Role-Based Security**: 
+  - `OWNER` has full access, including safe deletions and financial reversals.
+  - `STAFF` can generate bills and add items, but cannot delete records or access restricted tabs (Reports, Settings).
+- **Financial Safeguards**: Prevents selling below purchase price (profit warnings) and stops billing if a customer exceeds their defined credit limit.
+- **Smart Communications**: 1-click WhatsApp follow-ups for pending payments and clients who haven't visited in 15 days.
+- **AI Assistant**: Built-in Groq AI Chat Widget to help you query data or navigate the app.
+- **Database Backups & Export**: Generate monthly GST Excel Reports or automatically backup the database.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Database ORM**: [Prisma](https://www.prisma.io/)
+- **Database**: [Neon Serverless PostgreSQL](https://neon.tech/)
+- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
+- **Styling**: Vanilla CSS & [Lucide Icons](https://lucide.dev/)
+- **AI Integration**: [Groq API](https://groq.com/)
+- **Charts**: [Recharts](https://recharts.org/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💻 Local Development Setup
 
-## Learn More
+To run this project locally on your machine:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/mkhan0012/Inventory.git
+   cd Inventory
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Set up Environment Variables:**
+   Create a `.env` file in the root directory and add the following keys:
+   ```env
+   DATABASE_URL="your_neon_postgres_url"
+   NEXTAUTH_SECRET="your_secret_key"
+   NEXTAUTH_URL="http://localhost:3000"
+   GROQ_API_KEY="your_groq_api_key"
+   ```
 
-## Deploy on Vercel
+4. **Sync the Database & Seed Users:**
+   ```bash
+   npx prisma db push
+   node prisma/seed.js
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. **Start the Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ☁️ Deploying to Vercel
+
+This app is fully optimized for Vercel's serverless environment.
+
+1. Import this repository into your Vercel Dashboard.
+2. In the deployment settings, add all of your Environment Variables (`DATABASE_URL`, `NEXTAUTH_SECRET`, `GROQ_API_KEY`).
+3. Set `NEXTAUTH_URL` to your live Vercel domain (e.g., `https://bharat-hydraulics.vercel.app`).
+4. Vercel will automatically run `npm run build` and launch your production application!
+
+## 🔐 Demo Credentials
+After running the seed script, you can log in using:
+- **Owner**: `owner@bharathydraulics.com` / `owner123`
+- **Staff**: `staff@bharathydraulics.com` / `staff123`
+
+---
+*Developed for Bharat Hydraulics*
