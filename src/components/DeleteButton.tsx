@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 
 interface DeleteButtonProps {
   id: string;
-  action: (id: string) => Promise<void>;
+  action: (id: string) => Promise<any>;
   itemType: string;
 }
 
