@@ -1,7 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import AutoLogout from "@/components/AutoLogout";
-import { Toaster } from "react-hot-toast";
+import ToastProvider from "@/components/ToastProvider";
 import "../layout.css";
 
 export default function DashboardLayout({
@@ -11,7 +11,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className="app-layout">
-      <Toaster position="top-center" />
+      <ToastProvider />
       <AutoLogout />
       <Sidebar />
       <div className="main-content">
