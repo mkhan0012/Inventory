@@ -70,10 +70,5 @@ This app is fully optimized for Vercel's serverless environment.
 3. Set `NEXTAUTH_URL` to your live Vercel domain (e.g., `https://bharat-hydraulics.vercel.app`).
 4. Vercel will automatically run `npm run build` and launch your production application!
 
-## 🔐 Demo Credentials
-After running the seed script, you can log in using:
-- **Owner**: `owner@bharathydraulics.com` / `owner123`
-- **Staff**: `staff@bharathydraulics.com` / `staff123`
-
 ---
 *Developed for Bharat Hydraulics*
