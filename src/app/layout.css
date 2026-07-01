@@ -18,3 +18,23 @@
   padding: 24px;
   background-color: var(--bg-main);
 }
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  .page-content {
+    padding: 16px;
+  }
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-content {
+    width: 95% !important;
+    margin: 10px auto !important;
+    padding: 20px !important;
+  }
+}

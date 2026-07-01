@@ -70,3 +70,18 @@
   color: var(--primary);
   font-weight: 500;
 }
+
+@media (max-width: 1024px) {
+  .stats-grid, .bottom-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .middle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid, .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}

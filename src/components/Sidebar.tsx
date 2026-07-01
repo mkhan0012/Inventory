@@ -61,7 +61,12 @@ export default function Sidebar() {
           const Icon = item.icon;
           const isActive = pathname === item.path;
           return (
-            <Link href={item.path} key={item.name} className={`nav-item ${isActive ? 'active' : ''}`}>
+            <Link 
+              href={item.path} 
+              key={item.name} 
+              className={`nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => document.body.classList.remove('sidebar-open')}
+            >
               <div className="nav-item-left">
                 <Icon size={20} />
                 <span>{item.name}</span>

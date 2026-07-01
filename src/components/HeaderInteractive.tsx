@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, Bell, ChevronDown, LogOut, Settings, Package, Receipt, Users, AlertTriangle } from 'lucide-react';
+import { Search, Plus, Bell, ChevronDown, LogOut, Settings, Package, Receipt, Users, AlertTriangle, Menu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
@@ -28,9 +28,17 @@ export default function HeaderInteractive({ name, role }: Props) {
     }
   };
 
+  const toggleSidebar = () => {
+    document.body.classList.toggle('sidebar-open');
+  };
+
   return (
     <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
       
+      <button className="mobile-menu-btn" onClick={toggleSidebar}>
+        <Menu size={24} />
+      </button>
+
       <form onSubmit={handleSearch} className="search-bar" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-main)', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
         <Search size={18} color="var(--text-muted)" style={{ marginRight: '8px' }} />
         <input 
