@@ -28,7 +28,9 @@ export default async function PurchasesPage() {
             <Search size={16} color="var(--text-muted)" />
             <input type="text" placeholder="Search purchases..." />
           </div>
-          <CreatePurchaseModal suppliers={suppliers} products={products} />
+          <div className="desktop-only">
+            <CreatePurchaseModal suppliers={suppliers} products={products} />
+          </div>
         </div>
       </div>
 
@@ -42,7 +44,7 @@ export default async function PurchasesPage() {
               <th>Items</th>
               <th>Total Amount</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th className="desktop-only">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -62,7 +64,7 @@ export default async function PurchasesPage() {
                     {purchase.status}
                   </span>
                 </td>
-                <td style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <td className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <button className="btn-icon" title="View Purchase">
                     <FileText size={16} />
                   </button>

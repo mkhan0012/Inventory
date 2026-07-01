@@ -24,7 +24,9 @@ export default async function CustomersPage() {
             <Search size={16} color="var(--text-muted)" />
             <input type="text" placeholder="Search customers..." />
           </div>
-          <AddCustomerModal />
+          <div className="desktop-only">
+            <AddCustomerModal />
+          </div>
         </div>
       </div>
 
@@ -37,7 +39,7 @@ export default async function CustomersPage() {
               <th>Phone</th>
               <th>Total Purchases</th>
               <th>Due Amount</th>
-              {isOwner && <th>Actions</th>}
+              {isOwner && <th className="desktop-only">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -57,7 +59,7 @@ export default async function CustomersPage() {
                   </span>
                 </td>
                 {isOwner && (
-                  <td>
+                  <td className="desktop-only">
                     <DeleteButton id={customer.id} action={deleteCustomer} itemType="customer" />
                   </td>
                 )}

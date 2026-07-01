@@ -31,7 +31,9 @@ export default async function InventoryPage({
           <button className="btn-outline">
             <Filter size={16} /> Filter
           </button>
-          <AddProductModal />
+          <div className="desktop-only">
+            <AddProductModal />
+          </div>
         </div>
       </div>
 
@@ -48,7 +50,7 @@ export default async function InventoryPage({
               <th>Price</th>
               <th>Est. Empty</th>
               <th>Status</th>
-              {isOwner && <th>Actions</th>}
+              {isOwner && <th className="desktop-only">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -84,7 +86,7 @@ export default async function InventoryPage({
                   </span>
                 </td>
                 {isOwner && (
-                  <td>
+                  <td className="desktop-only">
                     <DeleteButton id={item.id} action={deleteProduct} itemType="product" />
                   </td>
                 )}

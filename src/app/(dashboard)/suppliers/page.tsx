@@ -24,7 +24,9 @@ export default async function SuppliersPage() {
             <Search size={16} color="var(--text-muted)" />
             <input type="text" placeholder="Search suppliers..." />
           </div>
-          <AddSupplierModal />
+          <div className="desktop-only">
+            <AddSupplierModal />
+          </div>
         </div>
       </div>
 
@@ -37,7 +39,7 @@ export default async function SuppliersPage() {
               <th>Phone</th>
               <th>Total Supplied</th>
               <th>Due Amount</th>
-              {isOwner && <th>Actions</th>}
+              {isOwner && <th className="desktop-only">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -57,7 +59,7 @@ export default async function SuppliersPage() {
                   </span>
                 </td>
                 {isOwner && (
-                  <td>
+                  <td className="desktop-only">
                     <DeleteButton id={supplier.id} action={deleteSupplier} itemType="supplier" />
                   </td>
                 )}

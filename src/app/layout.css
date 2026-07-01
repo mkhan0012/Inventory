@@ -37,4 +37,7 @@
     margin: 10px auto !important;
     padding: 20px !important;
   }
+  .desktop-only {
+    display: none !important;
+  }
 }

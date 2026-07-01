@@ -29,7 +29,9 @@ export default async function SalesPage() {
             <Search size={16} color="var(--text-muted)" />
             <input type="text" placeholder="Search invoices..." />
           </div>
-          <CreateInvoiceModal customers={customers} products={products} />
+          <div className="desktop-only">
+            <CreateInvoiceModal customers={customers} products={products} />
+          </div>
         </div>
       </div>
 
@@ -43,7 +45,7 @@ export default async function SalesPage() {
               <th>Items</th>
               <th>Total Amount</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th className="desktop-only">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -63,7 +65,7 @@ export default async function SalesPage() {
                     {invoice.status}
                   </span>
                 </td>
-                <td style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <td className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <Link href={`/sales/${invoice.id}/print`} className="btn-icon" target="_blank" title="Print Invoice">
                     <FileText size={16} />
                   </Link>

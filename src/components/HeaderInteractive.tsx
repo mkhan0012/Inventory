@@ -53,7 +53,7 @@ export default function HeaderInteractive({ name, role }: Props) {
       <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
         
         {/* Quick Add Menu */}
-        <div style={{ position: 'relative' }}>
+        <div className="desktop-only" style={{ position: 'relative' }}>
           <button className="icon-btn primary" onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <Plus size={20} />
           </button>

@@ -43,8 +43,10 @@ export default function Sidebar() {
   const isOwner = session?.user && (session.user as any).role === 'OWNER';
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-header">
+    <>
+      <div className="sidebar-overlay" onClick={() => document.body.classList.remove('sidebar-open')}></div>
+      <aside className="sidebar">
+        <div className="sidebar-header">
         <div className="logo-icon" style={{ background: 'transparent', padding: 0 }}>
           <img src="/logo.png" alt="Logo" style={{ width: '40px', height: 'auto', objectFit: 'contain' }} />
         </div>
@@ -81,5 +83,6 @@ export default function Sidebar() {
         <LogoutButton />
       </div>
     </aside>
+    </>
   );
 }
