@@ -1,0 +1,125 @@
+.print-container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  color: #000;
+  background: #fff;
+}
+
+.print-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #000;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.shop-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+.shop-address, .shop-gst {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+}
+
+.invoice-meta {
+  text-align: right;
+}
+
+.invoice-meta h2 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.invoice-meta p {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+}
+
+.bill-to {
+  margin-bottom: 30px;
+}
+
+.bill-to h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  border-bottom: 1px solid #ccc;
+  display: inline-block;
+}
+
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.print-table th, .print-table td {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: left;
+}
+
+.print-table th {
+  background-color: #f5f5f5;
+}
+
+.print-table td:nth-child(3),
+.print-table td:nth-child(4),
+.print-table td:nth-child(5) {
+  text-align: right;
+}
+
+.print-totals {
+  width: 300px;
+  margin-left: auto;
+  margin-bottom: 50px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.grand-total {
+  font-weight: bold;
+  font-size: 18px;
+  border-top: 2px solid #000;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.print-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.print-btn {
+  margin-top: 40px;
+  padding: 10px 20px;
+  background: #2962ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}

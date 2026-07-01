@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("STAFF") // "OWNER" or "STAFF"
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  barcode     String?  @unique
+  category    String
+  stock       Int      @default(0)
+  location    String   @default("Store Front") // e.g. "Store Front", "Warehouse"
+  unit        String
+  price       Float    @default(0.0)
+  status      String   @default("In Stock") // "In Stock", "Low Stock", "Out of Stock"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  invoiceItems InvoiceItem[]
+  purchaseItems PurchaseItem[]
+  quotationItems QuotationItem[]
+}
+
+model Customer {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String?
+  totalPurchases Float   @default(0.0)
+  dueAmount     Float    @default(0.0)
+  creditLimit   Float    @default(50000.0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  invoices Invoice[]
+  quotations Quotation[]
+  payments Payment[] @relation("CustomerPayments")
+}
+
+model Supplier {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String?
+  totalSupplied Float    @default(0.0)
+  dueAmount     Float    @default(0.0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  purchases Purchase[]
+  payments Payment[] @relation("SupplierPayments")
+}
+
+model Invoice {
+  id         String   @id @default(cuid())
+  invoiceNo  String   @unique
+  date       DateTime @default(now())
+  subtotal   Float    @default(0.0)
+  tax        Float    @default(0.0)
+  total      Float    @default(0.0)
+  status     String   @default("PAID") // "PAID", "DUE"
+  createdAt  DateTime @default(now())
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  items InvoiceItem[]
+}
+
+model InvoiceItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  rate      Float
+  amount    Float
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Purchase {
+  id         String   @id @default(cuid())
+  purchaseNo String   @unique
+  date       DateTime @default(now())
+  total      Float    @default(0.0)
+  status     String   @default("PAID") // "PAID", "DUE"
+  createdAt  DateTime @default(now())
+
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+
+  items PurchaseItem[]
+}
+
+model PurchaseItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  rate      Float
+  amount    Float
+
+  purchaseId String
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  description String
+  amount      Float
+  category    String   // e.g. "Electricity", "Tea", "Transport", "Misc"
+  date        DateTime @default(now())
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  amount      Float
+  type        String   // "INCOMING" (from Customer), "OUTGOING" (to Supplier)
+  method      String   // "CASH", "UPI", "BANK_TRANSFER"
+  date        DateTime @default(now())
+  
+  customerId  String?
+  customer    Customer? @relation("CustomerPayments", fields: [customerId], references: [id])
+
+  supplierId  String?
+  supplier    Supplier? @relation("SupplierPayments", fields: [supplierId], references: [id])
+}
+
+model Settings {
+  id          String   @id @default("singleton") // enforce single row
+  shopName    String   @default("Bharat Hydraulics")
+  address     String   @default("")
+  gstNumber   String   @default("")
+  defaultTax  Float    @default(18.0)
+}
+
+model Quotation {
+  id         String   @id @default(cuid())
+  quoteNo    String   @unique
+  date       DateTime @default(now())
+  subtotal   Float    @default(0.0)
+  tax        Float    @default(0.0)
+  total      Float    @default(0.0)
+  createdAt  DateTime @default(now())
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  items QuotationItem[]
+}
+
+model QuotationItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  rate      Float
+  amount    Float
+
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   String
+  userName  String
+  userRole  String
+  timestamp DateTime @default(now())
+}

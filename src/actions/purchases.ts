@@ -1,0 +1,128 @@
+"use server";
+import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/authOptions";
+import { logActivity } from "./activity";
+
+export async function getPurchases() {
+  return await prisma.purchase.findMany({
+    include: {
+      supplier: true,
+      items: { include: { product: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+}
+
+export async function createPurchase(data: {
+  supplierId: string;
+  items: Array<{ productId: string; quantity: number; rate: number }>;
+  status: string; // "PAID" | "DUE"
+  date?: string;
+}) {
+  const total = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
+
+  const purchase = await prisma.$transaction(async (tx) => {
+    // 1. Update stock
+    for (const item of data.items) {
+      const product = await tx.product.findUnique({ where: { id: item.productId } });
+      if (!product) throw new Error("Product not found");
+      
+      const newStock = product.stock + item.quantity;
+      const status = newStock > 10 ? 'In Stock' : 'Low Stock';
+      
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: newStock, status }
+      });
+    }
+
+    // 2. Create Purchase
+    const newPurchase = await tx.purchase.create({
+      data: {
+        purchaseNo: `PUR-${Date.now().toString().substring(7)}`,
+        date: data.date ? new Date(data.date) : undefined,
+        supplierId: data.supplierId,
+        total,
+        status: data.status,
+        items: {
+          create: data.items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            rate: item.rate,
+            amount: item.quantity * item.rate
+          }))
+        }
+      }
+    });
+
+    // 3. Update Supplier
+    const dueAmountIncrement = data.status === 'DUE' ? total : 0;
+    
+    await tx.supplier.update({
+      where: { id: data.supplierId },
+      data: {
+        totalSupplied: { increment: total },
+        dueAmount: { increment: dueAmountIncrement }
+      }
+    });
+
+    return newPurchase;
+  });
+
+  revalidatePath('/purchases');
+  revalidatePath('/inventory');
+  revalidatePath('/suppliers');
+  revalidatePath('/');
+  return purchase;
+}
+
+export async function deletePurchase(id: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as any).role !== "OWNER") {
+    throw new Error("Unauthorized: Only owners can delete purchases.");
+  }
+  const userName = session.user.name || "Unknown";
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const purchase = await tx.purchase.findUnique({ where: { id }, include: { items: true } });
+      if (!purchase) throw new Error("Purchase not found.");
+
+      // Reverse Supplier amounts
+      await tx.supplier.update({
+        where: { id: purchase.supplierId },
+        data: {
+          totalSupplied: { decrement: purchase.total },
+          dueAmount: { decrement: purchase.status === 'DUE' ? purchase.total : 0 }
+        }
+      });
+
+      // Reverse Product stock
+      await Promise.all(purchase.items.map(item => 
+        tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } }
+        })
+      ));
+
+      // Delete Purchase
+      await tx.purchase.delete({ where: { id } });
+
+      await logActivity(
+        "Delete Purchase", 
+        `Deleted Purchase ${purchase.purchaseNo} (₹${purchase.total})`, 
+        userName, 
+        "OWNER"
+      );
+    }, { maxWait: 15000, timeout: 15000 });
+
+    revalidatePath('/purchases');
+    revalidatePath('/inventory');
+    revalidatePath('/suppliers');
+  } catch (error) {
+    console.error("Error deleting purchase:", error);
+    throw error;
+  }
+}
