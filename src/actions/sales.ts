@@ -143,7 +143,7 @@ export async function getUpsellSuggestions(productIds: string[]) {
 export async function deleteInvoice(id: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as any).role !== "OWNER") {
-    throw new Error("Unauthorized: Only owners can delete invoices.");
+    return { error: "Unauthorized: Only owners can delete invoices." };
   }
   const userName = session.user.name || "Unknown";
 
@@ -183,8 +183,7 @@ export async function deleteInvoice(id: string) {
     revalidatePath('/sales');
     revalidatePath('/inventory');
     revalidatePath('/customers');
-  } catch (error) {
-    console.error("Error deleting invoice:", error);
-    throw error;
+  } catch (e: any) {
+    return { error: e.message || "An unexpected error occurred." };
   }
 }

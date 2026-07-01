@@ -81,7 +81,7 @@ export async function createPurchase(data: {
 export async function deletePurchase(id: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as any).role !== "OWNER") {
-    throw new Error("Unauthorized: Only owners can delete purchases.");
+    return { error: "Unauthorized: Only owners can delete purchases." };
   }
   const userName = session.user.name || "Unknown";
 
@@ -121,8 +121,7 @@ export async function deletePurchase(id: string) {
     revalidatePath('/purchases');
     revalidatePath('/inventory');
     revalidatePath('/suppliers');
-  } catch (error) {
-    console.error("Error deleting purchase:", error);
-    throw error;
+  } catch (e: any) {
+    return { error: e.message || "An unexpected error occurred." };
   }
 }

@@ -95,12 +95,12 @@ export async function createProduct(data: {
 export async function deleteProduct(id: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as any).role !== "OWNER") {
-    throw new Error("Unauthorized: Only owners can delete products.");
+    return { error: "Unauthorized: Only owners can delete products." };
   }
 
   try {
     const product = await prisma.product.findUnique({ where: { id } });
-    if (!product) throw new Error("Product not found.");
+    if (!product) return { error: "Product not found." };
 
     await prisma.product.delete({
       where: { id }
@@ -116,8 +116,8 @@ export async function deleteProduct(id: string) {
     revalidatePath('/inventory');
   } catch (e: any) {
     if (e.code === 'P2003') {
-      throw new Error("Cannot delete this product because it is referenced in past invoices or purchases.");
+      return { error: "Cannot delete this product because it is referenced in past invoices or purchases." };
     }
-    throw e;
+    return { error: e.message || "An unexpected error occurred." };
   }
 }

@@ -16,7 +16,10 @@ export default function DeleteButton({ id, action, itemType }: DeleteButtonProps
     if (confirm(`Are you sure you want to delete this ${itemType}? This action cannot be undone.`)) {
       startTransition(async () => {
         try {
-          await action(id);
+          const res = await action(id);
+          if (res && res.error) {
+            toast.error(res.error);
+          }
         } catch (e: any) {
           toast.error(`Failed to delete: ${e.message}`);
         }

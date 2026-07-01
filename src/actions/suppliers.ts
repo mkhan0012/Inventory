@@ -25,12 +25,12 @@ export async function createSupplier(data: {
 export async function deleteSupplier(id: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as any).role !== "OWNER") {
-    throw new Error("Unauthorized: Only owners can delete suppliers.");
+    return { error: "Unauthorized: Only owners can delete suppliers." };
   }
 
   try {
     const supplier = await prisma.supplier.findUnique({ where: { id } });
-    if (!supplier) throw new Error("Supplier not found.");
+    if (!supplier) return { error: "Supplier not found." };
 
     await prisma.supplier.delete({ where: { id } });
 
@@ -44,8 +44,8 @@ export async function deleteSupplier(id: string) {
     revalidatePath('/suppliers');
   } catch (e: any) {
     if (e.code === 'P2003') {
-      throw new Error("Cannot delete this supplier because they have past purchases or payments.");
+      return { error: "Cannot delete this supplier because they have past purchases or payments." };
     }
-    throw e;
+    return { error: e.message || "An unexpected error occurred." };
   }
 }

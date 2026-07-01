@@ -41,12 +41,12 @@ export async function createCustomer(data: {
 export async function deleteCustomer(id: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as any).role !== "OWNER") {
-    throw new Error("Unauthorized: Only owners can delete customers.");
+    return { error: "Unauthorized: Only owners can delete customers." };
   }
 
   try {
     const customer = await prisma.customer.findUnique({ where: { id } });
-    if (!customer) throw new Error("Customer not found.");
+    if (!customer) return { error: "Customer not found." };
 
     await prisma.customer.delete({ where: { id } });
 
@@ -60,8 +60,8 @@ export async function deleteCustomer(id: string) {
     revalidatePath('/customers');
   } catch (e: any) {
     if (e.code === 'P2003') {
-      throw new Error("Cannot delete this customer because they have past invoices or payments.");
+      return { error: "Cannot delete this customer because they have past invoices or payments." };
     }
-    throw e;
+    return { error: e.message || "An unexpected error occurred." };
   }
 }
