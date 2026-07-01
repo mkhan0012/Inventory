@@ -28,12 +28,15 @@ export async function createInvoice(data: {
   const total = subtotal + data.tax;
 
   const invoice = await prisma.$transaction(async (tx) => {
+    const productCache = new Map<string, number>();
+
     // 1. Update stock
     for (const item of data.items) {
       const product = await tx.product.findUnique({ where: { id: item.productId } });
       if (!product || product.stock < item.quantity) {
         throw new Error(`Insufficient stock for product ID ${item.productId}`);
       }
+      productCache.set(product.id, product.purchasePrice);
       const newStock = product.stock - item.quantity;
       const status = newStock > 10 ? 'In Stock' : newStock > 0 ? 'Low Stock' : 'Out of Stock';
       
@@ -58,6 +61,7 @@ export async function createInvoice(data: {
             productId: item.productId,
             quantity: item.quantity,
             rate: item.rate,
+            purchaseRate: productCache.get(item.productId) || 0,
             amount: item.quantity * item.rate
           }))
         }

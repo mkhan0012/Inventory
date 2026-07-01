@@ -3,17 +3,11 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { name: '1 Jun', sales: 20000, profit: 12000 },
-  { name: '5 Jun', sales: 45000, profit: 25000 },
-  { name: '10 Jun', sales: 30000, profit: 18000 },
-  { name: '15 Jun', sales: 60000, profit: 35000 },
-  { name: '20 Jun', sales: 40000, profit: 22000 },
-  { name: '25 Jun', sales: 75000, profit: 45000 },
-  { name: '28 Jun', sales: 50000, profit: 28000 },
-];
+export default function SalesChart({ data }: { data: any[] }) {
+  if (!data || data.length === 0) {
+    return <div style={{ width: '100%', height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>No sales data for this month yet.</div>;
+  }
 
-export default function SalesChart() {
   return (
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer>

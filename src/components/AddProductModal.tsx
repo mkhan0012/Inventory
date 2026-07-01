@@ -29,6 +29,7 @@ export default function AddProductModal() {
         location,
         unit: formData.get('unit') as string,
         price: parseFloat(formData.get('price') as string),
+        purchasePrice: parseFloat(formData.get('purchasePrice') as string) || 0,
       });
       setIsOpen(false);
     } catch (err: any) {
@@ -85,7 +86,11 @@ export default function AddProductModal() {
                   <input name="unit" required placeholder="e.g. Meter" />
                 </div>
                 <div className="form-group">
-                  <label>Price (₹)</label>
+                  <label>Purchase Price (₹)</label>
+                  <input name="purchasePrice" type="number" step="0.01" required placeholder="0.00" />
+                </div>
+                <div className="form-group">
+                  <label>Selling Price (₹)</label>
                   <input name="price" type="number" step="0.01" required placeholder="0.00" />
                 </div>
               </div>

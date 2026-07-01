@@ -21,17 +21,55 @@ export async function getDashboardStats() {
   const monthlyInvoices = await prisma.invoice.findMany({
     where: {
       date: { gte: startOfMonth }
-    }
+    },
+    include: { items: true },
+    orderBy: { date: 'asc' }
   });
 
   const dailyInvoices = await prisma.invoice.findMany({
     where: {
       date: { gte: startOfDay }
-    }
+    },
+    include: { items: true }
   });
 
   const monthlySales = monthlyInvoices.reduce((acc, inv) => acc + inv.total, 0);
   const todaysSales = dailyInvoices.reduce((acc, inv) => acc + inv.total, 0);
+
+  const calculateProfit = (invoices: any[]) => {
+    return invoices.reduce((totalProfit, inv) => {
+      const invoiceProfit = inv.items.reduce((itemProfit: number, item: any) => {
+        return itemProfit + ((item.rate - item.purchaseRate) * item.quantity);
+      }, 0);
+      return totalProfit + invoiceProfit;
+    }, 0);
+  };
+
+  const monthlyProfit = calculateProfit(monthlyInvoices);
+  const todaysProfit = calculateProfit(dailyInvoices);
+
+  const chartDataMap = new Map<string, { sales: number, profit: number }>();
+  
+  monthlyInvoices.forEach(inv => {
+    const day = inv.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (!chartDataMap.has(day)) {
+      chartDataMap.set(day, { sales: 0, profit: 0 });
+    }
+    const data = chartDataMap.get(day)!;
+    data.sales += inv.total;
+    
+    const invoiceProfit = inv.items.reduce((itemProfit: number, item: any) => {
+      return itemProfit + ((item.rate - item.purchaseRate) * item.quantity);
+    }, 0);
+    
+    data.profit += invoiceProfit;
+  });
+
+  const chartData = Array.from(chartDataMap.entries()).map(([name, data]) => ({
+    name,
+    sales: data.sales,
+    profit: data.profit
+  }));
 
   const recentSales = await prisma.invoice.findMany({
     take: 5,
@@ -42,10 +80,13 @@ export async function getDashboardStats() {
   return {
     stockValue,
     todaysSales,
+    todaysProfit,
     monthlySales,
+    monthlyProfit,
     duePayments,
     lowStockProducts,
     outOfStockProducts,
-    recentSales
+    recentSales,
+    chartData
   };
 }

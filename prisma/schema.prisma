@@ -26,6 +26,7 @@ model Product {
   location    String   @default("Store Front") // e.g. "Store Front", "Warehouse"
   unit        String
   price       Float    @default(0.0)
+  purchasePrice Float  @default(0.0)
   status      String   @default("In Stock") // "In Stock", "Low Stock", "Out of Stock"
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -83,6 +84,7 @@ model InvoiceItem {
   id        String  @id @default(cuid())
   quantity  Int
   rate      Float
+  purchaseRate Float @default(0.0)
   amount    Float
 
   invoiceId String

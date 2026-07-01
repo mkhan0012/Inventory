@@ -61,7 +61,8 @@ const productSchema = z.object({
   stock: z.number().min(0, "Stock cannot be negative"),
   location: z.string().min(1, "Location is required"),
   unit: z.string().min(1, "Unit is required"),
-  price: z.number().min(0.01, "Price must be at least 0.01")
+  price: z.number().min(0.01, "Price must be at least 0.01"),
+  purchasePrice: z.number().min(0, "Purchase price cannot be negative")
 });
 
 export async function createProduct(data: {
@@ -72,6 +73,7 @@ export async function createProduct(data: {
   location: string;
   unit: string;
   price: number;
+  purchasePrice: number;
 }) {
   const result = productSchema.safeParse(data);
   if (!result.success) {

@@ -54,12 +54,12 @@ export default async function Dashboard() {
           iconBg="rgba(139,92,246,0.1)" 
         />
         <StatCard 
-          title="Total Due Payments" 
-          value={`₹${stats.duePayments.toLocaleString('en-IN')}`} 
+          title="Monthly Profit" 
+          value={`₹${stats.monthlyProfit.toLocaleString('en-IN')}`} 
           trend="" 
-          trendUp={false} 
-          icon={<IndianRupee size={24} color="#f59e0b" />} 
-          iconBg="rgba(245,158,11,0.1)" 
+          trendUp={true} 
+          icon={<IndianRupee size={24} color="#10b981" />} 
+          iconBg="rgba(16,185,129,0.1)" 
         />
       </div>
 
@@ -79,7 +79,7 @@ export default async function Dashboard() {
                <div style={{ width: 12, height: 4, backgroundColor: '#10b981', borderRadius: 2 }}></div> Profit
              </div>
           </div>
-          <SalesChart />
+          <SalesChart data={stats.chartData} />
         </div>
 
         <div className="side-column">
