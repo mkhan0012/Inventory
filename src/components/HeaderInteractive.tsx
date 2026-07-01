@@ -4,6 +4,7 @@ import { Search, Plus, Bell, ChevronDown, LogOut, Settings, Package, Receipt, Us
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 interface Props {
   name: string;
@@ -74,7 +75,7 @@ export default function HeaderInteractive({ name, role }: Props) {
         </div>
         
         {/* Notifications (Static demo) */}
-        <button className="icon-btn" onClick={() => alert("Check Inventory page for Low Stock alerts and Communications for missing clients!")} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+        <button className="icon-btn" onClick={() => toast("Check Inventory page for Low Stock alerts and Communications for missing clients!", { icon: '🔔' })} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
           <Bell size={20} color="var(--text-main)" />
           <span className="badge" style={{ position: 'absolute', top: '0', right: '0', background: 'var(--danger)', width: '10px', height: '10px', borderRadius: '50%' }}></span>
         </button>

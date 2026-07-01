@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useTransition } from 'react';
 import { Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface DeleteButtonProps {
   id: string;
@@ -17,7 +18,7 @@ export default function DeleteButton({ id, action, itemType }: DeleteButtonProps
         try {
           await action(id);
         } catch (e: any) {
-          alert(`Failed to delete: ${e.message}`);
+          toast.error(`Failed to delete: ${e.message}`);
         }
       });
     }

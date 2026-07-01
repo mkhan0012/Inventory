@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Trash2 } from 'lucide-react';
 import { createPurchase } from '@/actions/purchases';
+import toast from 'react-hot-toast';
 import './AddProductModal.css';
 
 export default function CreatePurchaseModal({ suppliers, products }: { suppliers: any[], products: any[] }) {
@@ -37,7 +38,7 @@ export default function CreatePurchaseModal({ suppliers, products }: { suppliers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supplierId || items.length === 0 || items.some(i => !i.productId)) {
-      alert("Please fill all required fields and add at least one valid item.");
+      toast.error("Please fill all required fields and add at least one valid item.");
       return;
     }
     
@@ -53,7 +54,7 @@ export default function CreatePurchaseModal({ suppliers, products }: { suppliers
       setItems([]);
       setSupplierId('');
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
     setLoading(false);
   };

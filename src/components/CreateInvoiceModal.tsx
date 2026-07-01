@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Plus, X, Trash2, ScanLine, Sparkles } from 'lucide-react';
 import { createInvoice, getUpsellSuggestions } from '@/actions/sales';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import './AddProductModal.css';
 
 export default function CreateInvoiceModal({ customers, products }: { customers: any[], products: any[] }) {
@@ -42,7 +43,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
           setItems([...items, { productId: product.id, quantity: 1, rate: product.price }]);
         }
       } else {
-        alert("Product with barcode/code not found!");
+        toast.error("Product with barcode/code not found!");
       }
       setBarcodeInput('');
     }
@@ -73,7 +74,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerId || items.length === 0 || items.some(i => !i.productId)) {
-      alert("Please fill all required fields and add at least one valid item.");
+      toast.error("Please fill all required fields and add at least one valid item.");
       return;
     }
     
@@ -90,7 +91,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
       // Show the success screen instead of auto-opening
       setCreatedInvoiceId(res.id);
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
     setLoading(false);
   };

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Trash2, ScanLine } from 'lucide-react';
 import { createQuotation } from '@/actions/quotations';
+import toast from 'react-hot-toast';
 import './AddProductModal.css';
 
 export default function CreateQuotationModal({ customers, products }: { customers: any[], products: any[] }) {
@@ -30,7 +31,7 @@ export default function CreateQuotationModal({ customers, products }: { customer
           setItems([...items, { productId: product.id, quantity: 1, rate: product.price }]);
         }
       } else {
-        alert("Product with barcode/code not found!");
+        toast.error("Product with barcode/code not found!");
       }
       setBarcodeInput('');
     }
@@ -61,7 +62,7 @@ export default function CreateQuotationModal({ customers, products }: { customer
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerId || items.length === 0 || items.some(i => !i.productId)) {
-      alert("Please fill all required fields and add at least one valid item.");
+      toast.error("Please fill all required fields and add at least one valid item.");
       return;
     }
     
@@ -77,7 +78,7 @@ export default function CreateQuotationModal({ customers, products }: { customer
       // Show the success screen instead of auto-opening
       setCreatedEstimateId(res.id);
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
     setLoading(false);
   };

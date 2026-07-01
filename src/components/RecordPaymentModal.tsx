@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { createPayment } from '@/actions/payments';
+import toast from 'react-hot-toast';
 import './AddProductModal.css';
 
 export default function RecordPaymentModal({ customers, suppliers }: { customers: any[], suppliers: any[] }) {
@@ -25,7 +26,7 @@ export default function RecordPaymentModal({ customers, suppliers }: { customers
       });
       setIsOpen(false);
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
 
     setLoading(false);
