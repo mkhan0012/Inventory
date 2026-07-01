@@ -115,9 +115,10 @@ export async function deleteProduct(id: string) {
 
     revalidatePath('/inventory');
   } catch (e: any) {
-    if (e.code === 'P2003') {
+    const msg = e.message || "";
+    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
       return { error: "Cannot delete this product because it is referenced in past invoices or purchases." };
     }
-    return { error: e.message || "An unexpected error occurred." };
+    return { error: "Failed to delete. Please try again." };
   }
 }

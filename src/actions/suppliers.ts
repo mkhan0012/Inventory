@@ -43,9 +43,10 @@ export async function deleteSupplier(id: string) {
 
     revalidatePath('/suppliers');
   } catch (e: any) {
-    if (e.code === 'P2003') {
+    const msg = e.message || "";
+    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
       return { error: "Cannot delete this supplier because they have past purchases or payments." };
     }
-    return { error: e.message || "An unexpected error occurred." };
+    return { error: "Failed to delete. Please try again." };
   }
 }
