@@ -69,14 +69,14 @@ export async function getDashboardStats() {
   todaysSales += dailyHistRecords.reduce((acc, r) => acc + r.sales, 0);
   todaysProfit += dailyHistRecords.reduce((acc, r) => acc + r.profit, 0);
 
-  const chartDataMap = new Map<string, { sales: number, profit: number }>();
+  const chartDataMonthMap = new Map<string, { sales: number, profit: number }>();
   
   monthlyInvoices.forEach(inv => {
     const day = inv.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-    if (!chartDataMap.has(day)) {
-      chartDataMap.set(day, { sales: 0, profit: 0 });
+    if (!chartDataMonthMap.has(day)) {
+      chartDataMonthMap.set(day, { sales: 0, profit: 0 });
     }
-    const data = chartDataMap.get(day)!;
+    const data = chartDataMonthMap.get(day)!;
     data.sales += inv.total;
     
     const invoiceProfit = inv.items.reduce((itemProfit: number, item: any) => {
@@ -86,22 +86,64 @@ export async function getDashboardStats() {
     data.profit += invoiceProfit;
   });
 
-  // Merge historical records into chart data
   monthlyHistRecords.forEach(rec => {
     const day = rec.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-    if (!chartDataMap.has(day)) {
-      chartDataMap.set(day, { sales: 0, profit: 0 });
+    if (!chartDataMonthMap.has(day)) {
+      chartDataMonthMap.set(day, { sales: 0, profit: 0 });
     }
-    const data = chartDataMap.get(day)!;
+    const data = chartDataMonthMap.get(day)!;
     data.sales += rec.sales;
     data.profit += rec.profit;
   });
 
-  const chartData = Array.from(chartDataMap.entries()).map(([name, data]) => ({
+  const chartDataMonth = Array.from(chartDataMonthMap.entries()).map(([name, data]) => ({
     name,
     sales: data.sales,
     profit: data.profit
   }));
+
+  const buildMonthlyBuckets = (monthsBack: number) => {
+    const dataMap = new Map<string, { sales: number, profit: number }>();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - (monthsBack - 1));
+    startDate.setDate(1);
+    startDate.setHours(0,0,0,0);
+
+    for (let i = monthsBack - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const monthName = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      dataMap.set(monthName, { sales: 0, profit: 0 });
+    }
+
+    const addData = (date: Date, sales: number, profit: number) => {
+      if (date >= startDate) {
+        const monthName = new Date(date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        if (dataMap.has(monthName)) {
+          const entry = dataMap.get(monthName)!;
+          entry.sales += sales;
+          entry.profit += profit;
+        }
+      }
+    };
+
+    allInvoices.forEach(inv => {
+      const invProfit = inv.items.reduce((acc: number, item: any) => acc + ((item.rate - item.purchaseRate) * item.quantity), 0);
+      addData(inv.date, inv.total, invProfit);
+    });
+
+    historicalRecords.forEach(rec => {
+      addData(rec.date, rec.sales, rec.profit);
+    });
+
+    return Array.from(dataMap.entries()).map(([name, data]) => ({ name, sales: data.sales, profit: data.profit }));
+  };
+
+  const chartData = {
+    month: chartDataMonth,
+    sixMonths: buildMonthlyBuckets(6),
+    year: buildMonthlyBuckets(12)
+  };
 
   const recentSales = await prisma.invoice.findMany({
     take: 5,

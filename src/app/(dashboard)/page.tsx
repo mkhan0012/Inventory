@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee } from 'lucide-react';
 import StatCard from '@/components/StatCard';
-import SalesChart from '@/components/SalesChart';
+import DashboardSalesChart from '@/components/DashboardSalesChart';
 import TopSelling from '@/components/TopSelling';
 import AiChatWidget from '@/components/AiChatWidget';
 import './page.css';
@@ -88,23 +88,7 @@ export default async function Dashboard() {
       </div>
 
       <div className="middle-grid">
-        <div className="card" style={{ minHeight: '350px' }}>
-          <div className="card-header">
-             <h3 className="card-title">Sales Overview</h3>
-             <div className="date-picker" style={{ padding: '4px 8px', fontSize: '12px' }}>
-                This Month <Calendar size={14} style={{ marginLeft: 8 }} />
-             </div>
-          </div>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 500 }}>
-               <div style={{ width: 12, height: 4, backgroundColor: '#2962ff', borderRadius: 2 }}></div> Sales
-             </div>
-             <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 500 }}>
-               <div style={{ width: 12, height: 4, backgroundColor: '#10b981', borderRadius: 2 }}></div> Profit
-             </div>
-          </div>
-          <SalesChart data={stats.chartData} />
-        </div>
+        <DashboardSalesChart data={stats.chartData} />
 
         <div className="side-column">
           <div className="card" style={{ flex: 1 }}>
