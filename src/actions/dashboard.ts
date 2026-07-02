@@ -18,23 +18,13 @@ export async function getDashboardStats() {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const monthlyInvoices = await prisma.invoice.findMany({
-    where: {
-      date: { gte: startOfMonth }
-    },
-    include: { items: true },
-    orderBy: { date: 'asc' }
-  });
-
-  const dailyInvoices = await prisma.invoice.findMany({
-    where: {
-      date: { gte: startOfDay }
-    },
+  // Fetch all active invoices for all-time calculation
+  const allInvoices = await prisma.invoice.findMany({
     include: { items: true }
   });
 
-  const monthlySales = monthlyInvoices.reduce((acc, inv) => acc + inv.total, 0);
-  const todaysSales = dailyInvoices.reduce((acc, inv) => acc + inv.total, 0);
+  const monthlyInvoices = allInvoices.filter(inv => inv.date >= startOfMonth);
+  const dailyInvoices = allInvoices.filter(inv => inv.date >= startOfDay);
 
   const calculateProfit = (invoices: any[]) => {
     return invoices.reduce((totalProfit, inv) => {
@@ -45,8 +35,33 @@ export async function getDashboardStats() {
     }, 0);
   };
 
-  const monthlyProfit = calculateProfit(monthlyInvoices);
-  const todaysProfit = calculateProfit(dailyInvoices);
+  // Fetch all historical records
+  const historicalRecords = await prisma.historicalRecord.findMany();
+  
+  const allTimeActiveSales = allInvoices.reduce((acc, inv) => acc + inv.total, 0);
+  const allTimeActiveProfit = calculateProfit(allInvoices);
+  
+  const allTimeHistSales = historicalRecords.reduce((acc, r) => acc + r.sales, 0);
+  const allTimeHistProfit = historicalRecords.reduce((acc, r) => acc + r.profit, 0);
+
+  const allTimeSales = allTimeActiveSales + allTimeHistSales;
+  const allTimeProfit = allTimeActiveProfit + allTimeHistProfit;
+
+  const monthlyHistRecords = historicalRecords.filter(r => r.date >= startOfMonth);
+  const dailyHistRecords = historicalRecords.filter(r => r.date >= startOfDay);
+
+  let monthlySales = monthlyInvoices.reduce((acc, inv) => acc + inv.total, 0);
+  let todaysSales = dailyInvoices.reduce((acc, inv) => acc + inv.total, 0);
+
+  let monthlyProfit = calculateProfit(monthlyInvoices);
+  let todaysProfit = calculateProfit(dailyInvoices);
+
+  // Merge historical data into monthly/daily totals
+  monthlySales += monthlyHistRecords.reduce((acc, r) => acc + r.sales, 0);
+  monthlyProfit += monthlyHistRecords.reduce((acc, r) => acc + r.profit, 0);
+  
+  todaysSales += dailyHistRecords.reduce((acc, r) => acc + r.sales, 0);
+  todaysProfit += dailyHistRecords.reduce((acc, r) => acc + r.profit, 0);
 
   const chartDataMap = new Map<string, { sales: number, profit: number }>();
   
@@ -65,6 +80,17 @@ export async function getDashboardStats() {
     data.profit += invoiceProfit;
   });
 
+  // Merge historical records into chart data
+  monthlyHistRecords.forEach(rec => {
+    const day = rec.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (!chartDataMap.has(day)) {
+      chartDataMap.set(day, { sales: 0, profit: 0 });
+    }
+    const data = chartDataMap.get(day)!;
+    data.sales += rec.sales;
+    data.profit += rec.profit;
+  });
+
   const chartData = Array.from(chartDataMap.entries()).map(([name, data]) => ({
     name,
     sales: data.sales,
@@ -78,6 +104,8 @@ export async function getDashboardStats() {
   });
 
   return {
+    allTimeSales,
+    allTimeProfit,
     stockValue,
     todaysSales,
     todaysProfit,

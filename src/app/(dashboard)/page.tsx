@@ -28,7 +28,23 @@ export default async function Dashboard() {
         <AiChatWidget />
       </div>
 
-      <div className="stats-grid">
+      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <StatCard 
+          title="All-Time Sales" 
+          value={`₹${stats.allTimeSales.toLocaleString('en-IN')}`} 
+          trend="Total" 
+          trendUp={true} 
+          icon={<BarChart3 size={24} color="#f59e0b" />} 
+          iconBg="rgba(245,158,11,0.1)" 
+        />
+        <StatCard 
+          title="All-Time Profit" 
+          value={`₹${stats.allTimeProfit.toLocaleString('en-IN')}`} 
+          trend="Total" 
+          trendUp={true} 
+          icon={<IndianRupee size={24} color="#f59e0b" />} 
+          iconBg="rgba(245,158,11,0.1)" 
+        />
         <StatCard 
           title="Total Stock Value" 
           value={`₹${stats.stockValue.toLocaleString('en-IN')}`} 
