@@ -17,6 +17,10 @@ export async function getMonthlyComparisonData() {
     where: { date: { gte: sixMonthsAgo } }
   });
 
+  const historical = await prisma.historicalRecord.findMany({
+    where: { date: { gte: sixMonthsAgo } }
+  });
+
   // Group by month
   const dataMap = new Map<string, { name: string, income: number, expenses: number, profit: number }>();
   
@@ -49,7 +53,16 @@ export async function getMonthlyComparisonData() {
     }
   });
 
-  // Calculate profit
+  historical.forEach(h => {
+    const monthName = new Date(h.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+    if (dataMap.has(monthName)) {
+      dataMap.get(monthName)!.income += h.sales;
+      dataMap.get(monthName)!.expenses += h.purchases;
+      // We don't directly add h.profit because the chart below calculates Net Profit dynamically.
+    }
+  });
+
+  // Calculate profit (Net Cash Flow for the month)
   dataMap.forEach(v => {
     v.profit = v.income - v.expenses;
   });

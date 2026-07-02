@@ -16,18 +16,24 @@ export default async function ReportsPage() {
   const sales = await prisma.invoice.findMany({
     where: { date: { gte: startOfMonth } }
   });
-  const totalSales = sales.reduce((acc, inv) => acc + inv.total, 0);
-
+  
   // Get current month purchases
   const purchases = await prisma.purchase.findMany({
     where: { date: { gte: startOfMonth } }
   });
-  const totalPurchases = purchases.reduce((acc, pur) => acc + pur.total, 0);
-
+  
   // Get current month expenses
   const expenses = await prisma.expense.findMany({
     where: { date: { gte: startOfMonth } }
   });
+
+  // Get current month historical records
+  const historical = await prisma.historicalRecord.findMany({
+    where: { date: { gte: startOfMonth } }
+  });
+
+  const totalSales = sales.reduce((acc, inv) => acc + inv.total, 0) + historical.reduce((acc, h) => acc + h.sales, 0);
+  const totalPurchases = purchases.reduce((acc, pur) => acc + pur.total, 0) + historical.reduce((acc, h) => acc + h.purchases, 0);
   const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
 
   const netProfit = totalSales - totalPurchases - totalExpenses;
