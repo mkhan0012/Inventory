@@ -4,6 +4,8 @@ import '../inventory/page.css';
 import prisma from '@/lib/prisma';
 import { getMonthlyComparisonData } from '@/actions/reports';
 import MonthlyComparisonChart from '@/components/MonthlyComparisonChart';
+import StatCard from '@/components/StatCard';
+import { BarChart3, Package, ShoppingCart } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,72 +58,69 @@ export default async function ReportsPage() {
       </div>
 
       <div className="stats-grid">
-        <div className="card" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <TrendingUp size={24} color="#10b981" />
-            </div>
-            <div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>Total Sales (Income)</div>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-main)' }}>₹{totalSales.toFixed(2)}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <TrendingDown size={24} color="#ef4444" />
-            </div>
-            <div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>Total Purchases</div>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-main)' }}>₹{totalPurchases.toFixed(2)}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <TrendingDown size={24} color="#f59e0b" />
-            </div>
-            <div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>Total Expenses</div>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-main)' }}>₹{totalExpenses.toFixed(2)}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card" style={{ padding: '24px', border: netProfit >= 0 ? '2px solid rgba(16,185,129,0.3)' : '2px solid rgba(239,68,68,0.3)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(41,98,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <IndianRupee size={24} color="#2962ff" />
-            </div>
-            <div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: 500, marginBottom: '4px' }}>Net Profit / Loss</div>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: netProfit >= 0 ? '#10b981' : '#ef4444' }}>
-                ₹{Math.abs(netProfit).toFixed(2)} {netProfit < 0 ? '(Loss)' : ''}
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatCard 
+          title="Total Sales (This Month)" 
+          value={`₹${totalSales.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          trend="" 
+          trendUp={true} 
+          icon={<TrendingUp size={24} color="#10b981" />} 
+          iconBg="rgba(16,185,129,0.1)" 
+        />
+        <StatCard 
+          title="Total Purchases (This Month)" 
+          value={`₹${totalPurchases.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          trend="" 
+          trendUp={false} 
+          icon={<TrendingDown size={24} color="#ef4444" />} 
+          iconBg="rgba(239,68,68,0.1)" 
+        />
+        <StatCard 
+          title="Total Expenses (This Month)" 
+          value={`₹${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          trend="" 
+          trendUp={false} 
+          icon={<TrendingDown size={24} color="#f59e0b" />} 
+          iconBg="rgba(245,158,11,0.1)" 
+        />
+        <StatCard 
+          title="Net Profit / Loss (This Month)" 
+          value={`₹${Math.abs(netProfit).toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          trend={netProfit < 0 ? 'Loss' : 'Profit'} 
+          trendUp={netProfit >= 0} 
+          icon={<IndianRupee size={24} color={netProfit >= 0 ? "#2962ff" : "#ef4444"} />} 
+          iconBg={netProfit >= 0 ? "rgba(41,98,255,0.1)" : "rgba(239,68,68,0.1)"} 
+        />
       </div>
       
       <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
-         <h2 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-main)' }}>All-Time Monthly Averages</h2>
-         <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-           <div style={{ padding: '16px', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-             <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '4px' }}>Avg. Monthly Sales</div>
-             <div style={{ fontSize: '20px', fontWeight: 600, color: '#10b981' }}>₹{averages.income.toFixed(2)}</div>
-           </div>
-           <div style={{ padding: '16px', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-             <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '4px' }}>Avg. Monthly Expenses</div>
-             <div style={{ fontSize: '20px', fontWeight: 600, color: '#ef4444' }}>₹{averages.expenses.toFixed(2)}</div>
-           </div>
-           <div style={{ padding: '16px', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-             <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '4px' }}>Avg. Monthly Profit</div>
-             <div style={{ fontSize: '20px', fontWeight: 600, color: '#2962ff' }}>₹{averages.profit.toFixed(2)}</div>
-           </div>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+           <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)' }}>All-Time Monthly Averages</h2>
+         </div>
+         <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+           <StatCard 
+             title="Avg. Monthly Sales" 
+             value={`₹${averages.income.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+             trend="Average" 
+             trendUp={true} 
+             icon={<BarChart3 size={24} color="#10b981" />} 
+             iconBg="rgba(16,185,129,0.1)" 
+           />
+           <StatCard 
+             title="Avg. Monthly Expenses" 
+             value={`₹${averages.expenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+             trend="Average" 
+             trendUp={false} 
+             icon={<ShoppingCart size={24} color="#ef4444" />} 
+             iconBg="rgba(239,68,68,0.1)" 
+           />
+           <StatCard 
+             title="Avg. Monthly Profit" 
+             value={`₹${averages.profit.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+             trend="Average" 
+             trendUp={averages.profit >= 0} 
+             icon={<IndianRupee size={24} color={averages.profit >= 0 ? "#2962ff" : "#ef4444"} />} 
+             iconBg={averages.profit >= 0 ? "rgba(41,98,255,0.1)" : "rgba(239,68,68,0.1)"} 
+           />
          </div>
       </div>
 
