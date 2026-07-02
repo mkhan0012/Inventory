@@ -193,6 +193,7 @@ model HistoricalRecord {
   date      DateTime
   sales     Float    @default(0.0)
   profit    Float    @default(0.0)
+  purchases Float    @default(0.0)
   notes     String?
   createdAt DateTime @default(now())
 }

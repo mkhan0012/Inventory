@@ -23,6 +23,9 @@ export async function getDashboardStats() {
     include: { items: true }
   });
 
+  // Fetch all active purchases for all-time calculation
+  const allPurchases = await prisma.purchase.findMany();
+
   const monthlyInvoices = allInvoices.filter(inv => inv.date >= startOfMonth);
   const dailyInvoices = allInvoices.filter(inv => inv.date >= startOfDay);
 
@@ -40,12 +43,15 @@ export async function getDashboardStats() {
   
   const allTimeActiveSales = allInvoices.reduce((acc, inv) => acc + inv.total, 0);
   const allTimeActiveProfit = calculateProfit(allInvoices);
+  const allTimeActivePurchases = allPurchases.reduce((acc, p) => acc + p.total, 0);
   
   const allTimeHistSales = historicalRecords.reduce((acc, r) => acc + r.sales, 0);
   const allTimeHistProfit = historicalRecords.reduce((acc, r) => acc + r.profit, 0);
+  const allTimeHistPurchases = historicalRecords.reduce((acc, r) => acc + r.purchases, 0);
 
   const allTimeSales = allTimeActiveSales + allTimeHistSales;
   const allTimeProfit = allTimeActiveProfit + allTimeHistProfit;
+  const allTimePurchases = allTimeActivePurchases + allTimeHistPurchases;
 
   const monthlyHistRecords = historicalRecords.filter(r => r.date >= startOfMonth);
   const dailyHistRecords = historicalRecords.filter(r => r.date >= startOfDay);
@@ -106,6 +112,7 @@ export async function getDashboardStats() {
   return {
     allTimeSales,
     allTimeProfit,
+    allTimePurchases,
     stockValue,
     todaysSales,
     todaysProfit,

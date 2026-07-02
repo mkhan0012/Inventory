@@ -46,6 +46,14 @@ export default async function Dashboard() {
           iconBg="rgba(245,158,11,0.1)" 
         />
         <StatCard 
+          title="All-Time Purchases" 
+          value={`₹${stats.allTimePurchases.toLocaleString('en-IN')}`} 
+          trend="Total" 
+          trendUp={true} 
+          icon={<ShoppingCart size={24} color="#f59e0b" />} 
+          iconBg="rgba(245,158,11,0.1)" 
+        />
+        <StatCard 
           title="Total Stock Value" 
           value={`₹${stats.stockValue.toLocaleString('en-IN')}`} 
           trend="" 

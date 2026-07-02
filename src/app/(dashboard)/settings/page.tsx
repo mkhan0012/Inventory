@@ -29,6 +29,7 @@ export default async function SettingsPage() {
       date: formData.get('date') as string,
       sales: parseFloat(formData.get('sales') as string),
       profit: parseFloat(formData.get('profit') as string),
+      purchases: parseFloat(formData.get('purchases') as string),
       notes: formData.get('notes') as string
     });
   };
@@ -83,18 +84,22 @@ export default async function SettingsPage() {
         </p>
         
         <form action={handleAddHistorical} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px', paddingBottom: '24px', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)' }}>Date</label>
               <input type="date" name="date" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)' }}>Total Sales (₹)</label>
               <input type="number" step="0.01" name="sales" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)' }}>Total Profit (₹)</label>
               <input type="number" step="0.01" name="profit" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
+            </div>
+            <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-muted)' }}>Total Purchases (₹)</label>
+              <input type="number" step="0.01" name="purchases" required style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -120,7 +125,7 @@ export default async function SettingsPage() {
                     {new Date(rec.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    Sales: ₹{rec.sales.toLocaleString('en-IN')} | Profit: ₹{rec.profit.toLocaleString('en-IN')} {rec.notes && `| ${rec.notes}`}
+                    Sales: ₹{rec.sales.toLocaleString('en-IN')} | Profit: ₹{rec.profit.toLocaleString('en-IN')} | Purchases: ₹{rec.purchases.toLocaleString('en-IN')} {rec.notes && `| ${rec.notes}`}
                   </div>
                 </div>
                 <DeleteButton 

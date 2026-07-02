@@ -6,6 +6,7 @@ export async function addHistoricalRecord(data: {
   date: string;
   sales: number;
   profit: number;
+  purchases: number;
   notes?: string;
 }) {
   try {
@@ -14,6 +15,7 @@ export async function addHistoricalRecord(data: {
         date: new Date(data.date),
         sales: data.sales,
         profit: data.profit,
+        purchases: data.purchases,
         notes: data.notes
       }
     });
