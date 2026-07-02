@@ -38,7 +38,7 @@ export default async function ReportsPage() {
 
   const netProfit = totalSales - totalPurchases - totalExpenses;
 
-  const chartData = await getMonthlyComparisonData();
+  const { chartData, averages } = await getMonthlyComparisonData();
 
   return (
     <div className="page-container">
@@ -108,7 +108,26 @@ export default async function ReportsPage() {
       </div>
       
       <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
-         <h2 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-main)' }}>Monthly Profit & Loss Comparison (Last 6 Months)</h2>
+         <h2 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-main)' }}>All-Time Monthly Averages</h2>
+         <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+           <div style={{ padding: '16px', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+             <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '4px' }}>Avg. Monthly Sales</div>
+             <div style={{ fontSize: '20px', fontWeight: 600, color: '#10b981' }}>₹{averages.income.toFixed(2)}</div>
+           </div>
+           <div style={{ padding: '16px', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+             <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '4px' }}>Avg. Monthly Expenses</div>
+             <div style={{ fontSize: '20px', fontWeight: 600, color: '#ef4444' }}>₹{averages.expenses.toFixed(2)}</div>
+           </div>
+           <div style={{ padding: '16px', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+             <div style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '4px' }}>Avg. Monthly Profit</div>
+             <div style={{ fontSize: '20px', fontWeight: 600, color: '#2962ff' }}>₹{averages.profit.toFixed(2)}</div>
+           </div>
+         </div>
+      </div>
+
+      <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
+         <h2 style={{ fontSize: '16px', marginBottom: '16px', color: 'var(--text-main)' }}>Monthly Profit & Loss Comparison (All-Time)</h2>
+         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Use the slider below the chart to zoom into specific months.</p>
          <MonthlyComparisonChart data={chartData} />
       </div>
 

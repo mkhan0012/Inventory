@@ -2,70 +2,78 @@
 import prisma from '@/lib/prisma';
 
 export async function getMonthlyComparisonData() {
-  const sixMonthsAgo = new Date();
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-  sixMonthsAgo.setDate(1);
-  sixMonthsAgo.setHours(0, 0, 0, 0);
+  const sales = await prisma.invoice.findMany();
+  const purchases = await prisma.purchase.findMany();
+  const expenses = await prisma.expense.findMany();
+  const historical = await prisma.historicalRecord.findMany();
 
-  const sales = await prisma.invoice.findMany({
-    where: { date: { gte: sixMonthsAgo } }
-  });
-  const purchases = await prisma.purchase.findMany({
-    where: { date: { gte: sixMonthsAgo } }
-  });
-  const expenses = await prisma.expense.findMany({
-    where: { date: { gte: sixMonthsAgo } }
-  });
+  // Find the earliest date
+  let earliestDate = new Date();
+  const allDates = [
+    ...sales.map(s => s.date),
+    ...purchases.map(p => p.date),
+    ...expenses.map(e => e.date),
+    ...historical.map(h => h.date)
+  ];
+  
+  if (allDates.length > 0) {
+    earliestDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+  }
+  
+  // Ensure it starts from the 1st of the earliest month
+  earliestDate.setDate(1);
+  earliestDate.setHours(0, 0, 0, 0);
 
-  const historical = await prisma.historicalRecord.findMany({
-    where: { date: { gte: sixMonthsAgo } }
-  });
-
-  // Group by month
   const dataMap = new Map<string, { name: string, income: number, expenses: number, profit: number }>();
   
-  // Initialize last 6 months to ensure they all show up even if zero
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - i);
-    const monthName = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+  // Generate all months from earliest to current
+  const currentDate = new Date();
+  let currentIterDate = new Date(earliestDate);
+  
+  while (currentIterDate <= currentDate) {
+    const monthName = currentIterDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
     dataMap.set(monthName, { name: monthName, income: 0, expenses: 0, profit: 0 });
+    currentIterDate.setMonth(currentIterDate.getMonth() + 1);
   }
 
-  sales.forEach(s => {
-    const monthName = new Date(s.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+  // Populate data
+  const addToMap = (date: Date, key: 'income' | 'expenses', amount: number) => {
+    const monthName = new Date(date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
     if (dataMap.has(monthName)) {
-      dataMap.get(monthName)!.income += s.total;
+      dataMap.get(monthName)![key] += amount;
     }
-  });
+  };
 
-  purchases.forEach(p => {
-    const monthName = new Date(p.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-    if (dataMap.has(monthName)) {
-      dataMap.get(monthName)!.expenses += p.total;
-    }
-  });
-
-  expenses.forEach(e => {
-    const monthName = new Date(e.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-    if (dataMap.has(monthName)) {
-      dataMap.get(monthName)!.expenses += e.amount;
-    }
-  });
-
+  sales.forEach(s => addToMap(s.date, 'income', s.total));
+  purchases.forEach(p => addToMap(p.date, 'expenses', p.total));
+  expenses.forEach(e => addToMap(e.date, 'expenses', e.amount));
+  
   historical.forEach(h => {
-    const monthName = new Date(h.date).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-    if (dataMap.has(monthName)) {
-      dataMap.get(monthName)!.income += h.sales;
-      dataMap.get(monthName)!.expenses += h.purchases;
-      // We don't directly add h.profit because the chart below calculates Net Profit dynamically.
-    }
+    addToMap(h.date, 'income', h.sales);
+    addToMap(h.date, 'expenses', h.purchases);
   });
 
-  // Calculate profit (Net Cash Flow for the month)
+  let totalIncome = 0;
+  let totalExpensesSum = 0;
+  let totalProfit = 0;
+
+  // Calculate profit and totals
   dataMap.forEach(v => {
     v.profit = v.income - v.expenses;
+    totalIncome += v.income;
+    totalExpensesSum += v.expenses;
+    totalProfit += v.profit;
   });
 
-  return Array.from(dataMap.values());
+  const chartData = Array.from(dataMap.values());
+  const monthCount = chartData.length > 0 ? chartData.length : 1;
+
+  return {
+    chartData,
+    averages: {
+      income: totalIncome / monthCount,
+      expenses: totalExpensesSum / monthCount,
+      profit: totalProfit / monthCount
+    }
+  };
 }

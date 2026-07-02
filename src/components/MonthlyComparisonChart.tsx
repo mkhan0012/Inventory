@@ -9,7 +9,8 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Brush
 } from 'recharts';
 
 interface ChartData {
@@ -43,6 +44,7 @@ export default function MonthlyComparisonChart({ data }: { data: ChartData[] }) 
           <Bar dataKey="income" name="Total Income" barSize={32} fill="#10b981" radius={[4, 4, 0, 0]} />
           <Bar dataKey="expenses" name="Total Expenses" barSize={32} fill="#ef4444" radius={[4, 4, 0, 0]} />
           <Line type="monotone" dataKey="profit" name="Net Profit Trend" stroke="#2962ff" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
+          <Brush dataKey="name" height={30} stroke="#8884d8" fill="var(--bg-main)" />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
