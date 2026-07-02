@@ -31,31 +31,34 @@ export default async function Dashboard() {
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
         <StatCard 
           title="All-Time Sales" 
-          value={`₹${stats.allTimeSales.toLocaleString('en-IN')}`} 
+          value={`₹${stats.allTimeSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="Total" 
           trendUp={true} 
           icon={<BarChart3 size={24} color="#f59e0b" />} 
           iconBg="rgba(245,158,11,0.1)" 
+          trendLabel="All-Time"
         />
         <StatCard 
           title="All-Time Profit" 
-          value={`₹${stats.allTimeProfit.toLocaleString('en-IN')}`} 
+          value={`₹${stats.allTimeProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="Total" 
           trendUp={true} 
           icon={<IndianRupee size={24} color="#f59e0b" />} 
           iconBg="rgba(245,158,11,0.1)" 
+          trendLabel="All-Time"
         />
         <StatCard 
           title="All-Time Purchases" 
-          value={`₹${stats.allTimePurchases.toLocaleString('en-IN')}`} 
+          value={`₹${stats.allTimePurchases.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="Total" 
           trendUp={true} 
           icon={<ShoppingCart size={24} color="#f59e0b" />} 
           iconBg="rgba(245,158,11,0.1)" 
+          trendLabel="All-Time"
         />
         <StatCard 
           title="Total Stock Value" 
-          value={`₹${stats.stockValue.toLocaleString('en-IN')}`} 
+          value={`₹${stats.stockValue.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="" 
           trendUp={true} 
           icon={<Package size={24} color="#2962ff" />} 
@@ -63,24 +66,24 @@ export default async function Dashboard() {
         />
         <StatCard 
           title="Today's Sales" 
-          value={`₹${stats.todaysSales.toLocaleString('en-IN')}`} 
-          trend="" 
+          value={`₹${stats.todaysSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          trend="Today" 
           trendUp={true} 
           icon={<ShoppingCart size={24} color="#10b981" />} 
           iconBg="rgba(16,185,129,0.1)" 
         />
         <StatCard 
           title="Monthly Sales" 
-          value={`₹${stats.monthlySales.toLocaleString('en-IN')}`} 
-          trend="" 
+          value={`₹${stats.monthlySales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          trend="This Month" 
           trendUp={true} 
           icon={<BarChart3 size={24} color="#8b5cf6" />} 
           iconBg="rgba(139,92,246,0.1)" 
         />
         <StatCard 
           title="Monthly Profit" 
-          value={`₹${stats.monthlyProfit.toLocaleString('en-IN')}`} 
-          trend="" 
+          value={`₹${stats.monthlyProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          trend="This Month" 
           trendUp={true} 
           icon={<IndianRupee size={24} color="#10b981" />} 
           iconBg="rgba(16,185,129,0.1)" 

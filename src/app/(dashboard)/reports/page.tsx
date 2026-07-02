@@ -60,7 +60,7 @@ export default async function ReportsPage() {
       <div className="stats-grid">
         <StatCard 
           title="Total Sales (This Month)" 
-          value={`₹${totalSales.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          value={`₹${totalSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="" 
           trendUp={true} 
           icon={<TrendingUp size={24} color="#10b981" />} 
@@ -68,7 +68,7 @@ export default async function ReportsPage() {
         />
         <StatCard 
           title="Total Purchases (This Month)" 
-          value={`₹${totalPurchases.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          value={`₹${totalPurchases.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="" 
           trendUp={false} 
           icon={<TrendingDown size={24} color="#ef4444" />} 
@@ -76,7 +76,7 @@ export default async function ReportsPage() {
         />
         <StatCard 
           title="Total Expenses (This Month)" 
-          value={`₹${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          value={`₹${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend="" 
           trendUp={false} 
           icon={<TrendingDown size={24} color="#f59e0b" />} 
@@ -84,7 +84,7 @@ export default async function ReportsPage() {
         />
         <StatCard 
           title="Net Profit / Loss (This Month)" 
-          value={`₹${Math.abs(netProfit).toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+          value={`₹${Math.abs(netProfit).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
           trend={netProfit < 0 ? 'Loss' : 'Profit'} 
           trendUp={netProfit >= 0} 
           icon={<IndianRupee size={24} color={netProfit >= 0 ? "#2962ff" : "#ef4444"} />} 
@@ -99,27 +99,30 @@ export default async function ReportsPage() {
          <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
            <StatCard 
              title="Avg. Monthly Sales" 
-             value={`₹${averages.income.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+             value={`₹${averages.income.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
              trend="Average" 
              trendUp={true} 
              icon={<BarChart3 size={24} color="#10b981" />} 
              iconBg="rgba(16,185,129,0.1)" 
+             trendLabel="All-Time"
            />
            <StatCard 
              title="Avg. Monthly Expenses" 
-             value={`₹${averages.expenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+             value={`₹${averages.expenses.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
              trend="Average" 
              trendUp={false} 
              icon={<ShoppingCart size={24} color="#ef4444" />} 
              iconBg="rgba(239,68,68,0.1)" 
+             trendLabel="All-Time"
            />
            <StatCard 
              title="Avg. Monthly Profit" 
-             value={`₹${averages.profit.toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+             value={`₹${averages.profit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
              trend="Average" 
              trendUp={averages.profit >= 0} 
              icon={<IndianRupee size={24} color={averages.profit >= 0 ? "#2962ff" : "#ef4444"} />} 
              iconBg={averages.profit >= 0 ? "rgba(41,98,255,0.1)" : "rgba(239,68,68,0.1)"} 
+             trendLabel="All-Time"
            />
          </div>
       </div>
