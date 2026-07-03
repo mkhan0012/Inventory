@@ -3,11 +3,13 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 24px;
+  gap: 12px;
 }
 
 .stat-content {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .stat-title {
@@ -22,6 +24,7 @@
   font-weight: 700;
   color: var(--text-main);
   margin-bottom: 8px;
+  word-wrap: break-word;
 }
 
 .stat-trend {
@@ -57,7 +60,6 @@
   .stat-card {
     padding: 20px 16px;
     align-items: center;
-    gap: 12px;
   }
 
   .stat-value {
