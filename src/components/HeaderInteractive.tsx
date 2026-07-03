@@ -39,13 +39,13 @@ export default function HeaderInteractive({ name, role }: Props) {
   };
 
   return (
-    <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+    <div className="header-right">
       
       <button className="mobile-menu-btn" onClick={toggleSidebar}>
         <Menu size={24} />
       </button>
 
-      <form onSubmit={handleSearch} className="search-bar" style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-main)', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+      <form onSubmit={handleSearch} className="search-bar">
         <Search size={18} color="var(--text-muted)" style={{ marginRight: '8px' }} />
         <input 
           type="text" 
@@ -56,11 +56,11 @@ export default function HeaderInteractive({ name, role }: Props) {
         />
       </form>
 
-      <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}>
+      <div className="header-actions">
         
         {/* Quick Add Menu */}
         <div className="desktop-only" style={{ position: 'relative' }}>
-          <button className="icon-btn primary" onClick={() => setShowAddMenu(!showAddMenu)} style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <button className="icon-btn primary" onClick={() => setShowAddMenu(!showAddMenu)}>
             <Plus size={20} />
           </button>
           
@@ -80,25 +80,24 @@ export default function HeaderInteractive({ name, role }: Props) {
         </div>
         
         {/* Notifications (Static demo) */}
-        <button className="icon-btn" onClick={() => toast("Check Inventory page for Low Stock alerts and Communications for missing clients!", { icon: '🔔' })} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+        <button className="icon-btn" onClick={() => toast("Check Inventory page for Low Stock alerts and Communications for missing clients!", { icon: '🔔' })}>
           <Bell size={20} color="var(--text-main)" />
           <span className="badge" style={{ position: 'absolute', top: '0', right: '0', background: 'var(--danger)', width: '10px', height: '10px', borderRadius: '50%' }}></span>
         </button>
 
-        {/* Theme Toggle */}
         {mounted && (
-          <button className="icon-btn" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>
+          <button className="icon-btn" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ fontSize: '18px' }}>
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
         )}
 
         {/* Profile Menu */}
         <div style={{ position: 'relative' }}>
-          <div className="user-profile" onClick={() => setShowProfileMenu(!showProfileMenu)} style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px' }}>
-            <div className="avatar" style={{ background: 'var(--primary)', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+          <div className="user-profile" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+            <div className="avatar">
               {name.charAt(0).toUpperCase()}
             </div>
-            <div className="user-info" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="user-info">
               <span className="user-name" style={{ fontWeight: '500', fontSize: '14px' }}>{name}</span>
               <span className="user-role" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{role === 'OWNER' ? 'Owner' : 'Staff'}</span>
             </div>
