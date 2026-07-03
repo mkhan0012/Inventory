@@ -141,13 +141,31 @@
 @media (max-width: 768px) {
   .header {
     padding: 0 16px;
+    gap: 12px;
+    justify-content: flex-start;
   }
   .header-left {
+    display: flex;
+    align-items: center;
+    order: 0;
+    max-width: 140px;
+  }
+  .header-left .sub-greeting {
     display: none;
   }
+  .header-left .greeting {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
   .header-right {
-    width: 100%;
-    justify-content: space-between;
+    width: auto;
+    justify-content: flex-end;
+    margin-left: auto;
+    order: 1;
+    gap: 8px;
   }
   .search-bar {
     display: none !important;
@@ -155,7 +173,7 @@
   .mobile-menu-btn {
     display: flex;
     order: -1;
-    margin-right: auto;
+    margin-right: 0;
   }
   .user-name, .user-role {
     display: none;

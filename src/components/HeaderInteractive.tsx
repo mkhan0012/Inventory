@@ -39,11 +39,12 @@ export default function HeaderInteractive({ name, role }: Props) {
   };
 
   return (
-    <div className="header-right">
-      
+    <>
       <button className="mobile-menu-btn" onClick={toggleSidebar}>
         <Menu size={24} />
       </button>
+
+      <div className="header-right">
 
       <form onSubmit={handleSearch} className="search-bar">
         <Search size={18} color="var(--text-muted)" style={{ marginRight: '8px' }} />
@@ -118,7 +119,8 @@ export default function HeaderInteractive({ name, role }: Props) {
             </div>
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
