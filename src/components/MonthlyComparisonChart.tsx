@@ -21,6 +21,12 @@ interface ChartData {
 }
 
 export default function MonthlyComparisonChart({ data }: { data: ChartData[] }) {
+  const formatYAxis = (value: number) => {
+    if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
+    if (value >= 1000) return `₹${(value / 1000).toFixed(0)}K`;
+    return `₹${value}`;
+  };
+
   return (
     <div style={{ width: '100%', height: 400 }}>
       <ResponsiveContainer>
@@ -35,10 +41,12 @@ export default function MonthlyComparisonChart({ data }: { data: ChartData[] }) 
         >
           <CartesianGrid stroke="#f5f5f5" strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} />
-          <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} tickFormatter={(val) => `₹${val}`} />
+          <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} tickFormatter={formatYAxis} />
           <Tooltip 
             formatter={(value: any) => `₹${Number(value).toFixed(2)}`} 
-            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', background: 'var(--bg-card)' }}
+            labelStyle={{ color: 'var(--text-main)', fontWeight: 'bold' }}
+            itemStyle={{ color: 'var(--text-main)' }}
           />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
           <Bar dataKey="income" name="Total Income" barSize={32} fill="#10b981" radius={[4, 4, 0, 0]} />

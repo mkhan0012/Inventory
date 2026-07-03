@@ -8,6 +8,12 @@ export default function SalesChart({ data }: { data: any[] }) {
     return <div style={{ width: '100%', height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>No sales data for this month yet.</div>;
   }
 
+  const formatYAxis = (value: number) => {
+    if (value >= 100000) return `${(value / 100000).toFixed(1)}L`;
+    if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
+    return String(value);
+  };
+
   return (
     <div style={{ width: '100%', height: 300 }}>
       <ResponsiveContainer>
@@ -42,11 +48,12 @@ export default function SalesChart({ data }: { data: any[] }) {
             axisLine={false} 
             tickLine={false} 
             tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
-            tickFormatter={(value) => `${value / 1000}K`} 
+            tickFormatter={formatYAxis} 
           />
           <Tooltip 
-            contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }} 
+            contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)', background: 'var(--bg-card)' }} 
             labelStyle={{ color: 'var(--text-main)', fontWeight: 'bold' }}
+            itemStyle={{ color: 'var(--text-main)' }}
           />
           <Area type="monotone" dataKey="sales" stroke="#2962ff" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
           <Area type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorProfit)" />

@@ -3,7 +3,6 @@ import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee } from 'lucide-
 import StatCard from '@/components/StatCard';
 import DashboardSalesChart from '@/components/DashboardSalesChart';
 import TopSelling from '@/components/TopSelling';
-import AiChatWidget from '@/components/AiChatWidget';
 import './page.css';
 import { getDashboardStats } from '@/actions/dashboard';
 import Link from 'next/link';
@@ -23,9 +22,39 @@ export default async function Dashboard() {
         </div>
       </div>
 
-      {/* AI Assistant Row */}
-      <div style={{ marginBottom: '24px' }}>
-        <AiChatWidget />
+      <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Quick Snapshots</h2>
+      </div>
+      
+      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginBottom: '32px' }}>
+        <StatCard 
+          title="Today's Sales" 
+          value={`₹${stats.todaysSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          trend="Today" 
+          trendUp={true} 
+          icon={<ShoppingCart size={24} color="#10b981" />} 
+          iconBg="rgba(16,185,129,0.1)" 
+        />
+        <StatCard 
+          title="Monthly Sales" 
+          value={`₹${stats.monthlySales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          trend="This Month" 
+          trendUp={true} 
+          icon={<BarChart3 size={24} color="#8b5cf6" />} 
+          iconBg="rgba(139,92,246,0.1)" 
+        />
+        <StatCard 
+          title="Monthly Profit" 
+          value={`₹${stats.monthlyProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          trend="This Month" 
+          trendUp={true} 
+          icon={<IndianRupee size={24} color="#10b981" />} 
+          iconBg="rgba(16,185,129,0.1)" 
+        />
+      </div>
+
+      <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>All-Time Performance</h2>
       </div>
 
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
@@ -63,30 +92,6 @@ export default async function Dashboard() {
           trendUp={true} 
           icon={<Package size={24} color="#2962ff" />} 
           iconBg="rgba(41,98,255,0.1)" 
-        />
-        <StatCard 
-          title="Today's Sales" 
-          value={`₹${stats.todaysSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
-          trend="Today" 
-          trendUp={true} 
-          icon={<ShoppingCart size={24} color="#10b981" />} 
-          iconBg="rgba(16,185,129,0.1)" 
-        />
-        <StatCard 
-          title="Monthly Sales" 
-          value={`₹${stats.monthlySales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
-          trend="This Month" 
-          trendUp={true} 
-          icon={<BarChart3 size={24} color="#8b5cf6" />} 
-          iconBg="rgba(139,92,246,0.1)" 
-        />
-        <StatCard 
-          title="Monthly Profit" 
-          value={`₹${stats.monthlyProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
-          trend="This Month" 
-          trendUp={true} 
-          icon={<IndianRupee size={24} color="#10b981" />} 
-          iconBg="rgba(16,185,129,0.1)" 
         />
       </div>
 

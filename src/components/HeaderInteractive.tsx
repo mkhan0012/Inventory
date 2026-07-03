@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { useTheme } from 'next-themes';
 
 interface Props {
   name: string;
@@ -17,8 +18,12 @@ export default function HeaderInteractive({ name, role }: Props) {
   
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  
-  // Basic click outside handler would go here (omitted for brevity, using simple toggles)
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +84,13 @@ export default function HeaderInteractive({ name, role }: Props) {
           <Bell size={20} color="var(--text-main)" />
           <span className="badge" style={{ position: 'absolute', top: '0', right: '0', background: 'var(--danger)', width: '10px', height: '10px', borderRadius: '50%' }}></span>
         </button>
+
+        {/* Theme Toggle */}
+        {mounted && (
+          <button className="icon-btn" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        )}
 
         {/* Profile Menu */}
         <div style={{ position: 'relative' }}>
