@@ -28,7 +28,7 @@ export default async function Dashboard() {
         <AiChatWidget />
       </div>
 
-      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
         <StatCard 
           title="All-Time Sales" 
           value={`₹${stats.allTimeSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
