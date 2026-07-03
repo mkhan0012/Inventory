@@ -1,43 +1,45 @@
 "use server";
 import prisma from "@/lib/prisma";
 import Groq from "groq-sdk";
+import { getDashboardStats } from "./dashboard";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function askAI(query: string) {
   try {
     // 1. Fetch live summary data
-    const products = await prisma.product.findMany();
+    const stats = await getDashboardStats();
     const customers = await prisma.customer.findMany();
     
-    // Fetch last 30 days of sales
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const recentSales = await prisma.invoice.findMany({
-      where: { date: { gte: thirtyDaysAgo } }
-    });
-    const totalRecentSales = recentSales.reduce((acc, s) => acc + s.total, 0);
-
     const contextData = {
-      overview: {
-        totalProducts: products.length,
-        totalCustomers: customers.length,
-        totalSalesLast30Days: totalRecentSales,
+      businessOverview: {
+        allTimeSales: stats.allTimeSales,
+        allTimeProfit: stats.allTimeProfit,
+        allTimePurchases: stats.allTimePurchases,
+        stockValue: stats.stockValue,
+        todaysSales: stats.todaysSales,
+        todaysProfit: stats.todaysProfit,
+        thisMonthSales: stats.monthlySales,
+        thisMonthProfit: stats.monthlyProfit,
+        totalPendingDuesFromCustomers: stats.duePayments,
       },
-      lowStockAlerts: products.filter(p => p.stock < 10).map(p => ({ name: p.name, stock: p.stock })),
-      top5Customers: customers.sort((a,b) => b.totalPurchases - a.totalPurchases).slice(0, 5).map(c => ({ name: c.name, totalBought: c.totalPurchases, pendingDues: c.dueAmount })),
-      topDueCustomers: customers.filter(c => c.dueAmount > 0).sort((a,b) => b.dueAmount - a.dueAmount).slice(0, 5).map(c => ({ name: c.name, pendingDues: c.dueAmount }))
+      inventoryAlerts: {
+        outOfStock: stats.outOfStockProducts.map(p => p.name),
+        lowStock: stats.lowStockProducts.map(p => ({ name: p.name, stock: p.stock })),
+      },
+      recentInvoices: stats.recentSales.map(s => ({ invoiceNo: s.invoiceNo, total: s.total, status: s.status, date: s.date })),
+      topCustomers: customers.sort((a,b) => b.totalPurchases - a.totalPurchases).slice(0, 5).map(c => ({ name: c.name, totalBought: c.totalPurchases, pendingDues: c.dueAmount })),
     };
 
     const systemPrompt = `You are a highly intelligent Business Assistant for Bharat Hydraulics. 
-Here is the LIVE real-time state of the business data in JSON format:
+Here is the LIVE real-time state of the business data in JSON format, which includes all historical data you need:
 ${JSON.stringify(contextData, null, 2)}
 
 Answer the user's question accurately based ONLY on this provided data. 
 - Keep your answer brief, professional, and easy to read.
-- If they ask about sales, you only have data for the last 30 days.
+- You now have access to ALL-TIME historical totals (allTimeSales, allTimeProfit, allTimePurchases). Use them when the user asks about total historical data, all-time performance, previous months, or total profit.
 - If you don't know the answer based on the JSON, politely say you don't have that specific data.
-- Format numbers nicely (e.g. ₹5,000).`;
+- Format numbers with commas and currency symbols nicely (e.g. ₹5,000.00).`;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [
