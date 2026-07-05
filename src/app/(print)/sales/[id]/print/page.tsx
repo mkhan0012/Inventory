@@ -82,8 +82,12 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
       </div>
 
       <div className="print-footer">
-        <p>Thank you for your business!</p>
-        <p>Authorized Signatory</p>
+        <div style={{ fontStyle: 'italic', color: '#6b7280' }}>
+          <p>Thank you for your business!</p>
+        </div>
+        <div className="signatory">
+          <p>Authorized Signatory</p>
+        </div>
       </div>
 
       <PrintButton />

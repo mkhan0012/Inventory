@@ -81,8 +81,12 @@ export default async function PrintQuotation({ params }: { params: Promise<{ id:
       </div>
 
       <div className="print-footer">
-        <p>This is an estimate, not a tax invoice.</p>
-        <p>Authorized Signatory</p>
+        <div style={{ fontStyle: 'italic', color: '#6b7280' }}>
+          <p>This is an estimate, not a tax invoice.</p>
+        </div>
+        <div className="signatory">
+          <p>Authorized Signatory</p>
+        </div>
       </div>
 
       <PrintButton />

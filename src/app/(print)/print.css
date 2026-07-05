@@ -1,81 +1,123 @@
 .print-container {
-  max-width: 800px;
+  max-width: 850px;
   margin: 0 auto;
-  font-family: Arial, sans-serif;
-  color: #000;
-  background: #fff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #111827 !important;
+  background: #fff !important;
+  padding: 40px;
 }
 
 .print-header {
   display: flex;
   justify-content: space-between;
-  border-bottom: 2px solid #000;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .shop-name {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0 0 5px 0;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #111827 !important;
+  letter-spacing: -0.5px;
 }
 
 .shop-address, .shop-gst {
-  margin: 0 0 5px 0;
+  margin: 0 0 4px 0;
   font-size: 14px;
+  color: #4b5563 !important;
+  line-height: 1.5;
 }
 
 .invoice-meta {
   text-align: right;
+  background: #f9fafb;
+  padding: 20px 24px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .invoice-meta h2 {
-  margin: 0 0 10px 0;
-  color: #333;
+  margin: 0 0 12px 0;
+  color: #2962ff !important;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 .invoice-meta p {
-  margin: 0 0 5px 0;
+  margin: 0 0 8px 0;
   font-size: 14px;
+  color: #374151 !important;
+}
+
+.invoice-meta p strong {
+  color: #111827 !important;
 }
 
 .bill-to {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .bill-to h3 {
-  margin: 0 0 10px 0;
-  font-size: 16px;
-  border-bottom: 1px solid #ccc;
-  display: inline-block;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #6b7280 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.bill-to p {
+  margin: 0 0 4px 0;
+  color: #111827 !important;
+  font-size: 15px;
 }
 
 .print-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 30px;
-}
-
-.print-table th, .print-table td {
-  border: 1px solid #000;
-  padding: 10px;
-  text-align: left;
+  margin-bottom: 40px;
 }
 
 .print-table th {
-  background-color: #f5f5f5;
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.print-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #111827 !important;
+  font-size: 14px;
 }
 
 .print-table td:nth-child(3),
 .print-table td:nth-child(4),
-.print-table td:nth-child(5) {
+.print-table td:nth-child(5),
+.print-table th:nth-child(3),
+.print-table th:nth-child(4),
+.print-table th:nth-child(5) {
   text-align: right;
 }
 
 .print-totals {
-  width: 300px;
+  width: 320px;
   margin-left: auto;
   margin-bottom: 50px;
+  background: #f9fafb;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .total-row {
@@ -83,22 +125,42 @@
   justify-content: space-between;
   padding: 8px 0;
   font-size: 14px;
+  color: #4b5563 !important;
+}
+
+.total-row span:last-child {
+  color: #111827 !important;
+  font-weight: 500;
 }
 
 .grand-total {
-  font-weight: bold;
   font-size: 18px;
-  border-top: 2px solid #000;
-  margin-top: 10px;
-  padding-top: 10px;
+  border-top: 2px solid #e5e7eb;
+  margin-top: 12px;
+  padding-top: 16px;
+  color: #111827 !important;
+}
+
+.grand-total span:last-child {
+  color: #2962ff !important;
+  font-weight: 800;
+  font-size: 22px;
 }
 
 .print-footer {
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   margin-top: 50px;
-  font-style: italic;
   font-size: 14px;
+  color: #6b7280 !important;
+}
+
+.signatory {
+  border-top: 1px solid #9ca3af;
+  padding-top: 8px;
+  width: 200px;
+  text-align: center;
 }
 
 .print-btn {
@@ -121,5 +183,10 @@
   }
   body {
     background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-container {
+    padding: 0;
   }
 }
