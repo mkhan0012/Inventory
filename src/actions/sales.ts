@@ -191,3 +191,124 @@ export async function deleteInvoice(id: string) {
     return { error: e.message || "An unexpected error occurred." };
   }
 }
+
+export async function getDirectSales() {
+  const directSales = await prisma.directSale.findMany({
+    include: {
+      items: {
+        include: { product: true }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+  
+  return directSales.map(ds => ({
+    ...ds,
+    date: ds.date.toISOString(),
+    createdAt: ds.createdAt.toISOString()
+  }));
+}
+
+export async function createDirectSale(data: {
+  items: Array<{ productId: string; quantity: number; rate: number }>;
+  tax: number;
+  date?: string;
+}) {
+  const subtotal = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
+  const total = subtotal + data.tax;
+
+  const directSale = await prisma.$transaction(async (tx) => {
+    const productCache = new Map<string, number>();
+
+    // 1. Update stock
+    for (const item of data.items) {
+      const product = await tx.product.findUnique({ where: { id: item.productId } });
+      if (!product || product.stock < item.quantity) {
+        throw new Error(`Insufficient stock for product ID ${item.productId}`);
+      }
+      productCache.set(product.id, product.purchasePrice);
+      const newStock = product.stock - item.quantity;
+      const status = newStock > 10 ? 'In Stock' : newStock > 0 ? 'Low Stock' : 'Out of Stock';
+      
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: newStock, status }
+      });
+    }
+
+    // 2. Create Direct Sale
+    const newDirectSale = await tx.directSale.create({
+      data: {
+        saleNo: `DS-${Date.now().toString().substring(7)}`,
+        date: data.date ? new Date(data.date) : undefined,
+        subtotal,
+        tax: data.tax,
+        total,
+        items: {
+          create: data.items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            rate: item.rate,
+            purchaseRate: productCache.get(item.productId) || 0,
+            amount: item.quantity * item.rate
+          }))
+        }
+      }
+    });
+
+    return newDirectSale;
+  });
+
+  const session = await getServerSession(authOptions);
+  if (session?.user) {
+    await logActivity(
+      "Create Direct Sale", 
+      `Created Direct Sale ${directSale.saleNo} for ₹${directSale.total}`, 
+      session.user.name || "Unknown", 
+      (session.user as any).role || "STAFF"
+    );
+  }
+
+  revalidatePath('/sales');
+  revalidatePath('/inventory');
+  revalidatePath('/');
+  return { success: true, id: directSale.id };
+}
+
+export async function deleteDirectSale(id: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as any).role !== "OWNER") {
+    return { error: "Unauthorized: Only owners can delete sales." };
+  }
+  const userName = session.user.name || "Unknown";
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const directSale = await tx.directSale.findUnique({ where: { id }, include: { items: true } });
+      if (!directSale) throw new Error("Sale not found.");
+
+      // Reverse Product stock
+      await Promise.all(directSale.items.map(item => 
+        tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } }
+        })
+      ));
+
+      // Delete Sale
+      await tx.directSale.delete({ where: { id } });
+
+      await logActivity(
+        "Delete Direct Sale", 
+        `Deleted Direct Sale ${directSale.saleNo} (₹${directSale.total})`, 
+        userName, 
+        "OWNER"
+      );
+    }, { maxWait: 15000, timeout: 15000 });
+
+    revalidatePath('/sales');
+    revalidatePath('/inventory');
+  } catch (e: any) {
+    return { error: e.message || "An unexpected error occurred." };
+  }
+}

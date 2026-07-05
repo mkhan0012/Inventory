@@ -6,11 +6,13 @@ export async function getMonthlyComparisonData() {
   const purchases = await prisma.purchase.findMany();
   const expenses = await prisma.expense.findMany();
   const historical = await prisma.historicalRecord.findMany();
+  const directSales = await prisma.directSale.findMany();
 
   // Find the earliest date
   let earliestDate = new Date();
   const allDates = [
     ...sales.map(s => s.date),
+    ...directSales.map(d => d.date),
     ...purchases.map(p => p.date),
     ...expenses.map(e => e.date),
     ...historical.map(h => h.date)
@@ -45,6 +47,7 @@ export async function getMonthlyComparisonData() {
   };
 
   sales.forEach(s => addToMap(s.date, 'income', s.total));
+  directSales.forEach(d => addToMap(d.date, 'income', d.total));
   purchases.forEach(p => addToMap(p.date, 'expenses', p.total));
   expenses.forEach(e => addToMap(e.date, 'expenses', e.amount));
   

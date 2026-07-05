@@ -28,8 +28,19 @@ export async function getProducts(search?: string) {
     }
   });
 
+  const recentDirectSaleItems = await prisma.directSaleItem.findMany({
+    where: {
+      directSale: {
+        date: { gte: thirtyDaysAgo }
+      }
+    }
+  });
+
   const soldMap = new Map<string, number>();
   recentInvoiceItems.forEach(item => {
+    soldMap.set(item.productId, (soldMap.get(item.productId) || 0) + item.quantity);
+  });
+  recentDirectSaleItems.forEach(item => {
     soldMap.set(item.productId, (soldMap.get(item.productId) || 0) + item.quantity);
   });
 

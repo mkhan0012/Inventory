@@ -19,6 +19,10 @@ export default async function ReportsPage() {
     where: { date: { gte: startOfMonth } }
   });
   
+  const directSales = await prisma.directSale.findMany({
+    where: { date: { gte: startOfMonth } }
+  });
+  
   // Get current month purchases
   const purchases = await prisma.purchase.findMany({
     where: { date: { gte: startOfMonth } }
@@ -34,7 +38,7 @@ export default async function ReportsPage() {
     where: { date: { gte: startOfMonth } }
   });
 
-  const totalSales = sales.reduce((acc, inv) => acc + inv.total, 0) + historical.reduce((acc, h) => acc + h.sales, 0);
+  const totalSales = sales.reduce((acc, inv) => acc + inv.total, 0) + historical.reduce((acc, h) => acc + h.sales, 0) + directSales.reduce((acc, ds) => acc + ds.total, 0);
   const totalPurchases = purchases.reduce((acc, pur) => acc + pur.total, 0) + historical.reduce((acc, h) => acc + h.purchases, 0);
   const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
 
@@ -52,10 +56,20 @@ export default async function ReportsPage() {
     }
   });
 
+  const directSaleItemsThisMonth = await prisma.directSaleItem.findMany({
+    where: {
+      directSale: {
+        date: { gte: startOfMonth }
+      }
+    }
+  });
+
   const productStats = products.map(p => {
-    const items = invoiceItemsThisMonth.filter(i => i.productId === p.id);
-    const totalSold = items.reduce((acc, curr) => acc + curr.quantity, 0);
-    const totalProfit = items.reduce((acc, curr) => acc + ((curr.rate - curr.purchaseRate) * curr.quantity), 0);
+    const invItems = invoiceItemsThisMonth.filter(i => i.productId === p.id);
+    const dsItems = directSaleItemsThisMonth.filter(i => i.productId === p.id);
+
+    const totalSold = invItems.reduce((acc, curr) => acc + curr.quantity, 0) + dsItems.reduce((acc, curr) => acc + curr.quantity, 0);
+    const totalProfit = invItems.reduce((acc, curr) => acc + ((curr.rate - curr.purchaseRate) * curr.quantity), 0) + dsItems.reduce((acc, curr) => acc + ((curr.rate - curr.purchaseRate) * curr.quantity), 0);
     
     return {
       id: p.id,

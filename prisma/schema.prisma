@@ -34,6 +34,7 @@ model Product {
   invoiceItems InvoiceItem[]
   purchaseItems PurchaseItem[]
   quotationItems QuotationItem[]
+  directSaleItems DirectSaleItem[]
 }
 
 model Customer {
@@ -196,4 +197,30 @@ model HistoricalRecord {
   purchases Float    @default(0.0)
   notes     String?
   createdAt DateTime @default(now())
+}
+
+model DirectSale {
+  id         String   @id @default(cuid())
+  saleNo     String   @unique
+  date       DateTime @default(now())
+  subtotal   Float    @default(0.0)
+  tax        Float    @default(0.0)
+  total      Float    @default(0.0)
+  createdAt  DateTime @default(now())
+
+  items DirectSaleItem[]
+}
+
+model DirectSaleItem {
+  id        String  @id @default(cuid())
+  quantity  Float
+  rate      Float
+  purchaseRate Float @default(0.0)
+  amount    Float
+
+  directSaleId String
+  directSale   DirectSale @relation(fields: [directSaleId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 }

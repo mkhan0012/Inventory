@@ -1,8 +1,9 @@
 import React from 'react';
 import { Search, FileText } from 'lucide-react';
 import '../inventory/page.css';
-import { getInvoices, deleteInvoice } from '@/actions/sales';
+import { getInvoices, deleteInvoice, getDirectSales, deleteDirectSale } from '@/actions/sales';
 import CreateInvoiceModal from '@/components/CreateInvoiceModal';
+import CreateDirectSaleModal from '@/components/CreateDirectSaleModal';
 import DeleteButton from '@/components/DeleteButton';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
@@ -17,8 +18,32 @@ export default async function SalesPage() {
   const isOwner = (session?.user as any)?.role === 'OWNER';
 
   const invoices = await getInvoices();
+  const directSales = await getDirectSales();
   const customers = await getCustomers();
   const products = await getProducts();
+
+  const combinedSales = [
+    ...invoices.map(i => ({
+      id: i.id,
+      no: i.invoiceNo,
+      date: new Date(i.date),
+      customer: i.customer.name,
+      items: i.items.length,
+      total: i.total,
+      status: i.status,
+      type: 'INVOICE'
+    })),
+    ...directSales.map(d => ({
+      id: d.id,
+      no: d.saleNo,
+      date: new Date(d.date),
+      customer: 'Direct / Walk-in',
+      items: d.items.length,
+      total: d.total,
+      status: 'PAID',
+      type: 'DIRECT'
+    }))
+  ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return (
     <div className="page-container">
@@ -29,7 +54,8 @@ export default async function SalesPage() {
             <Search size={16} color="var(--text-muted)" />
             <input type="text" placeholder="Search invoices..." />
           </div>
-          <div className="desktop-only">
+          <div className="desktop-only" style={{ display: 'flex', gap: '10px' }}>
+            <CreateDirectSaleModal products={products} />
             <CreateInvoiceModal customers={customers} products={products} />
           </div>
         </div>
@@ -39,7 +65,7 @@ export default async function SalesPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Invoice No</th>
+              <th>No.</th>
               <th>Date</th>
               <th>Customer</th>
               <th>Items</th>
@@ -49,28 +75,35 @@ export default async function SalesPage() {
             </tr>
           </thead>
           <tbody>
-            {invoices.length === 0 ? (
+            {combinedSales.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No invoices found.</td>
+                <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No sales records found.</td>
               </tr>
-            ) : invoices.map((invoice) => (
-              <tr key={invoice.id}>
-                <td className="text-primary font-medium">{invoice.invoiceNo}</td>
-                <td>{new Date(invoice.date).toLocaleDateString()}</td>
-                <td className="font-medium">{invoice.customer.name}</td>
-                <td>{invoice.items.length} items</td>
-                <td>₹{invoice.total.toFixed(2)}</td>
+            ) : combinedSales.map((sale) => (
+              <tr key={sale.id}>
+                <td className="text-primary font-medium">
+                  {sale.no}
+                  {sale.type === 'DIRECT' && <span style={{ marginLeft: '8px', fontSize: '10px', background: '#fef3c7', color: '#d97706', padding: '2px 6px', borderRadius: '10px' }}>QUICK</span>}
+                </td>
+                <td>{sale.date.toLocaleDateString()}</td>
+                <td className="font-medium">{sale.customer}</td>
+                <td>{sale.items} items</td>
+                <td>₹{sale.total.toFixed(2)}</td>
                 <td>
-                  <span className={`status-badge ${invoice.status.toLowerCase()}`}>
-                    {invoice.status}
+                  <span className={`status-badge ${sale.status.toLowerCase()}`}>
+                    {sale.status}
                   </span>
                 </td>
                 <td className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Link href={`/sales/${invoice.id}/print`} className="btn-icon" target="_blank" title="Print Invoice">
-                    <FileText size={16} />
-                  </Link>
+                  {sale.type === 'INVOICE' && (
+                    <Link href={`/sales/${sale.id}/print`} className="btn-icon" target="_blank" title="Print Invoice">
+                      <FileText size={16} />
+                    </Link>
+                  )}
                   {isOwner && (
-                    <DeleteButton id={invoice.id} action={deleteInvoice} itemType="invoice" />
+                    sale.type === 'INVOICE' 
+                      ? <DeleteButton id={sale.id} action={deleteInvoice} itemType="invoice" />
+                      : <DeleteButton id={sale.id} action={deleteDirectSale} itemType="sale" />
                   )}
                 </td>
               </tr>
