@@ -70,7 +70,7 @@ export default function AddProductModal() {
                 </div>
                 <div className="form-group">
                   <label>Initial Stock</label>
-                  <input type="number" required min="0" value={stock} onChange={e => setStock(Number(e.target.value))} />
+                  <input type="number" step="0.01" required min="0" value={stock} onChange={e => setStock(Number(e.target.value))} />
                 </div>
                 <div className="form-group">
                   <label>Location</label>

@@ -22,7 +22,7 @@ model Product {
   name        String
   barcode     String?  @unique
   category    String
-  stock       Int      @default(0)
+  stock       Float      @default(0.0)
   location    String   @default("Store Front") // e.g. "Store Front", "Warehouse"
   unit        String
   price       Float    @default(0.0)
@@ -82,7 +82,7 @@ model Invoice {
 
 model InvoiceItem {
   id        String  @id @default(cuid())
-  quantity  Int
+  quantity  Float
   rate      Float
   purchaseRate Float @default(0.0)
   amount    Float
@@ -110,7 +110,7 @@ model Purchase {
 
 model PurchaseItem {
   id        String  @id @default(cuid())
-  quantity  Int
+  quantity  Float
   rate      Float
   amount    Float
 
@@ -168,7 +168,7 @@ model Quotation {
 
 model QuotationItem {
   id        String  @id @default(cuid())
-  quantity  Int
+  quantity  Float
   rate      Float
   amount    Float
 

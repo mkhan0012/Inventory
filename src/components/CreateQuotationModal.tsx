@@ -175,7 +175,7 @@ export default function CreateQuotationModal({ customers, products }: { customer
                     </div>
                     <div className="form-group" style={{ flex: 1 }}>
                       <label style={{ fontSize: '11px' }}>Quantity</label>
-                      <input type="number" required min="1" value={item.quantity} onChange={e => updateItem(index, 'quantity', e.target.value)} style={{ padding: '8px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
+                      <input type="number" required min="0.01" step="0.01" value={item.quantity} onChange={e => updateItem(index, 'quantity', e.target.value)} style={{ padding: '8px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
                     </div>
                     <div className="form-group" style={{ flex: 1 }}>
                       <label style={{ fontSize: '11px' }}>Rate</label>
