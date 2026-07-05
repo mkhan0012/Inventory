@@ -137,7 +137,11 @@ export async function getUpsellSuggestions(productIds: string[]) {
   return Array.from(freqMap.values())
     .sort((a, b) => b.count - a.count)
     .slice(0, 3)
-    .map(entry => entry.product);
+    .map(entry => ({
+      ...entry.product,
+      createdAt: entry.product.createdAt.toISOString(),
+      updatedAt: entry.product.updatedAt.toISOString()
+    }));
 }
 
 export async function deleteInvoice(id: string) {

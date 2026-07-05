@@ -6,9 +6,14 @@ import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
 export async function getCustomers() {
-  return await prisma.customer.findMany({
+  const customers = await prisma.customer.findMany({
     orderBy: { createdAt: 'desc' }
   });
+  return customers.map(c => ({
+    ...c,
+    createdAt: c.createdAt.toISOString(),
+    updatedAt: c.updatedAt.toISOString()
+  }));
 }
 
 import { z } from "zod";

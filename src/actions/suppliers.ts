@@ -6,9 +6,14 @@ import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
 export async function getSuppliers() {
-  return await prisma.supplier.findMany({
+  const suppliers = await prisma.supplier.findMany({
     orderBy: { createdAt: 'desc' }
   });
+  return suppliers.map(s => ({
+    ...s,
+    createdAt: s.createdAt.toISOString(),
+    updatedAt: s.updatedAt.toISOString()
+  }));
 }
 
 export async function createSupplier(data: {

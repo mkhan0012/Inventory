@@ -46,6 +46,8 @@ export async function getProducts(search?: string) {
 
     return {
       ...p,
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
       velocityPerDay,
       daysUntilEmpty
     };
