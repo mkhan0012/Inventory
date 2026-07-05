@@ -112,7 +112,9 @@ export default function CreatePurchaseModal({ suppliers, products }: { suppliers
                       <select required value={item.productId} onChange={e => updateItem(index, 'productId', e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
                         <option value="">-- Select --</option>
                         {products.map(p => (
-                          <option key={p.id} value={p.id}>{p.name}</option>
+                          <option key={p.id} value={p.id}>
+                            {p.name} | Cat: {p.category} | Stock: {p.stock} | Buy: ₹{p.purchasePrice} | Sell: ₹{p.price}
+                          </option>
                         ))}
                       </select>
                     </div>
