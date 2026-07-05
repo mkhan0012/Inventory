@@ -41,5 +41,5 @@ export async function createPayment(data: {
   revalidatePath('/customers');
   revalidatePath('/suppliers');
   revalidatePath('/');
-  return payment;
+  return { success: true, id: payment.id };
 }

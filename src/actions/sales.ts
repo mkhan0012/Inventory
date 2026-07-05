@@ -103,7 +103,7 @@ export async function createInvoice(data: {
   revalidatePath('/inventory');
   revalidatePath('/customers');
   revalidatePath('/');
-  return invoice;
+  return { success: true, id: invoice.id };
 }
 
 export async function getUpsellSuggestions(productIds: string[]) {

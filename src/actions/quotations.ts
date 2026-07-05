@@ -43,5 +43,5 @@ export async function createQuotation(data: {
   });
 
   revalidatePath('/quotations');
-  return quotation;
+  return { success: true, id: quotation.id };
 }

@@ -89,7 +89,7 @@ export async function createProduct(data: {
   });
 
   revalidatePath('/inventory');
-  return product;
+  return { success: true, id: product.id };
 }
 
 export async function deleteProduct(id: string) {

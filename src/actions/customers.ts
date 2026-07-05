@@ -35,7 +35,7 @@ export async function createCustomer(data: {
   });
 
   revalidatePath('/customers');
-  return customer;
+  return { success: true, id: customer.id };
 }
 
 export async function deleteCustomer(id: string) {

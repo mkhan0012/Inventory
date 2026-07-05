@@ -24,5 +24,5 @@ export async function createExpense(data: {
   });
   revalidatePath('/expenses');
   revalidatePath('/');
-  return expense;
+  return { success: true, id: expense.id };
 }

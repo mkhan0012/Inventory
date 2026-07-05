@@ -19,7 +19,7 @@ export async function createSupplier(data: {
     data
   });
   revalidatePath('/suppliers');
-  return supplier;
+  return { success: true, id: supplier.id };
 }
 
 export async function deleteSupplier(id: string) {

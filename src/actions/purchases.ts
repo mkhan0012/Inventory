@@ -75,7 +75,7 @@ export async function createPurchase(data: {
   revalidatePath('/inventory');
   revalidatePath('/suppliers');
   revalidatePath('/');
-  return purchase;
+  return { success: true, id: purchase.id };
 }
 
 export async function deletePurchase(id: string) {
