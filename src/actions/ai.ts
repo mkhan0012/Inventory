@@ -10,6 +10,7 @@ export async function askAI(query: string) {
     // 1. Fetch live summary data
     const stats = await getDashboardStats();
     const customers = await prisma.customer.findMany();
+    const products = await prisma.product.findMany();
     
     const contextData = {
       businessOverview: {
@@ -29,6 +30,15 @@ export async function askAI(query: string) {
       },
       recentInvoices: stats.recentSales.map(s => ({ invoiceNo: s.invoiceNo, total: s.total, status: s.status, date: s.date })),
       topCustomers: customers.sort((a,b) => b.totalPurchases - a.totalPurchases).slice(0, 5).map(c => ({ name: c.name, totalBought: c.totalPurchases, pendingDues: c.dueAmount })),
+      inventoryCatalog: products.map(p => ({
+        code: p.code,
+        name: p.name,
+        stock: p.stock,
+        price: p.price,
+        purchasePrice: p.purchasePrice,
+        category: p.category,
+        location: p.location,
+      })),
     };
 
     const systemPrompt = `You are a highly intelligent Business Assistant for Bharat Hydraulics. 

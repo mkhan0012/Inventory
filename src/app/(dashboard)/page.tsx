@@ -151,9 +151,12 @@ export default async function Dashboard() {
                 <tbody>
                   {stats.recentSales.map(sale => (
                     <tr key={sale.id} style={{ borderBottom: '1px solid var(--border)', fontSize: '14px' }}>
-                      <td style={{ padding: '12px 8px', color: 'var(--primary)', fontWeight: 500 }}>{sale.invoiceNo}</td>
+                      <td style={{ padding: '12px 8px', color: 'var(--primary)', fontWeight: 500 }}>
+                        {sale.invoiceNo}
+                        {sale.type === 'DIRECT' && <span style={{ marginLeft: '8px', fontSize: '10px', background: '#fef3c7', color: '#d97706', padding: '2px 6px', borderRadius: '10px' }}>QUICK</span>}
+                      </td>
                       <td style={{ padding: '12px 8px', color: 'var(--text-main)' }}>{new Date(sale.date).toLocaleDateString()}</td>
-                      <td style={{ padding: '12px 8px', color: 'var(--text-main)' }}>{sale.customer.name}</td>
+                      <td style={{ padding: '12px 8px', color: 'var(--text-main)' }}>{sale.customerName}</td>
                       <td style={{ padding: '12px 8px', color: 'var(--text-main)', fontWeight: 500 }}>₹{sale.total.toFixed(2)}</td>
                       <td style={{ padding: '12px 8px' }}>
                         <span className={`status-badge ${sale.status.toLowerCase()}`}>{sale.status}</span>

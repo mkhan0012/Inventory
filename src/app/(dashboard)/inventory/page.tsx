@@ -4,6 +4,7 @@ import './page.css';
 import { getProducts, deleteProduct } from '@/actions/inventory';
 import AddProductModal from '@/components/AddProductModal';
 import DeleteButton from '@/components/DeleteButton';
+import InventorySearch from '@/components/InventorySearch';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 
@@ -24,10 +25,7 @@ export default async function InventoryPage({
       <div className="page-header">
         <h1 className="page-title">Inventory</h1>
         <div className="header-actions">
-          <div className="search-box">
-            <Search size={16} color="var(--text-muted)" />
-            <input type="text" placeholder="Search items..." />
-          </div>
+          <InventorySearch />
           <button className="btn-outline">
             <Filter size={16} /> Filter
           </button>

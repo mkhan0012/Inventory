@@ -145,11 +145,37 @@ export async function getDashboardStats() {
     year: buildMonthlyBuckets(12)
   };
 
-  const recentSales = await prisma.invoice.findMany({
+  const recentInvoices = await prisma.invoice.findMany({
     take: 5,
     orderBy: { createdAt: 'desc' },
     include: { customer: true }
   });
+
+  const recentDirectSales = await prisma.directSale.findMany({
+    take: 5,
+    orderBy: { createdAt: 'desc' }
+  });
+
+  const recentSales = [
+    ...recentInvoices.map(i => ({
+      id: i.id,
+      invoiceNo: i.invoiceNo,
+      date: i.date,
+      customerName: i.customer.name,
+      total: i.total,
+      status: i.status,
+      type: 'INVOICE'
+    })),
+    ...recentDirectSales.map(d => ({
+      id: d.id,
+      invoiceNo: d.saleNo,
+      date: d.date,
+      customerName: 'Direct / Walk-in',
+      total: d.total,
+      status: 'PAID',
+      type: 'DIRECT'
+    }))
+  ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5);
 
   return {
     allTimeSales,

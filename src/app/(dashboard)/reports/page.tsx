@@ -5,37 +5,51 @@ import prisma from '@/lib/prisma';
 import { getMonthlyComparisonData } from '@/actions/reports';
 import MonthlyComparisonChart from '@/components/MonthlyComparisonChart';
 import StatCard from '@/components/StatCard';
+import MonthPicker from '@/components/MonthPicker';
 import { BarChart3, Package, ShoppingCart } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ReportsPage() {
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams?: { month?: string }
+}) {
   const startOfMonth = new Date();
-  startOfMonth.setDate(1);
+  if (searchParams?.month) {
+    const [year, month] = searchParams.month.split('-');
+    startOfMonth.setFullYear(parseInt(year), parseInt(month) - 1, 1);
+  } else {
+    startOfMonth.setDate(1);
+  }
   startOfMonth.setHours(0, 0, 0, 0);
+
+  const endOfMonth = new Date(startOfMonth);
+  endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+  endOfMonth.setMilliseconds(-1);
 
   // Get current month sales
   const sales = await prisma.invoice.findMany({
-    where: { date: { gte: startOfMonth } }
+    where: { date: { gte: startOfMonth, lte: endOfMonth } }
   });
   
   const directSales = await prisma.directSale.findMany({
-    where: { date: { gte: startOfMonth } }
+    where: { date: { gte: startOfMonth, lte: endOfMonth } }
   });
   
   // Get current month purchases
   const purchases = await prisma.purchase.findMany({
-    where: { date: { gte: startOfMonth } }
+    where: { date: { gte: startOfMonth, lte: endOfMonth } }
   });
   
   // Get current month expenses
   const expenses = await prisma.expense.findMany({
-    where: { date: { gte: startOfMonth } }
+    where: { date: { gte: startOfMonth, lte: endOfMonth } }
   });
 
   // Get current month historical records
   const historical = await prisma.historicalRecord.findMany({
-    where: { date: { gte: startOfMonth } }
+    where: { date: { gte: startOfMonth, lte: endOfMonth } }
   });
 
   const totalSales = sales.reduce((acc, inv) => acc + inv.total, 0) + historical.reduce((acc, h) => acc + h.sales, 0) + directSales.reduce((acc, ds) => acc + ds.total, 0);
@@ -51,7 +65,7 @@ export default async function ReportsPage() {
   const invoiceItemsThisMonth = await prisma.invoiceItem.findMany({
     where: {
       invoice: {
-        date: { gte: startOfMonth }
+        date: { gte: startOfMonth, lte: endOfMonth }
       }
     }
   });
@@ -59,7 +73,7 @@ export default async function ReportsPage() {
   const directSaleItemsThisMonth = await prisma.directSaleItem.findMany({
     where: {
       directSale: {
-        date: { gte: startOfMonth }
+        date: { gte: startOfMonth, lte: endOfMonth }
       }
     }
   });
@@ -93,8 +107,8 @@ export default async function ReportsPage() {
             Export GST Excel
           </a>
           <div className="date-picker">
-            <span>This Month ({startOfMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})</span>
-            <Calendar size={18} color="var(--text-muted)" />
+            <span style={{ marginRight: '8px' }}>({startOfMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })})</span>
+            <MonthPicker />
           </div>
         </div>
       </div>

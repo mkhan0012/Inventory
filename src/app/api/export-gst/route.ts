@@ -23,15 +23,31 @@ export async function GET() {
     orderBy: { date: 'asc' }
   });
 
-  const exportData = invoices.map(inv => ({
-    "Date": new Date(inv.date).toLocaleDateString(),
-    "Invoice No": inv.invoiceNo,
-    "Customer Name": inv.customer.name,
-    "Subtotal": inv.subtotal,
-    "Tax Amount (GST)": inv.tax,
-    "Total Amount": inv.total,
-    "Status": inv.status
-  }));
+  const directSales = await prisma.directSale.findMany({
+    where: { date: { gte: startOfMonth } },
+    orderBy: { date: 'asc' }
+  });
+
+  const exportData = [
+    ...invoices.map(inv => ({
+      "Date": new Date(inv.date).toLocaleDateString(),
+      "Invoice No": inv.invoiceNo,
+      "Customer Name": inv.customer.name,
+      "Subtotal": inv.subtotal,
+      "Tax Amount (GST)": inv.tax,
+      "Total Amount": inv.total,
+      "Status": inv.status
+    })),
+    ...directSales.map(ds => ({
+      "Date": new Date(ds.date).toLocaleDateString(),
+      "Invoice No": ds.saleNo,
+      "Customer Name": "Direct / Walk-in",
+      "Subtotal": ds.subtotal,
+      "Tax Amount (GST)": ds.tax,
+      "Total Amount": ds.total,
+      "Status": "PAID"
+    }))
+  ];
 
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();

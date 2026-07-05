@@ -5,6 +5,15 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
+export async function getLowStockAlerts() {
+  return await prisma.product.findMany({
+    where: { stock: { lte: 10 } },
+    select: { id: true, name: true, stock: true },
+    orderBy: { stock: 'asc' },
+    take: 10
+  });
+}
+
 export async function getProducts(search?: string) {
   const products = await prisma.product.findMany({
     where: search ? {
