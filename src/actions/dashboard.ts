@@ -22,12 +22,19 @@ export async function getDashboardStats() {
   const allInvoices = await prisma.invoice.findMany({
     include: { items: true }
   });
+  
+  const allDirectSales = await prisma.directSale.findMany({
+    include: { items: true }
+  });
 
   // Fetch all active purchases for all-time calculation
   const allPurchases = await prisma.purchase.findMany();
 
   const monthlyInvoices = allInvoices.filter(inv => inv.date >= startOfMonth);
   const dailyInvoices = allInvoices.filter(inv => inv.date >= startOfDay);
+  
+  const monthlyDirectSales = allDirectSales.filter(ds => ds.date >= startOfMonth);
+  const dailyDirectSales = allDirectSales.filter(ds => ds.date >= startOfDay);
 
   const calculateProfit = (invoices: any[]) => {
     return invoices.reduce((totalProfit, inv) => {
@@ -41,8 +48,8 @@ export async function getDashboardStats() {
   // Fetch all historical records
   const historicalRecords = await prisma.historicalRecord.findMany();
   
-  const allTimeActiveSales = allInvoices.reduce((acc, inv) => acc + inv.total, 0);
-  const allTimeActiveProfit = calculateProfit(allInvoices);
+  const allTimeActiveSales = allInvoices.reduce((acc, inv) => acc + inv.total, 0) + allDirectSales.reduce((acc, ds) => acc + ds.total, 0);
+  const allTimeActiveProfit = calculateProfit(allInvoices) + calculateProfit(allDirectSales);
   const allTimeActivePurchases = allPurchases.reduce((acc, p) => acc + p.total, 0);
   
   const allTimeHistSales = historicalRecords.reduce((acc, r) => acc + r.sales, 0);
@@ -56,11 +63,11 @@ export async function getDashboardStats() {
   const monthlyHistRecords = historicalRecords.filter(r => r.date >= startOfMonth);
   const dailyHistRecords = historicalRecords.filter(r => r.date >= startOfDay);
 
-  let monthlySales = monthlyInvoices.reduce((acc, inv) => acc + inv.total, 0);
-  let todaysSales = dailyInvoices.reduce((acc, inv) => acc + inv.total, 0);
+  let monthlySales = monthlyInvoices.reduce((acc, inv) => acc + inv.total, 0) + monthlyDirectSales.reduce((acc, ds) => acc + ds.total, 0);
+  let todaysSales = dailyInvoices.reduce((acc, inv) => acc + inv.total, 0) + dailyDirectSales.reduce((acc, ds) => acc + ds.total, 0);
 
-  let monthlyProfit = calculateProfit(monthlyInvoices);
-  let todaysProfit = calculateProfit(dailyInvoices);
+  let monthlyProfit = calculateProfit(monthlyInvoices) + calculateProfit(monthlyDirectSales);
+  let todaysProfit = calculateProfit(dailyInvoices) + calculateProfit(dailyDirectSales);
 
   // Merge historical data into monthly/daily totals
   monthlySales += monthlyHistRecords.reduce((acc, r) => acc + r.sales, 0);
@@ -84,6 +91,21 @@ export async function getDashboardStats() {
     }, 0);
     
     data.profit += invoiceProfit;
+  });
+
+  monthlyDirectSales.forEach(ds => {
+    const day = ds.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (!chartDataMonthMap.has(day)) {
+      chartDataMonthMap.set(day, { sales: 0, profit: 0 });
+    }
+    const data = chartDataMonthMap.get(day)!;
+    data.sales += ds.total;
+    
+    const dsProfit = ds.items.reduce((itemProfit: number, item: any) => {
+      return itemProfit + ((item.rate - item.purchaseRate) * item.quantity);
+    }, 0);
+    
+    data.profit += dsProfit;
   });
 
   monthlyHistRecords.forEach(rec => {
@@ -130,6 +152,11 @@ export async function getDashboardStats() {
     allInvoices.forEach(inv => {
       const invProfit = inv.items.reduce((acc: number, item: any) => acc + ((item.rate - item.purchaseRate) * item.quantity), 0);
       addData(inv.date, inv.total, invProfit);
+    });
+
+    allDirectSales.forEach(ds => {
+      const dsProfit = ds.items.reduce((acc: number, item: any) => acc + ((item.rate - item.purchaseRate) * item.quantity), 0);
+      addData(ds.date, ds.total, dsProfit);
     });
 
     historicalRecords.forEach(rec => {
