@@ -9,7 +9,7 @@ import * as XLSX from 'xlsx';
 interface Customer {
   id: string;
   name: string;
-  phone: string;
+  phone: string | null;
   totalPurchases: number;
   dueAmount: number;
 }

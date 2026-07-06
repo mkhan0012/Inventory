@@ -5,7 +5,7 @@ import { updateSupplier } from '@/actions/suppliers';
 import './AddProductModal.css';
 
 interface EditSupplierModalProps {
-  supplier: { id: string; name: string; phone: string };
+  supplier: { id: string; name: string; phone: string | null };
   isOpen: boolean;
   onClose: () => void;
 }
@@ -52,7 +52,7 @@ export default function EditSupplierModal({ supplier, isOpen, onClose }: EditSup
           </div>
           <div className="form-group">
             <label>Phone Number</label>
-            <input name="phone" required defaultValue={supplier.phone} />
+            <input name="phone" required defaultValue={supplier.phone || ''} />
           </div>
           
           <div className="modal-footer">

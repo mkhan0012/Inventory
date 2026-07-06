@@ -5,7 +5,7 @@ import { updateCustomer } from '@/actions/customers';
 import './AddProductModal.css';
 
 interface EditCustomerModalProps {
-  customer: { id: string; name: string; phone: string };
+  customer: { id: string; name: string; phone: string | null };
   isOpen: boolean;
   onClose: () => void;
 }
@@ -52,7 +52,7 @@ export default function EditCustomerModal({ customer, isOpen, onClose }: EditCus
           </div>
           <div className="form-group">
             <label>Phone Number</label>
-            <input name="phone" required defaultValue={customer.phone} />
+            <input name="phone" required defaultValue={customer.phone || ''} />
           </div>
           
           <div className="modal-footer">
