@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { getSuppliers } from '@/actions/suppliers';
 import { getProducts } from '@/actions/inventory';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,9 +66,9 @@ export default async function PurchasesPage() {
                   </span>
                 </td>
                 <td className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button className="btn-icon" title="View Purchase">
+                  <Link href={`/purchases/${purchase.id}/print`} className="btn-icon" target="_blank" title="View Purchase">
                     <FileText size={16} />
-                  </button>
+                  </Link>
                   {isOwner && (
                     <DeleteButton id={purchase.id} action={deletePurchase} itemType="purchase" />
                   )}

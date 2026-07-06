@@ -26,9 +26,6 @@ export default async function InventoryPage({
         <h1 className="page-title">Inventory</h1>
         <div className="header-actions">
           <InventorySearch />
-          <button className="btn-outline">
-            <Filter size={16} /> Filter
-          </button>
           <div className="desktop-only">
             <AddProductModal />
           </div>
