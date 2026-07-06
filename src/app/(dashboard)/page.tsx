@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee } from 'lucide-react';
+import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee, PackageCheck, ReceiptText } from 'lucide-react';
 import StatCard from '@/components/StatCard';
 import DashboardSalesChart from '@/components/DashboardSalesChart';
 import AiInsightBanner from '@/components/AiInsightBanner';
@@ -126,7 +126,11 @@ export default async function Dashboard() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {stats.outOfStockProducts.length === 0 && stats.lowStockProducts.length === 0 && (
-                <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>All items are sufficiently stocked.</div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 0', color: 'var(--text-muted)', textAlign: 'center' }}>
+                  <PackageCheck size={48} color="var(--border)" style={{ marginBottom: '16px', opacity: 0.5 }} />
+                  <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-main)' }}>Inventory Healthy</span>
+                  <span style={{ fontSize: '12px', marginTop: '4px' }}>All items are sufficiently stocked.</span>
+                </div>
               )}
               {stats.outOfStockProducts.map(p => (
                 <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '8px', borderLeft: '3px solid var(--danger)' }}>
@@ -184,7 +188,16 @@ export default async function Dashboard() {
                     </tr>
                   ))}
                   {stats.recentSales.length === 0 && (
-                    <tr><td colSpan={5} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>No recent sales</td></tr>
+                    <tr>
+                      <td colSpan={5} style={{ padding: '60px 20px', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                          <ReceiptText size={48} color="var(--border)" style={{ marginBottom: '16px', opacity: 0.5 }} />
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-main)' }}>No Sales Yet</span>
+                          <span style={{ fontSize: '12px', marginTop: '4px', marginBottom: '16px' }}>Your recent invoices and direct sales will appear here.</span>
+                          <Link href="/sales/new" style={{ background: 'var(--primary)', color: 'white', padding: '8px 16px', borderRadius: '6px', fontSize: '13px', fontWeight: 500 }}>Create Sale</Link>
+                        </div>
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>

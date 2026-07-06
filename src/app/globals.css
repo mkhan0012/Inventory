@@ -30,12 +30,12 @@
 
 .dark {
   /* Dark Mode Colors */
-  --bg-main: #0b0f19;
-  --bg-card: #151b2b;
-  --bg-sidebar: #0b0f19;
+  --bg-main: #000000;
+  --bg-card: #09090b;
+  --bg-sidebar: #09090b;
   --sidebar-active: #2962ff;
-  --sidebar-hover: #1e293b;
-  --sidebar-text: #94a3b8;
+  --sidebar-hover: #18181b;
+  --sidebar-text: #a1a1aa;
   --sidebar-text-active: #ffffff;
   
   --text-main: #f1f5f9;
@@ -46,9 +46,9 @@
   --success: #10b981;
   --warning: #fbbf24;
   --danger: #ef4444;
-  --border: #1e293b;
+  --border: rgba(255, 255, 255, 0.08);
 
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --shadow-card: none;
 }
 
 * {
@@ -92,9 +92,9 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--bg-card);
   border-radius: 12px;
   box-shadow: var(--shadow-card);
-  padding: 20px;
+  padding: 24px;
   border: 1px solid var(--border);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover {
@@ -103,7 +103,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark .card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Animations */
