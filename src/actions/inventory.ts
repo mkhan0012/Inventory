@@ -136,11 +136,72 @@ export async function deleteProduct(id: string) {
     );
 
     revalidatePath('/inventory');
+    return { success: true };
   } catch (e: any) {
     const msg = e.message || "";
     if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
       return { error: "Cannot delete this product because it is referenced in past invoices or purchases." };
     }
     return { error: "Failed to delete. Please try again." };
+  }
+}
+
+export async function updateProduct(id: string, data: {
+  code: string;
+  name: string;
+  category: string;
+  stock: number;
+  location: string;
+  unit: string;
+  price: number;
+  purchasePrice: number;
+}) {
+  const result = productSchema.safeParse(data);
+  if (!result.success) {
+    throw new Error(result.error.issues.map(e => e.message).join(", "));
+  }
+  const status = data.stock > 10 ? 'In Stock' : data.stock > 0 ? 'Low Stock' : 'Out of Stock';
+  
+  await prisma.product.update({
+    where: { id },
+    data: {
+      ...data,
+      status
+    }
+  });
+
+  revalidatePath('/inventory');
+  return { success: true };
+}
+
+export async function bulkDeleteProducts(ids: string[]) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as any).role !== "OWNER") {
+    return { error: "Unauthorized: Only owners can delete products." };
+  }
+
+  try {
+    const products = await prisma.product.findMany({ where: { id: { in: ids } } });
+    if (products.length === 0) return { error: "No products found." };
+
+    await prisma.product.deleteMany({
+      where: { id: { in: ids } }
+    });
+
+    await logActivity(
+      "Bulk Delete", 
+      `Bulk deleted ${products.length} products`, 
+      session.user.name || "Unknown", 
+      "OWNER"
+    );
+
+    revalidatePath('/inventory');
+    return { success: true };
+  } catch (e: any) {
+    const msg = e.message || "";
+    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
+      return { error: "Cannot delete some products because they are referenced in past invoices." };
+    }
+    return { error: "Failed to bulk delete. Please try again." };
   }
 }
