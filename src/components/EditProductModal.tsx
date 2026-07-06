@@ -53,23 +53,16 @@ export default function EditProductModal({ product }: { product: Product }) {
   return (
     <>
       <button 
+        type="button"
         title="Edit Product"
         onClick={() => setIsOpen(true)}
         style={{
           background: 'transparent',
           border: 'none',
-          cursor: 'pointer',
           color: 'var(--primary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '32px',
-          height: '32px',
-          borderRadius: '6px',
-          transition: 'all 0.2s ease',
+          cursor: 'pointer',
+          padding: '4px',
         }}
-        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(41, 98, 255, 0.1)'}
-        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
       >
         <Edit2 size={16} />
       </button>
