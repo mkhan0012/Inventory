@@ -1,8 +1,8 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-export const proxy = withAuth(
-  function proxy(req) {
+export default withAuth(
+  function middleware(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
@@ -27,6 +27,6 @@ export const proxy = withAuth(
 
 export const config = {
   matcher: [
-    "/((?!login|api|_next/static|_next/image|favicon.ico|logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!login|api/auth|_next/static|_next/image|favicon.ico|logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
