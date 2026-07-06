@@ -16,13 +16,24 @@ interface Product {
   purchasePrice: number;
 }
 
-export default function EditProductModal({ product }: { product: Product }) {
-  const [isOpen, setIsOpen] = useState(false);
+interface EditProductModalProps {
+  product: Product;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function EditProductModal({ product, isOpen, onClose }: EditProductModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const [stock, setStock] = useState(product.stock);
   const [location, setLocation] = useState(product.location);
+
+  // Update local state when product prop changes
+  React.useEffect(() => {
+    setStock(product.stock);
+    setLocation(product.location);
+  }, [product]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,7 +53,7 @@ export default function EditProductModal({ product }: { product: Product }) {
         price: parseFloat(formData.get('price') as string),
         purchasePrice: parseFloat(formData.get('purchasePrice') as string) || 0,
       });
-      setIsOpen(false);
+      onClose();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -52,27 +63,12 @@ export default function EditProductModal({ product }: { product: Product }) {
 
   return (
     <>
-      <button 
-        type="button"
-        title="Edit Product"
-        onClick={() => setIsOpen(true)}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          color: 'var(--primary)',
-          cursor: 'pointer',
-          padding: '4px',
-        }}
-      >
-        <Edit2 size={16} />
-      </button>
-
       {isOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
               <h2>Edit Item</h2>
-              <button className="close-btn" onClick={() => setIsOpen(false)}><X size={20} /></button>
+              <button type="button" className="close-btn" onClick={onClose}><X size={20} /></button>
             </div>
             
             <form onSubmit={handleSubmit} className="modal-form">
@@ -118,7 +114,7 @@ export default function EditProductModal({ product }: { product: Product }) {
               </div>
               
               <div className="modal-footer">
-                <button type="button" className="btn-outline" onClick={() => setIsOpen(false)}>Cancel</button>
+                <button type="button" className="btn-outline" onClick={onClose}>Cancel</button>
                 <button type="submit" className="btn-primary" disabled={loading}>
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>

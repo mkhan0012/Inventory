@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from 'react';
-import { PackageSearch, Download, Trash2 } from 'lucide-react';
+import { PackageSearch, Download, Trash2, Edit2 } from 'lucide-react';
 import DeleteButton from '@/components/DeleteButton';
 import EditProductModal from '@/components/EditProductModal';
 import { bulkDeleteProducts, deleteProduct } from '@/actions/inventory';
@@ -30,6 +30,7 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -215,7 +216,20 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
                 {isOwner && (
                   <td className="desktop-only">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
-                      <EditProductModal product={item} />
+                      <button 
+                        type="button"
+                        onClick={() => setEditingProduct(item)}
+                        title="Edit Product"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          color: 'var(--primary)',
+                          cursor: 'pointer',
+                          padding: '4px',
+                        }}
+                      >
+                        <Edit2 size={16} />
+                      </button>
                       <DeleteButton id={item.id} action={deleteProduct} itemType="product" />
                     </div>
                   </td>
@@ -225,6 +239,14 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
           </tbody>
         </table>
       </div>
+      
+      {editingProduct && (
+        <EditProductModal 
+          product={editingProduct} 
+          isOpen={true} 
+          onClose={() => setEditingProduct(null)} 
+        />
+      )}
     </>
   );
 }
