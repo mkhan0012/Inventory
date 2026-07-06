@@ -32,15 +32,18 @@ export async function createPurchase(data: {
   const purchase = await prisma.$transaction(async (tx) => {
     // 1. Update stock
     for (const item of data.items) {
-      const product = await tx.product.findUnique({ where: { id: item.productId } });
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true } });
       if (!product) throw new Error("Product not found");
       
-      const newStock = product.stock + item.quantity;
-      const status = newStock > 10 ? 'In Stock' : 'Low Stock';
+      const updatedProduct = await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { increment: item.quantity } }
+      });
       
+      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
       await tx.product.update({
         where: { id: item.productId },
-        data: { stock: newStock, status }
+        data: { status }
       });
     }
 
@@ -106,12 +109,22 @@ export async function deletePurchase(id: string) {
       });
 
       // Reverse Product stock
-      await Promise.all(purchase.items.map(item => 
-        tx.product.update({
+      for (const item of purchase.items) {
+        const updatedProduct = await tx.product.update({
           where: { id: item.productId },
           data: { stock: { decrement: item.quantity } }
-        })
-      ));
+        });
+
+        if (updatedProduct.stock < 0) {
+          throw new Error(`Cannot delete purchase: Items have already been sold. Reversing this purchase would result in negative stock.`);
+        }
+
+        const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { status }
+        });
+      }
 
       // Delete Purchase
       await tx.purchase.delete({ where: { id } });

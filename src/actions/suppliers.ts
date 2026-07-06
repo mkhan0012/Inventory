@@ -78,28 +78,34 @@ export async function bulkDeleteSuppliers(ids: string[]) {
     return { error: "Unauthorized: Only owners can delete suppliers." };
   }
 
-  try {
-    const suppliers = await prisma.supplier.findMany({ where: { id: { in: ids } } });
-    if (suppliers.length === 0) return { error: "No suppliers found." };
+  let successCount = 0;
+  let failureCount = 0;
 
-    await prisma.supplier.deleteMany({
-      where: { id: { in: ids } }
-    });
+  for (const id of ids) {
+    try {
+      await prisma.supplier.delete({ where: { id } });
+      successCount++;
+    } catch (e: any) {
+      failureCount++;
+    }
+  }
 
+  if (successCount > 0) {
     await logActivity(
       "Bulk Delete", 
-      `Bulk deleted ${suppliers.length} suppliers`, 
+      `Bulk deleted ${successCount} suppliers`, 
       session.user.name || "Unknown", 
       "OWNER"
     );
-
     revalidatePath('/suppliers');
-    return { success: true };
-  } catch (e: any) {
-    const msg = e.message || "";
-    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
-      return { error: "Cannot delete some suppliers because they have past purchases or payments." };
-    }
-    return { error: "Failed to bulk delete. Please try again." };
   }
+
+  if (failureCount > 0) {
+    if (successCount === 0) {
+      return { error: "Cannot delete selected suppliers because they have past purchases or payments." };
+    }
+    return { error: `Deleted ${successCount} suppliers, but ${failureCount} failed because they have past purchases.` };
+  }
+
+  return { success: true };
 }

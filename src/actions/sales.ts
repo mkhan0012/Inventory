@@ -38,17 +38,24 @@ export async function createInvoice(data: {
 
     // 1. Update stock
     for (const item of data.items) {
-      const product = await tx.product.findUnique({ where: { id: item.productId } });
-      if (!product || product.stock < item.quantity) {
-        throw new Error(`Insufficient stock for product ID ${item.productId}`);
-      }
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, purchasePrice: true, name: true } });
+      if (!product) throw new Error(`Product not found.`);
       productCache.set(product.id, product.purchasePrice);
-      const newStock = product.stock - item.quantity;
-      const status = newStock > 10 ? 'In Stock' : newStock > 0 ? 'Low Stock' : 'Out of Stock';
+      
+      const updatedProduct = await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } }
+      });
+
+      if (updatedProduct.stock < 0) {
+        throw new Error(`Insufficient stock for ${updatedProduct.name}`);
+      }
+
+      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
       
       await tx.product.update({
         where: { id: item.productId },
-        data: { stock: newStock, status }
+        data: { status }
       });
     }
 
@@ -171,13 +178,18 @@ export async function deleteInvoice(id: string) {
         }
       });
 
-      // Reverse Product stock
-      await Promise.all(invoice.items.map(item => 
-        tx.product.update({
+      // Reverse Product stock and update status
+      for (const item of invoice.items) {
+        const updatedProduct = await tx.product.update({
           where: { id: item.productId },
           data: { stock: { increment: item.quantity } }
-        })
-      ));
+        });
+        const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { status }
+        });
+      }
 
       // Delete Invoice
       await tx.invoice.delete({ where: { id } });
@@ -231,17 +243,24 @@ export async function createDirectSale(data: {
 
     // 1. Update stock
     for (const item of data.items) {
-      const product = await tx.product.findUnique({ where: { id: item.productId } });
-      if (!product || product.stock < item.quantity) {
-        throw new Error(`Insufficient stock for product ID ${item.productId}`);
-      }
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, purchasePrice: true, name: true } });
+      if (!product) throw new Error(`Product not found.`);
       productCache.set(product.id, product.purchasePrice);
-      const newStock = product.stock - item.quantity;
-      const status = newStock > 10 ? 'In Stock' : newStock > 0 ? 'Low Stock' : 'Out of Stock';
+      
+      const updatedProduct = await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } }
+      });
+
+      if (updatedProduct.stock < 0) {
+        throw new Error(`Insufficient stock for ${updatedProduct.name}`);
+      }
+
+      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
       
       await tx.product.update({
         where: { id: item.productId },
-        data: { stock: newStock, status }
+        data: { status }
       });
     }
 
@@ -296,13 +315,18 @@ export async function deleteDirectSale(id: string) {
       const directSale = await tx.directSale.findUnique({ where: { id }, include: { items: true } });
       if (!directSale) throw new Error("Sale not found.");
 
-      // Reverse Product stock
-      await Promise.all(directSale.items.map(item => 
-        tx.product.update({
+      // Reverse Product stock and update status
+      for (const item of directSale.items) {
+        const updatedProduct = await tx.product.update({
           where: { id: item.productId },
           data: { stock: { increment: item.quantity } }
-        })
-      ));
+        });
+        const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { status }
+        });
+      }
 
       // Delete Sale
       await tx.directSale.delete({ where: { id } });

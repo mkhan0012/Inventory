@@ -99,28 +99,34 @@ export async function bulkDeleteCustomers(ids: string[]) {
     return { error: "Unauthorized: Only owners can delete customers." };
   }
 
-  try {
-    const customers = await prisma.customer.findMany({ where: { id: { in: ids } } });
-    if (customers.length === 0) return { error: "No customers found." };
+  let successCount = 0;
+  let failureCount = 0;
 
-    await prisma.customer.deleteMany({
-      where: { id: { in: ids } }
-    });
+  for (const id of ids) {
+    try {
+      await prisma.customer.delete({ where: { id } });
+      successCount++;
+    } catch (e: any) {
+      failureCount++;
+    }
+  }
 
+  if (successCount > 0) {
     await logActivity(
       "Bulk Delete", 
-      `Bulk deleted ${customers.length} customers`, 
+      `Bulk deleted ${successCount} customers`, 
       session.user.name || "Unknown", 
       "OWNER"
     );
-
     revalidatePath('/customers');
-    return { success: true };
-  } catch (e: any) {
-    const msg = e.message || "";
-    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
-      return { error: "Cannot delete some customers because they have past invoices or payments." };
-    }
-    return { error: "Failed to bulk delete. Please try again." };
   }
+
+  if (failureCount > 0) {
+    if (successCount === 0) {
+      return { error: "Cannot delete selected customers because they have past invoices or payments." };
+    }
+    return { error: `Deleted ${successCount} customers, but ${failureCount} failed because they have past invoices.` };
+  }
+
+  return { success: true };
 }

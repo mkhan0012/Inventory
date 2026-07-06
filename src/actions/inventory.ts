@@ -180,28 +180,34 @@ export async function bulkDeleteProducts(ids: string[]) {
     return { error: "Unauthorized: Only owners can delete products." };
   }
 
-  try {
-    const products = await prisma.product.findMany({ where: { id: { in: ids } } });
-    if (products.length === 0) return { error: "No products found." };
+  let successCount = 0;
+  let failureCount = 0;
 
-    await prisma.product.deleteMany({
-      where: { id: { in: ids } }
-    });
+  for (const id of ids) {
+    try {
+      await prisma.product.delete({ where: { id } });
+      successCount++;
+    } catch (e: any) {
+      failureCount++;
+    }
+  }
 
+  if (successCount > 0) {
     await logActivity(
       "Bulk Delete", 
-      `Bulk deleted ${products.length} products`, 
+      `Bulk deleted ${successCount} products`, 
       session.user.name || "Unknown", 
       "OWNER"
     );
-
     revalidatePath('/inventory');
-    return { success: true };
-  } catch (e: any) {
-    const msg = e.message || "";
-    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
-      return { error: "Cannot delete some products because they are referenced in past invoices." };
-    }
-    return { error: "Failed to bulk delete. Please try again." };
   }
+
+  if (failureCount > 0) {
+    if (successCount === 0) {
+      return { error: "Cannot delete selected products because they are referenced in past invoices or purchases." };
+    }
+    return { error: `Deleted ${successCount} products, but ${failureCount} failed because they are referenced in past transactions.` };
+  }
+
+  return { success: true };
 }
