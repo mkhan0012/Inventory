@@ -67,14 +67,6 @@ export default async function PrintPurchase({ params }: { params: Promise<{ id: 
       </table>
 
       <div className="print-totals">
-        <div className="total-row">
-          <span>Subtotal:</span>
-          <span>₹{purchase.subtotal.toFixed(2)}</span>
-        </div>
-        <div className="total-row">
-          <span>Tax:</span>
-          <span>₹{purchase.tax.toFixed(2)}</span>
-        </div>
         <div className="total-row grand-total">
           <span>Grand Total:</span>
           <span>₹{purchase.total.toFixed(2)}</span>
