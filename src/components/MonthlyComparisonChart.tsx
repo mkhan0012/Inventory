@@ -39,14 +39,15 @@ export default function MonthlyComparisonChart({ data }: { data: ChartData[] }) 
             left: 20,
           }}
         >
-          <CartesianGrid stroke="#f5f5f5" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke="var(--border)" strokeOpacity={0.4} strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} />
           <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} tickFormatter={formatYAxis} />
           <Tooltip 
-            formatter={(value: any) => `₹${Number(value).toFixed(2)}`} 
-            contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', background: 'var(--bg-card)' }}
-            labelStyle={{ color: 'var(--text-main)', fontWeight: 'bold' }}
-            itemStyle={{ color: 'var(--text-main)' }}
+            formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
+            contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', background: 'var(--bg-card)' }}
+            labelStyle={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px', marginBottom: '8px' }}
+            itemStyle={{ color: 'var(--text-main)', fontWeight: 500, fontSize: '14px' }}
+            cursor={{ fill: 'var(--bg-main)', opacity: 0.5 }}
           />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
           <Bar dataKey="income" name="Total Income" barSize={32} fill="#10b981" radius={[4, 4, 0, 0]} />
