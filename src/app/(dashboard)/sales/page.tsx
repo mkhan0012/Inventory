@@ -1,10 +1,10 @@
 import React from 'react';
-import { Search, FileText } from 'lucide-react';
 import '../inventory/page.css';
-import { getInvoices, deleteInvoice, getDirectSales, deleteDirectSale } from '@/actions/sales';
+import { getInvoices, getDirectSales } from '@/actions/sales';
 import CreateInvoiceModal from '@/components/CreateInvoiceModal';
 import CreateDirectSaleModal from '@/components/CreateDirectSaleModal';
-import DeleteButton from '@/components/DeleteButton';
+import SearchBar from '@/components/SearchBar';
+import SalesClient from '@/components/SalesClient';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { getCustomers } from '@/actions/customers';
@@ -13,12 +13,16 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SalesPage() {
+export default async function SalesPage({
+  searchParams,
+}: {
+  searchParams?: { search?: string }
+}) {
   const session = await getServerSession(authOptions);
   const isOwner = (session?.user as any)?.role === 'OWNER';
 
-  const invoices = await getInvoices();
-  const directSales = await getDirectSales();
+  const invoices = await getInvoices(searchParams?.search);
+  const directSales = await getDirectSales(searchParams?.search);
   const customers = await getCustomers();
   const products = await getProducts();
 
@@ -50,10 +54,7 @@ export default async function SalesPage() {
       <div className="page-header">
         <h1 className="page-title">Sales & Invoices</h1>
         <div className="header-actions">
-          <div className="search-box">
-            <Search size={16} color="var(--text-muted)" />
-            <input type="text" placeholder="Search invoices..." />
-          </div>
+          <SearchBar placeholder="Search invoices..." basePath="/sales" />
           <div className="desktop-only" style={{ display: 'flex', gap: '10px' }}>
             <CreateDirectSaleModal products={products} />
             <CreateInvoiceModal customers={customers} products={products} />
@@ -61,56 +62,7 @@ export default async function SalesPage() {
         </div>
       </div>
 
-      <div className="card table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Items</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th className="desktop-only">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {combinedSales.length === 0 ? (
-              <tr>
-                <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No sales records found.</td>
-              </tr>
-            ) : combinedSales.map((sale) => (
-              <tr key={sale.id}>
-                <td className="text-primary font-medium">
-                  {sale.no}
-                  {sale.type === 'DIRECT' && <span style={{ marginLeft: '8px', fontSize: '10px', background: '#fef3c7', color: '#d97706', padding: '2px 6px', borderRadius: '10px' }}>QUICK</span>}
-                </td>
-                <td>{sale.date.toLocaleDateString()}</td>
-                <td className="font-medium">{sale.customer}</td>
-                <td>{sale.items} items</td>
-                <td>₹{sale.total.toFixed(2)}</td>
-                <td>
-                  <span className={`status-badge ${sale.status.toLowerCase()}`}>
-                    {sale.status}
-                  </span>
-                </td>
-                <td className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  {sale.type === 'INVOICE' && (
-                    <Link href={`/sales/${sale.id}/print`} className="btn-icon" target="_blank" title="Print Invoice">
-                      <FileText size={16} />
-                    </Link>
-                  )}
-                  {isOwner && (
-                    sale.type === 'INVOICE' 
-                      ? <DeleteButton id={sale.id} action={deleteInvoice} itemType="invoice" />
-                      : <DeleteButton id={sale.id} action={deleteDirectSale} itemType="sale" />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SalesClient sales={combinedSales} isOwner={isOwner} />
     </div>
   );
 }

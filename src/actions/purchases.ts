@@ -5,8 +5,14 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
-export async function getPurchases() {
+export async function getPurchases(search?: string) {
   return await prisma.purchase.findMany({
+    where: search ? {
+      OR: [
+        { purchaseNo: { contains: search } },
+        { supplier: { name: { contains: search } } }
+      ]
+    } : undefined,
     include: {
       supplier: true,
       items: { include: { product: true } }

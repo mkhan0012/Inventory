@@ -1,9 +1,9 @@
 import React from 'react';
-import { Search, FileText } from 'lucide-react';
 import '../inventory/page.css';
-import { getPurchases, deletePurchase } from '@/actions/purchases';
+import { getPurchases } from '@/actions/purchases';
 import CreatePurchaseModal from '@/components/CreatePurchaseModal';
-import DeleteButton from '@/components/DeleteButton';
+import SearchBar from '@/components/SearchBar';
+import PurchasesClient from '@/components/PurchasesClient';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { getSuppliers } from '@/actions/suppliers';
@@ -12,11 +12,15 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PurchasesPage() {
+export default async function PurchasesPage({
+  searchParams,
+}: {
+  searchParams?: { search?: string }
+}) {
   const session = await getServerSession(authOptions);
   const isOwner = (session?.user as any)?.role === 'OWNER';
 
-  const purchases = await getPurchases();
+  const purchases = await getPurchases(searchParams?.search);
   const suppliers = await getSuppliers();
   const products = await getProducts();
 
@@ -25,59 +29,14 @@ export default async function PurchasesPage() {
       <div className="page-header">
         <h1 className="page-title">Purchases</h1>
         <div className="header-actions">
-          <div className="search-box">
-            <Search size={16} color="var(--text-muted)" />
-            <input type="text" placeholder="Search purchases..." />
-          </div>
+          <SearchBar placeholder="Search purchases..." basePath="/purchases" />
           <div className="desktop-only">
             <CreatePurchaseModal suppliers={suppliers} products={products} />
           </div>
         </div>
       </div>
 
-      <div className="card table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Purchase No</th>
-              <th>Date</th>
-              <th>Supplier</th>
-              <th>Items</th>
-              <th>Total Amount</th>
-              <th>Status</th>
-              <th className="desktop-only">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {purchases.length === 0 ? (
-              <tr>
-                <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No purchases found.</td>
-              </tr>
-            ) : purchases.map((purchase) => (
-              <tr key={purchase.id}>
-                <td className="text-primary font-medium">{purchase.purchaseNo}</td>
-                <td>{new Date(purchase.date).toLocaleDateString()}</td>
-                <td className="font-medium">{purchase.supplier.name}</td>
-                <td>{purchase.items.length} items</td>
-                <td>₹{purchase.total.toFixed(2)}</td>
-                <td>
-                  <span className={`status-badge ${purchase.status.toLowerCase()}`}>
-                    {purchase.status}
-                  </span>
-                </td>
-                <td className="desktop-only" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Link href={`/purchases/${purchase.id}/print`} className="btn-icon" target="_blank" title="View Purchase">
-                    <FileText size={16} />
-                  </Link>
-                  {isOwner && (
-                    <DeleteButton id={purchase.id} action={deletePurchase} itemType="purchase" />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <PurchasesClient purchases={purchases} isOwner={isOwner} />
     </div>
   );
 }

@@ -5,8 +5,14 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
-export async function getCustomers() {
+export async function getCustomers(search?: string) {
   const customers = await prisma.customer.findMany({
+    where: search ? {
+      OR: [
+        { name: { contains: search } },
+        { phone: { contains: search } }
+      ]
+    } : undefined,
     orderBy: { createdAt: 'desc' }
   });
   return customers.map(c => ({
@@ -69,5 +75,52 @@ export async function deleteCustomer(id: string) {
       return { error: "Cannot delete this customer because they have past invoices or payments." };
     }
     return { error: "Failed to delete. Please try again." };
+  }
+}
+
+export async function updateCustomer(id: string, data: { name: string; phone: string; }) {
+  const result = customerSchema.safeParse(data);
+  if (!result.success) {
+    throw new Error(result.error.issues.map(e => e.message).join(", "));
+  }
+  
+  await prisma.customer.update({
+    where: { id },
+    data
+  });
+
+  revalidatePath('/customers');
+  return { success: true };
+}
+
+export async function bulkDeleteCustomers(ids: string[]) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user as any).role !== "OWNER") {
+    return { error: "Unauthorized: Only owners can delete customers." };
+  }
+
+  try {
+    const customers = await prisma.customer.findMany({ where: { id: { in: ids } } });
+    if (customers.length === 0) return { error: "No customers found." };
+
+    await prisma.customer.deleteMany({
+      where: { id: { in: ids } }
+    });
+
+    await logActivity(
+      "Bulk Delete", 
+      `Bulk deleted ${customers.length} customers`, 
+      session.user.name || "Unknown", 
+      "OWNER"
+    );
+
+    revalidatePath('/customers');
+    return { success: true };
+  } catch (e: any) {
+    const msg = e.message || "";
+    if (e.code === 'P2003' || msg.includes('foreign key constraint') || msg.includes('violates RESTRICT')) {
+      return { error: "Cannot delete some customers because they have past invoices or payments." };
+    }
+    return { error: "Failed to bulk delete. Please try again." };
   }
 }

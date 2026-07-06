@@ -5,8 +5,14 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
-export async function getInvoices() {
+export async function getInvoices(search?: string) {
   return await prisma.invoice.findMany({
+    where: search ? {
+      OR: [
+        { invoiceNo: { contains: search } },
+        { customer: { name: { contains: search } } }
+      ]
+    } : undefined,
     include: {
       customer: true,
       items: {
@@ -192,8 +198,11 @@ export async function deleteInvoice(id: string) {
   }
 }
 
-export async function getDirectSales() {
+export async function getDirectSales(search?: string) {
   const directSales = await prisma.directSale.findMany({
+    where: search ? {
+      saleNo: { contains: search }
+    } : undefined,
     include: {
       items: {
         include: { product: true }
