@@ -66,3 +66,38 @@ Answer the user's question accurately based ONLY on this provided data.
     return "Error connecting to AI: " + error.message;
   }
 }
+
+export async function generateDailyInsight() {
+  try {
+    const stats = await getDashboardStats();
+    
+    const contextData = {
+      todaysSales: stats.todaysSales,
+      monthlySales: stats.monthlySales,
+      pendingDues: stats.duePayments,
+      outOfStockCount: stats.outOfStockProducts.length,
+      lowStockCount: stats.lowStockProducts.length,
+    };
+
+    const systemPrompt = `You are a highly intelligent Business Assistant for Bharat Hydraulics. 
+Here is a quick snapshot of today's stats:
+${JSON.stringify(contextData, null, 2)}
+
+Write exactly ONE brief, encouraging, and highly professional sentence summarizing the business's day. 
+Do not use greetings like "Good morning". Just the insight.
+Example: "Sales are looking steady at ₹X today, but note that you have Y items running low on stock."
+Be creative but extremely concise. Use currency symbol ₹ where appropriate.`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "system", content: systemPrompt }],
+      model: "llama-3.3-70b-versatile", 
+      temperature: 0.7,
+      max_tokens: 50,
+    });
+
+    return chatCompletion.choices[0]?.message?.content || "Sales are looking steady today; keep up the great work!";
+  } catch (error: any) {
+    console.error("AI Insight Error:", error);
+    return "Welcome back to Bharat Hydraulics dashboard.";
+  }
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee } from 'lucide-react';
 import StatCard from '@/components/StatCard';
 import DashboardSalesChart from '@/components/DashboardSalesChart';
-import TopSelling from '@/components/TopSelling';
+import AiInsightBanner from '@/components/AiInsightBanner';
 import './page.css';
 import { getDashboardStats } from '@/actions/dashboard';
 import Link from 'next/link';
@@ -22,6 +22,8 @@ export default async function Dashboard() {
         </div>
       </div>
 
+      <AiInsightBanner />
+
       <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Quick Snapshots</h2>
       </div>
@@ -29,7 +31,9 @@ export default async function Dashboard() {
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginBottom: '32px' }}>
         <StatCard 
           title="Today's Sales" 
-          value={`₹${stats.todaysSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.todaysSales}
+          prefix="₹"
+          decimals={2}
           trend="Today" 
           trendUp={true} 
           icon={<ShoppingCart size={24} color="#10b981" />} 
@@ -37,19 +41,25 @@ export default async function Dashboard() {
         />
         <StatCard 
           title="Monthly Sales" 
-          value={`₹${stats.monthlySales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.monthlySales}
+          prefix="₹"
+          decimals={2}
           trend="This Month" 
           trendUp={true} 
           icon={<BarChart3 size={24} color="#8b5cf6" />} 
           iconBg="rgba(139,92,246,0.1)" 
+          sparklineData={stats.chartData.month.map(d => ({ value: d.sales }))}
         />
         <StatCard 
           title="Monthly Profit" 
-          value={`₹${stats.monthlyProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.monthlyProfit}
+          prefix="₹"
+          decimals={2}
           trend="This Month" 
           trendUp={true} 
           icon={<IndianRupee size={24} color="#10b981" />} 
           iconBg="rgba(16,185,129,0.1)" 
+          sparklineData={stats.chartData.month.map(d => ({ value: d.profit }))}
         />
       </div>
 
@@ -60,25 +70,33 @@ export default async function Dashboard() {
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
         <StatCard 
           title="All-Time Sales" 
-          value={`₹${stats.allTimeSales.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.allTimeSales}
+          prefix="₹"
+          decimals={2}
           trend="Total" 
           trendUp={true} 
           icon={<BarChart3 size={24} color="#f59e0b" />} 
           iconBg="rgba(245,158,11,0.1)" 
           trendLabel="All-Time"
+          sparklineData={stats.chartData.year.map(d => ({ value: d.sales }))}
         />
         <StatCard 
           title="All-Time Profit" 
-          value={`₹${stats.allTimeProfit.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.allTimeProfit}
+          prefix="₹"
+          decimals={2}
           trend="Total" 
           trendUp={true} 
           icon={<IndianRupee size={24} color="#f59e0b" />} 
           iconBg="rgba(245,158,11,0.1)" 
           trendLabel="All-Time"
+          sparklineData={stats.chartData.year.map(d => ({ value: d.profit }))}
         />
         <StatCard 
           title="All-Time Purchases" 
-          value={`₹${stats.allTimePurchases.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.allTimePurchases}
+          prefix="₹"
+          decimals={2}
           trend="Total" 
           trendUp={true} 
           icon={<ShoppingCart size={24} color="#f59e0b" />} 
@@ -87,7 +105,9 @@ export default async function Dashboard() {
         />
         <StatCard 
           title="Total Stock Value" 
-          value={`₹${stats.stockValue.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`} 
+          numericValue={stats.stockValue}
+          prefix="₹"
+          decimals={2}
           trend="" 
           trendUp={true} 
           icon={<Package size={24} color="#2962ff" />} 
