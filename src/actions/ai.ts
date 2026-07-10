@@ -2,6 +2,7 @@
 import prisma from "@/lib/prisma";
 import Groq from "groq-sdk";
 import { getDashboardStats } from "./dashboard";
+import { getAdvancedBiData } from "./reports";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -51,16 +52,91 @@ Answer the user's question accurately based ONLY on this provided data.
 - If you don't know the answer based on the JSON, politely say you don't have that specific data.
 - Format numbers with commas and currency symbols nicely (e.g. ₹5,000.00).`;
 
+    const messages: any[] = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: query },
+    ];
+
+    const tools: any[] = [
+      {
+        type: "function",
+        function: {
+          name: "create_customer",
+          description: "Creates a new customer in the database.",
+          parameters: {
+            type: "object",
+            properties: {
+              name: { type: "string", description: "Customer name" },
+              phone: { type: "string", description: "Customer phone number" },
+              creditLimit: { type: "number", description: "Credit limit (default 50000)" }
+            },
+            required: ["name"]
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "record_expense",
+          description: "Logs a new operational expense.",
+          parameters: {
+            type: "object",
+            properties: {
+              description: { type: "string", description: "Description of expense" },
+              amount: { type: "number", description: "Expense amount" },
+              category: { type: "string", description: "Category of expense (e.g., Electricity, Tea)" }
+            },
+            required: ["description", "amount", "category"]
+          }
+        }
+      }
+    ];
+
     const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: query },
-      ],
+      messages,
       model: "llama-3.3-70b-versatile", 
       temperature: 0.3,
+      tools,
+      tool_choice: "auto",
     });
 
-    return chatCompletion.choices[0]?.message?.content || "Sorry, I couldn't generate an answer.";
+    const responseMessage = chatCompletion.choices[0]?.message;
+
+    if (responseMessage?.tool_calls && responseMessage.tool_calls.length > 0) {
+      messages.push(responseMessage);
+      
+      for (const toolCall of responseMessage.tool_calls) {
+        let result = "";
+        try {
+          if (toolCall.function.name === 'create_customer') {
+            const args = JSON.parse(toolCall.function.arguments);
+            await prisma.customer.create({ data: { name: args.name, phone: args.phone || "", creditLimit: args.creditLimit || 50000 }});
+            result = `Successfully created customer ${args.name}.`;
+          } else if (toolCall.function.name === 'record_expense') {
+            const args = JSON.parse(toolCall.function.arguments);
+            await prisma.expense.create({ data: { description: args.description, amount: args.amount, category: args.category }});
+            result = `Successfully recorded expense of ₹${args.amount} for ${args.description}.`;
+          }
+        } catch (e: any) {
+          result = `Error: ${e.message}`;
+        }
+        
+        messages.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          name: toolCall.function.name,
+          content: result
+        });
+      }
+      
+      const finalResponse = await groq.chat.completions.create({
+        messages,
+        model: "llama-3.3-70b-versatile",
+      });
+      return finalResponse.choices[0]?.message?.content || "Action completed.";
+    }
+
+    return responseMessage?.content || "Sorry, I couldn't generate an answer.";
   } catch (error: any) {
     console.error("AI Error:", error);
     return "Error connecting to AI: " + error.message;
@@ -99,5 +175,40 @@ Be creative but extremely concise. Use currency symbol ₹ where appropriate.`;
   } catch (error: any) {
     console.error("AI Insight Error:", error);
     return "Welcome back to Bharat Hydraulics dashboard.";
+  }
+}
+
+export async function generateCEOBriefing() {
+  try {
+    const start = new Date();
+    start.setDate(1); 
+    start.setHours(0,0,0,0);
+    const end = new Date(start);
+    end.setMonth(end.getMonth() + 1); 
+    end.setMilliseconds(-1);
+
+    const bi = await getAdvancedBiData(start.toISOString(), end.toISOString());
+    
+    const prompt = `You are the Chief Financial Officer (CFO) of Bharat Hydraulics. 
+Write a highly professional, Markdown-formatted Weekly CEO Briefing based on this data:
+${JSON.stringify(bi, null, 2)}
+
+Include sections for:
+1. Executive Summary
+2. Profitability Analysis (mention the waterfall: Revenue, COGS, Gross Profit, Expenses, Net Profit)
+3. Year-over-Year Growth (sales and profit growth %)
+4. Category Performance
+Do not make up any numbers. Be concise and professional. Do NOT use introductory or concluding conversational filler like "Here is the report", just output the markdown report directly.`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "system", content: prompt }],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.4
+    });
+    
+    return chatCompletion.choices[0]?.message?.content || "Failed to generate report.";
+  } catch (error: any) {
+    console.error("AI CEO Briefing Error:", error);
+    return "Error generating briefing: " + error.message;
   }
 }
