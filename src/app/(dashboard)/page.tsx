@@ -44,8 +44,9 @@ export default async function Dashboard() {
           numericValue={stats.monthlySales}
           prefix="₹"
           decimals={2}
-          trend="This Month" 
-          trendUp={true} 
+          trend={`${stats.trends.salesVsLastMonth.pct}% vs Last Month`} 
+          trendUp={stats.trends.salesVsLastMonth.isUp} 
+          trendLabel={`(${stats.trends.salesVs6MonthAvg.isUp ? '+' : '-'}${stats.trends.salesVs6MonthAvg.pct}% vs 6M Avg)`}
           icon={<BarChart3 size={24} color="#8b5cf6" />} 
           iconBg="rgba(139,92,246,0.1)" 
           sparklineData={stats.chartData.month.map(d => ({ value: d.sales }))}
@@ -55,8 +56,9 @@ export default async function Dashboard() {
           numericValue={stats.monthlyProfit}
           prefix="₹"
           decimals={2}
-          trend="This Month" 
-          trendUp={true} 
+          trend={`${stats.trends.profitVsLastMonth.pct}% vs Last Month`} 
+          trendUp={stats.trends.profitVsLastMonth.isUp} 
+          trendLabel={`(${stats.trends.profitVs6MonthAvg.isUp ? '+' : '-'}${stats.trends.profitVs6MonthAvg.pct}% vs 6M Avg)`}
           icon={<IndianRupee size={24} color="#10b981" />} 
           iconBg="rgba(16,185,129,0.1)" 
           sparklineData={stats.chartData.month.map(d => ({ value: d.profit }))}

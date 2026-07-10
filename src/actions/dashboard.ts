@@ -172,6 +172,26 @@ export async function getDashboardStats() {
     year: buildMonthlyBuckets(12)
   };
 
+  const getTrend = (current: number, previous: number) => {
+    if (previous === 0) return { pct: current > 0 ? 100 : 0, isUp: current >= 0 };
+    const pct = ((current - previous) / Math.abs(previous)) * 100;
+    return { pct: Math.abs(pct).toFixed(1), isUp: pct >= 0 };
+  };
+
+  const sixMonthsData = chartData.sixMonths;
+  const currentMonthData = sixMonthsData[sixMonthsData.length - 1];
+  const lastMonthData = sixMonthsData[sixMonthsData.length - 2];
+  const previous5Months = sixMonthsData.slice(0, 5);
+  const avgSales5Months = previous5Months.reduce((a, b) => a + b.sales, 0) / 5;
+  const avgProfit5Months = previous5Months.reduce((a, b) => a + b.profit, 0) / 5;
+
+  const trends = {
+    salesVsLastMonth: getTrend(currentMonthData.sales, lastMonthData.sales),
+    profitVsLastMonth: getTrend(currentMonthData.profit, lastMonthData.profit),
+    salesVs6MonthAvg: getTrend(currentMonthData.sales, avgSales5Months),
+    profitVs6MonthAvg: getTrend(currentMonthData.profit, avgProfit5Months)
+  };
+
   const recentInvoices = await prisma.invoice.findMany({
     take: 5,
     orderBy: { createdAt: 'desc' },
@@ -217,6 +237,7 @@ export async function getDashboardStats() {
     lowStockProducts,
     outOfStockProducts,
     recentSales,
-    chartData
+    chartData,
+    trends
   };
 }
