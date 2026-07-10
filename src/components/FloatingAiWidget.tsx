@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
-import { Bot, Send, Sparkles, X, MessageSquare } from 'lucide-react';
-import { askAI } from '@/actions/ai';
+import { Bot, Send, Sparkles, X, MessageSquare, FileText } from 'lucide-react';
+import { askAI, generateCEOBriefing } from '@/actions/ai';
 import './FloatingAiWidget.css';
 
 export default function FloatingAiWidget() {
@@ -22,6 +22,18 @@ export default function FloatingAiWidget() {
       setResponse(res);
     } catch (err) {
       setResponse("An error occurred while fetching the answer.");
+    }
+    setLoading(false);
+  };
+
+  const handleGenerateBriefing = async () => {
+    setLoading(true);
+    setResponse('Gathering data and writing CEO Briefing. This may take a moment...');
+    try {
+      const res = await generateCEOBriefing();
+      setResponse(res);
+    } catch (err) {
+      setResponse("Failed to generate CEO Briefing.");
     }
     setLoading(false);
   };
@@ -70,6 +82,13 @@ export default function FloatingAiWidget() {
                   {q}
                 </button>
               ))}
+              
+              <button 
+                onClick={handleGenerateBriefing}
+                style={{ marginTop: '12px', width: '100%', padding: '10px', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}
+              >
+                <FileText size={16} /> Generate CEO Briefing
+              </button>
             </div>
           )}
 
@@ -82,7 +101,7 @@ export default function FloatingAiWidget() {
           )}
 
           {response && (
-            <div className="ai-response">
+            <div className="ai-response" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '13px' }}>
               {response}
             </div>
           )}
