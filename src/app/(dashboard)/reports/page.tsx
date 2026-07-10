@@ -2,12 +2,15 @@ import React from 'react';
 import { Calendar, TrendingUp, TrendingDown, IndianRupee, BarChart3, Package, ShoppingCart, ReceiptText, PackageX } from 'lucide-react';
 import '../inventory/page.css';
 import prisma from '@/lib/prisma';
-import { getMonthlyComparisonData } from '@/actions/reports';
 import MonthlyComparisonChart from '@/components/MonthlyComparisonChart';
 import StatCard from '@/components/StatCard';
 import MonthPicker from '@/components/MonthPicker';
 import ExpenseDonutChart from '@/components/ExpenseDonutChart';
 import ExportTableButton from '@/components/ExportTableButton';
+import ProfitWaterfall from '@/components/ProfitWaterfall';
+import CategoryDonutChart from '@/components/CategoryDonutChart';
+import WeeklyHeatmapChart from '@/components/WeeklyHeatmapChart';
+import { getMonthlyComparisonData, getAdvancedBiData } from '@/actions/reports';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,6 +87,7 @@ export default async function ReportsPage({
   };
 
   const { chartData, averages } = await getMonthlyComparisonData();
+  const advancedBiData = await getAdvancedBiData(startOfMonth.toISOString(), endOfMonth.toISOString());
 
   // New Request: Monthly Stock Summary
   const products = await prisma.product.findMany();
@@ -197,6 +201,44 @@ export default async function ReportsPage({
           icon={<IndianRupee size={24} color={netProfit >= 0 ? "#2962ff" : "#ef4444"} />} 
           iconBg={netProfit >= 0 ? "rgba(41,98,255,0.1)" : "rgba(239,68,68,0.1)"} 
         />
+      </div>
+
+      <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
+         <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '16px' }}>Year-over-Year (YoY) Growth</h2>
+         <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+           <StatCard 
+             title="Sales Growth (YoY)" 
+             value={`${advancedBiData.yoy.salesGrowth > 0 ? '+' : ''}${advancedBiData.yoy.salesGrowth.toFixed(1)}%`}
+             trend={`vs Last Year (₹${advancedBiData.yoy.lastYearSales.toLocaleString('en-IN', {maximumFractionDigits: 0})})`}
+             trendUp={advancedBiData.yoy.salesGrowth >= 0}
+             icon={<TrendingUp size={24} color="#8b5cf6" />}
+             iconBg="rgba(139,92,246,0.1)"
+           />
+           <StatCard 
+             title="Profit Growth (YoY)" 
+             value={`${advancedBiData.yoy.profitGrowth > 0 ? '+' : ''}${advancedBiData.yoy.profitGrowth.toFixed(1)}%`}
+             trend={`vs Last Year (₹${advancedBiData.yoy.lastYearProfit.toLocaleString('en-IN', {maximumFractionDigits: 0})})`}
+             trendUp={advancedBiData.yoy.profitGrowth >= 0}
+             icon={<IndianRupee size={24} color="#10b981" />}
+             iconBg="rgba(16,185,129,0.1)"
+           />
+         </div>
+      </div>
+      
+      <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
+         <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '16px' }}>Profit Waterfall (Where the money goes)</h2>
+         <ProfitWaterfall data={advancedBiData.waterfall} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px', marginTop: '24px' }}>
+        <div className="card" style={{ padding: '24px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '16px' }}>Category & Margin Analytics</h2>
+          <CategoryDonutChart data={advancedBiData.categoryData} />
+        </div>
+        <div className="card" style={{ padding: '24px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '16px' }}>Shop Heatmap (Sales by Day)</h2>
+          <WeeklyHeatmapChart data={advancedBiData.heatmapData} />
+        </div>
       </div>
       
       <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
