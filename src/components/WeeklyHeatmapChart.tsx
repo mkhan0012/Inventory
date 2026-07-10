@@ -17,9 +17,17 @@ export default function WeeklyHeatmapChart({ data }: { data: any[] }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div style={{ background: '#fff', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>{data.day}</p>
-          <p style={{ margin: 0, color: '#3b82f6', fontSize: '13px' }}>
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: '12px 16px', 
+          border: '1px solid rgba(255,255,255,0.3)', 
+          borderRadius: '12px', 
+          boxShadow: '0 10px 40px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.02)' 
+        }}>
+          <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: 'var(--text-main)' }}>{data.day}</p>
+          <p style={{ margin: 0, color: '#3b82f6', fontSize: '14px', fontWeight: 600 }}>
             Revenue: ₹{data.sales.toLocaleString('en-IN', {minimumFractionDigits: 2})}
           </p>
         </div>
@@ -32,10 +40,14 @@ export default function WeeklyHeatmapChart({ data }: { data: any[] }) {
     <div style={{ height: '300px', width: '100%' }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-          <XAxis dataKey="day" axisLine={false} tickLine={false} tickFormatter={(val) => val.substring(0, 3)} tick={{fill: '#6b7280', fontSize: 12}} />
-          <YAxis tickFormatter={(val) => `₹${val}`} axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
-          <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(0,0,0,0.05)'}} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
+          <XAxis dataKey="day" axisLine={false} tickLine={false} tickFormatter={(val) => val.substring(0, 3)} tick={{fill: 'var(--text-muted)', fontSize: 12}} />
+          <YAxis tickFormatter={(val) => {
+            if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
+            if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
+            return `₹${val}`;
+          }} axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 12}} />
+          <Tooltip content={<CustomTooltip />} cursor={{fill: 'var(--bg-main)', opacity: 0.5}} />
           <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => {
               const opacity = entry.sales === 0 ? 0.2 : 0.3 + (0.7 * (entry.sales / maxSales));

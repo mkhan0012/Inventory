@@ -39,21 +39,38 @@ export default function MonthlyComparisonChart({ data }: { data: ChartData[] }) 
             left: 20,
           }}
         >
+          <defs>
+            <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#10b981" stopOpacity={1}/>
+              <stop offset="95%" stopColor="#10b981" stopOpacity={0.6}/>
+            </linearGradient>
+            <linearGradient id="colorExp" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={1}/>
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.6}/>
+            </linearGradient>
+          </defs>
           <CartesianGrid stroke="var(--border)" strokeOpacity={0.4} strokeDasharray="3 3" vertical={false} />
           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} />
           <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} tickFormatter={formatYAxis} />
           <Tooltip 
             formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
-            contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', background: 'var(--bg-card)' }}
-            labelStyle={{ color: 'var(--text-muted)', fontWeight: 600, fontSize: '12px', marginBottom: '8px' }}
-            itemStyle={{ color: 'var(--text-main)', fontWeight: 500, fontSize: '14px' }}
+            contentStyle={{ 
+              borderRadius: '12px', 
+              border: '1px solid rgba(255,255,255,0.3)', 
+              boxShadow: '0 10px 40px rgba(0,0,0,0.08)', 
+              background: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)'
+            }}
+            labelStyle={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '12px', marginBottom: '8px' }}
+            itemStyle={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '14px' }}
             cursor={{ fill: 'var(--bg-main)', opacity: 0.5 }}
           />
           <Legend wrapperStyle={{ paddingTop: '20px' }} />
-          <Bar dataKey="income" name="Total Income" barSize={32} fill="#10b981" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="expenses" name="Total Expenses" barSize={32} fill="#ef4444" radius={[4, 4, 0, 0]} />
-          <Line type="monotone" dataKey="profit" name="Net Profit Trend" stroke="#2962ff" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-          <Brush dataKey="name" height={30} stroke="#8884d8" fill="var(--bg-main)" />
+          <Bar dataKey="income" name="Total Income" barSize={32} fill="url(#colorInc)" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="expenses" name="Total Expenses" barSize={32} fill="url(#colorExp)" radius={[4, 4, 0, 0]} />
+          <Line type="monotone" dataKey="profit" name="Net Profit Trend" stroke="#2962ff" strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: '#2962ff' }} activeDot={{ r: 6, strokeWidth: 0, fill: '#2962ff' }} />
+          <Brush dataKey="name" height={30} stroke="var(--border)" fill="transparent" />
         </ComposedChart>
       </ResponsiveContainer>
     </div>

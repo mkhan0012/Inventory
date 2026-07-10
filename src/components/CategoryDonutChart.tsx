@@ -17,10 +17,18 @@ export default function CategoryDonutChart({ data }: { data: any[] }) {
     if (active && payload && payload.length) {
       const { name, value, payload: data } = payload[0];
       return (
-        <div style={{ background: '#fff', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-          <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>{name}</p>
-          <p style={{ margin: 0, color: '#374151', fontSize: '13px' }}>Revenue: ₹{value.toLocaleString('en-IN', {minimumFractionDigits: 2})}</p>
-          <p style={{ margin: 0, color: '#10b981', fontSize: '13px' }}>Profit: ₹{data.profit.toLocaleString('en-IN', {minimumFractionDigits: 2})}</p>
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: '12px 16px', 
+          border: '1px solid rgba(255,255,255,0.3)', 
+          borderRadius: '12px', 
+          boxShadow: '0 10px 40px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.02)' 
+        }}>
+          <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: 'var(--text-main)' }}>{name}</p>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '13px', fontWeight: 500 }}>Revenue: <span style={{color: 'var(--text-main)'}}>₹{value.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span></p>
+          <p style={{ margin: '4px 0 0 0', color: '#10b981', fontSize: '13px', fontWeight: 600 }}>Profit: ₹{data.profit.toLocaleString('en-IN', {minimumFractionDigits: 2})}</p>
         </div>
       );
     }
