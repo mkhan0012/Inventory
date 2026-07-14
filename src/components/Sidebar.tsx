@@ -16,7 +16,9 @@ import {
   ChevronRight,
   MessageCircle,
   ShieldAlert,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  ChevronLeft,
+  Menu
 } from 'lucide-react';
 import LogoutButton from './LogoutButton';
 import { useSession } from 'next-auth/react';
@@ -41,11 +43,12 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const isOwner = session?.user && (session.user as any).role === 'OWNER';
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   return (
     <>
       <div className="sidebar-overlay" onClick={() => document.body.classList.remove('sidebar-open')}></div>
-      <aside className="sidebar">
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
         <div className="logo-icon" style={{ background: 'transparent', padding: 0 }}>
           <img src="/logo.png" alt="Logo" style={{ width: '40px', height: 'auto', objectFit: 'contain' }} />
@@ -54,6 +57,9 @@ export default function Sidebar() {
           <h2>Bharat Hydraulics</h2>
           <p>Hydraulic Pipes & Fittings</p>
         </div>
+        <button className="collapse-btn" onClick={() => setIsCollapsed(!isCollapsed)}>
+          {isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
+        </button>
       </div>
 
       <nav className="sidebar-nav">

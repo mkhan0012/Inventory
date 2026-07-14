@@ -15,6 +15,29 @@
   padding: 0 24px;
   gap: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+
+.collapse-btn {
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: opacity 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.collapse-btn:hover {
+  opacity: 0.9;
 }
 
 .logo-icon {
@@ -64,6 +87,46 @@
 .nav-item.active {
   background-color: var(--sidebar-active);
   color: #ffffff;
+}
+
+/* Collapsed State */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar.collapsed .logo-text {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-header {
+  padding: 0;
+  justify-content: center;
+}
+
+.sidebar.collapsed .nav-item-left span {
+  display: none;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.collapsed .nav-item-left {
+  justify-content: center;
+}
+
+.sidebar.collapsed .nav-item svg:last-child {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  padding: 24px 12px;
+  display: flex;
+  justify-content: center;
+}
+.sidebar.collapsed .sidebar-footer span {
+  display: none;
 }
 
 .sidebar-footer {

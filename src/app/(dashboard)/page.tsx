@@ -3,6 +3,8 @@ import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee, PackageCheck, 
 import StatCard from '@/components/StatCard';
 import DashboardSalesChart from '@/components/DashboardSalesChart';
 import AiInsightBanner from '@/components/AiInsightBanner';
+import TableActionMenu from '@/components/TableActionMenu';
+import CustomerHoverCard from '@/components/CustomerHoverCard';
 import './page.css';
 import { getDashboardStats } from '@/actions/dashboard';
 import Link from 'next/link';
@@ -172,6 +174,7 @@ export default async function Dashboard() {
                     <th style={{ padding: '12px 8px' }}>Customer</th>
                     <th style={{ padding: '12px 8px' }}>Amount</th>
                     <th style={{ padding: '12px 8px' }}>Status</th>
+                    <th style={{ padding: '12px 8px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -182,16 +185,21 @@ export default async function Dashboard() {
                         {sale.type === 'DIRECT' && <span style={{ marginLeft: '8px', fontSize: '10px', background: '#fef3c7', color: '#d97706', padding: '2px 6px', borderRadius: '10px' }}>QUICK</span>}
                       </td>
                       <td style={{ padding: '12px 8px', color: 'var(--text-main)' }}>{new Date(sale.date).toLocaleDateString()}</td>
-                      <td style={{ padding: '12px 8px', color: 'var(--text-main)' }}>{sale.customerName}</td>
+                      <td style={{ padding: '12px 8px', color: 'var(--text-main)' }}>
+                        <CustomerHoverCard customerName={sale.customerName} amount={sale.total} />
+                      </td>
                       <td style={{ padding: '12px 8px', color: 'var(--text-main)', fontWeight: 500 }}>₹{sale.total.toFixed(2)}</td>
                       <td style={{ padding: '12px 8px' }}>
                         <span className={`status-badge ${sale.status.toLowerCase()}`}>{sale.status}</span>
+                      </td>
+                      <td style={{ padding: '12px 8px', display: 'flex', justifyContent: 'flex-end' }}>
+                        <TableActionMenu saleId={sale.id} status={sale.status} />
                       </td>
                     </tr>
                   ))}
                   {stats.recentSales.length === 0 && (
                     <tr>
-                      <td colSpan={5} style={{ padding: '60px 20px', textAlign: 'center' }}>
+                      <td colSpan={6} style={{ padding: '60px 20px', textAlign: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                           <ReceiptText size={48} color="var(--border)" style={{ marginBottom: '16px', opacity: 0.5 }} />
                           <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-main)' }}>No Sales Yet</span>
