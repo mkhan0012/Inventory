@@ -208,8 +208,6 @@ export default async function Dashboard() {
                             textDecoration: 'none',
                             transition: 'opacity 0.2s'
                           }}
-                          onMouseOver={(e) => e.currentTarget.style.opacity = '0.8'}
-                          onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
                         >
                           View
                         </Link>
