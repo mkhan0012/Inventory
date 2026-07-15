@@ -2,6 +2,29 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={{ 
+        background: 'var(--bg-card)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        padding: '12px 16px', 
+        border: '1px solid var(--border)', 
+        borderRadius: '12px', 
+        boxShadow: 'var(--shadow-card)' 
+      }}>
+        <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: 'var(--text-main)' }}>{data.day}</p>
+        <p style={{ margin: 0, color: '#3b82f6', fontSize: '14px', fontWeight: 600 }}>
+          Revenue: ₹{data.sales.toLocaleString('en-IN', {minimumFractionDigits: 2})}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function WeeklyHeatmapChart({ data }: { data: any[] }) {
   if (!data || data.length === 0 || data.every(d => d.sales === 0)) {
     return (
@@ -12,29 +35,6 @@ export default function WeeklyHeatmapChart({ data }: { data: any[] }) {
   }
 
   const maxSales = Math.max(...data.map(d => d.sales));
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          padding: '12px 16px', 
-          border: '1px solid rgba(255,255,255,0.3)', 
-          borderRadius: '12px', 
-          boxShadow: '0 10px 40px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.02)' 
-        }}>
-          <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: 'var(--text-main)' }}>{data.day}</p>
-          <p style={{ margin: 0, color: '#3b82f6', fontSize: '14px', fontWeight: 600 }}>
-            Revenue: ₹{data.sales.toLocaleString('en-IN', {minimumFractionDigits: 2})}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div style={{ height: '300px', width: '100%' }}>

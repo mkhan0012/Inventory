@@ -26,7 +26,7 @@ import { z } from "zod";
 
 const customerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters long"),
-  phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits")
+  phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits").optional().or(z.literal(''))
 });
 
 export async function createCustomer(data: {

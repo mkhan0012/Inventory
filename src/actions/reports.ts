@@ -30,7 +30,7 @@ export async function getMonthlyComparisonData() {
   
   // Generate all months from earliest to current
   const currentDate = new Date();
-  let currentIterDate = new Date(earliestDate);
+  const currentIterDate = new Date(earliestDate);
   
   while (currentIterDate <= currentDate) {
     const monthName = currentIterDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });

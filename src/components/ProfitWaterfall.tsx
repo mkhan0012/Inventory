@@ -2,10 +2,34 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={{ 
+        background: 'var(--bg-card)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        padding: '12px 16px', 
+        border: '1px solid var(--border)', 
+        borderRadius: '12px', 
+        boxShadow: 'var(--shadow-card)' 
+      }}>
+        <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: 'var(--text-main)' }}>{data.name}</p>
+        <p style={{ margin: 0, fontWeight: 600, color: data.displayValue < 0 ? '#ef4444' : '#10b981' }}>
+          {data.displayValue < 0 ? '-' : ''}₹{Math.abs(data.displayValue).toLocaleString('en-IN', {minimumFractionDigits: 2})}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function ProfitWaterfall({ data }: { data: any[] }) {
+  const chartData: any[] = [];
   let currentTotal = 0;
   
-  const chartData = data.map((step, index) => {
+  data.forEach((step, index) => {
     const isNegative = step.value < 0;
     const absValue = Math.abs(step.value);
     
@@ -30,38 +54,15 @@ export default function ProfitWaterfall({ data }: { data: any[] }) {
       }
     }
     
-    return {
+    chartData.push({
       name: step.name,
       transparent,
       positive,
       negative,
       total,
       displayValue: step.value
-    };
+    });
   });
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div style={{ 
-          background: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          padding: '12px 16px', 
-          border: '1px solid rgba(255,255,255,0.3)', 
-          borderRadius: '12px', 
-          boxShadow: '0 10px 40px rgba(0,0,0,0.08), 0 2px 10px rgba(0,0,0,0.02)' 
-        }}>
-          <p style={{ margin: '0 0 6px 0', fontWeight: 600, color: 'var(--text-main)' }}>{data.name}</p>
-          <p style={{ margin: 0, fontWeight: 600, color: data.displayValue < 0 ? '#ef4444' : '#10b981' }}>
-            {data.displayValue < 0 ? '-' : ''}₹{Math.abs(data.displayValue).toLocaleString('en-IN', {minimumFractionDigits: 2})}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div style={{ height: '300px', width: '100%' }}>

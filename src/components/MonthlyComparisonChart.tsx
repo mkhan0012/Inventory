@@ -56,9 +56,9 @@ export default function MonthlyComparisonChart({ data }: { data: ChartData[] }) 
             formatter={(value: any) => `₹${Number(value).toLocaleString('en-IN', {minimumFractionDigits: 2})}`} 
             contentStyle={{ 
               borderRadius: '12px', 
-              border: '1px solid rgba(255,255,255,0.3)', 
+              border: '1px solid var(--border)', 
               boxShadow: '0 10px 40px rgba(0,0,0,0.08)', 
-              background: 'rgba(255, 255, 255, 0.8)',
+              background: 'var(--bg-card)',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)'
             }}

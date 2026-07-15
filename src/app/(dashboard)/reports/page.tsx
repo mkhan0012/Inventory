@@ -17,11 +17,12 @@ export const dynamic = 'force-dynamic';
 export default async function ReportsPage({
   searchParams,
 }: {
-  searchParams?: { month?: string }
+  searchParams?: Promise<{ month?: string }>
 }) {
+  const sp = await searchParams;
   const startOfMonth = new Date();
-  if (searchParams?.month) {
-    const [year, month] = searchParams.month.split('-');
+  if (sp?.month) {
+    const [year, month] = sp.month.split('-');
     startOfMonth.setFullYear(parseInt(year), parseInt(month) - 1, 1);
   } else {
     startOfMonth.setDate(1);

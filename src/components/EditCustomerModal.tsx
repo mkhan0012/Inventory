@@ -52,7 +52,7 @@ export default function EditCustomerModal({ customer, isOpen, onClose }: EditCus
           </div>
           <div className="form-group">
             <label>Phone Number</label>
-            <input name="phone" required defaultValue={customer.phone || ''} />
+            <input name="phone" placeholder="(Optional)" defaultValue={customer.phone || ''} />
           </div>
           
           <div className="modal-footer">

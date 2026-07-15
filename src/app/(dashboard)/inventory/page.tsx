@@ -12,12 +12,13 @@ export const dynamic = 'force-dynamic';
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams?: { search?: string }
+  searchParams?: Promise<{ search?: string }>
 }) {
+  const sp = await searchParams;
   const session = await getServerSession(authOptions);
   const isOwner = (session?.user as any)?.role === 'OWNER';
   
-  const inventoryData = await getProducts(searchParams?.search);
+  const inventoryData = await getProducts(sp?.search);
 
   return (
     <div className="page-container">

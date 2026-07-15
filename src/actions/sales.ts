@@ -345,3 +345,43 @@ export async function deleteDirectSale(id: string) {
     return { error: e.message || "An unexpected error occurred." };
   }
 }
+
+export async function markInvoiceAsPaid(id: string) {
+  const session = await getServerSession(authOptions);
+  const userName = session?.user?.name || "Unknown";
+  const userRole = (session?.user as any)?.role || "STAFF";
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const invoice = await tx.invoice.findUnique({ where: { id } });
+      if (!invoice) throw new Error("Invoice not found.");
+      if (invoice.status === 'PAID') throw new Error("Invoice is already paid.");
+
+      await tx.invoice.update({
+        where: { id },
+        data: { status: 'PAID' }
+      });
+
+      await tx.customer.update({
+        where: { id: invoice.customerId },
+        data: {
+          dueAmount: { decrement: invoice.total }
+        }
+      });
+
+      await logActivity(
+        "Mark Invoice Paid",
+        `Marked Invoice ${invoice.invoiceNo} as Paid (₹${invoice.total})`,
+        userName,
+        userRole
+      );
+    });
+
+    revalidatePath('/sales');
+    revalidatePath('/customers');
+    revalidatePath('/');
+    return { success: true };
+  } catch (e: any) {
+    return { error: e.message || "An unexpected error occurred." };
+  }
+}

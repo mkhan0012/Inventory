@@ -12,12 +12,13 @@ export const dynamic = 'force-dynamic';
 export default async function ExpensesPage({
   searchParams,
 }: {
-  searchParams?: { search?: string }
+  searchParams?: Promise<{ search?: string }>
 }) {
+  const sp = await searchParams;
   const session = await getServerSession(authOptions);
   const isOwner = (session?.user as any)?.role === 'OWNER';
 
-  const expenses = await getExpenses(searchParams?.search);
+  const expenses = await getExpenses(sp?.search);
 
   return (
     <div className="page-container">

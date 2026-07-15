@@ -95,7 +95,7 @@ export default function HeaderInteractive({ name, role, alerts = [] }: Props) {
             <div style={{ position: 'absolute', top: '50px', right: '0', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', padding: '12px', minWidth: '300px', zIndex: 10, maxHeight: '400px', overflowY: 'auto' }}>
               <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border)' }}>Notifications ({alerts.length})</h3>
               {alerts.length === 0 ? (
-                <div style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>You're all caught up!</div>
+                <div style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>You&apos;re all caught up!</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {alerts.map(alert => (

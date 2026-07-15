@@ -3,7 +3,7 @@ import { Calendar, Package, ShoppingCart, BarChart3, IndianRupee, PackageCheck, 
 import StatCard from '@/components/StatCard';
 import DashboardSalesChart from '@/components/DashboardSalesChart';
 import AiInsightBanner from '@/components/AiInsightBanner';
-import TableActionMenu from '@/components/TableActionMenu';
+
 import CustomerHoverCard from '@/components/CustomerHoverCard';
 import './page.css';
 import { getDashboardStats } from '@/actions/dashboard';
@@ -193,7 +193,26 @@ export default async function Dashboard() {
                         <span className={`status-badge ${sale.status.toLowerCase()}`}>{sale.status}</span>
                       </td>
                       <td style={{ padding: '12px 8px', display: 'flex', justifyContent: 'flex-end' }}>
-                        <TableActionMenu saleId={sale.id} status={sale.status} />
+                        <Link 
+                          href={`/sales/${sale.id}/print`}
+                          target="_blank"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '6px 12px',
+                            background: 'var(--primary)',
+                            color: '#ffffff',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                            transition: 'opacity 0.2s'
+                          }}
+                          onMouseOver={(e) => e.currentTarget.style.opacity = '0.8'}
+                          onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                        >
+                          View
+                        </Link>
                       </td>
                     </tr>
                   ))}

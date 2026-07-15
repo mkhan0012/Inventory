@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical, Download, MessageSquare, CheckCircle, FileText } from 'lucide-react';
+import { markInvoiceAsPaid } from '@/actions/sales';
 
 interface TableActionMenuProps {
   saleId: string;
@@ -9,7 +10,40 @@ interface TableActionMenuProps {
 
 export default function TableActionMenu({ saleId, status }: TableActionMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMarking, setIsMarking] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleDownload = () => {
+    window.open(`/sales/${saleId}/print`, '_blank');
+    setIsOpen(false);
+  };
+
+  const handleWhatsApp = () => {
+    const text = encodeURIComponent(`Hello, here is the link to your invoice: ${window.location.origin}/sales/${saleId}/print`);
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+    setIsOpen(false);
+  };
+
+  const handleViewDetails = () => {
+    window.open(`/sales/${saleId}/print`, '_blank');
+    setIsOpen(false);
+  };
+
+  const handleMarkAsPaid = async () => {
+    setIsMarking(true);
+    try {
+      const res = await markInvoiceAsPaid(saleId);
+      if (res?.error) {
+        alert(res.error);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to mark as paid.");
+    } finally {
+      setIsMarking(false);
+      setIsOpen(false);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,12 +87,12 @@ export default function TableActionMenu({ saleId, status }: TableActionMenuProps
           right: 0,
           top: '100%',
           marginTop: '4px',
-          background: 'rgba(255,255,255,0.85)',
+          background: 'var(--bg-card)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           border: '1px solid var(--border)',
           borderRadius: '8px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.12), 0 2px 10px rgba(0,0,0,0.04)',
+          boxShadow: 'var(--shadow-card)',
           width: '180px',
           zIndex: 50,
           padding: '4px',
@@ -66,18 +100,18 @@ export default function TableActionMenu({ saleId, status }: TableActionMenuProps
           flexDirection: 'column',
           gap: '2px'
         }}>
-          <button className="menu-item-btn">
+          <button className="menu-item-btn" onClick={handleDownload}>
             <Download size={14} /> Download PDF
           </button>
-          <button className="menu-item-btn">
+          <button className="menu-item-btn" onClick={handleWhatsApp}>
             <MessageSquare size={14} /> Send WhatsApp
           </button>
-          <button className="menu-item-btn">
+          <button className="menu-item-btn" onClick={handleViewDetails}>
             <FileText size={14} /> View Details
           </button>
           {status !== 'PAID' && (
-            <button className="menu-item-btn" style={{ color: '#10b981' }}>
-              <CheckCircle size={14} /> Mark as Paid
+            <button className="menu-item-btn" style={{ color: '#10b981' }} onClick={handleMarkAsPaid} disabled={isMarking}>
+              <CheckCircle size={14} /> {isMarking ? 'Marking...' : 'Mark as Paid'}
             </button>
           )}
         </div>

@@ -15,12 +15,13 @@ export const dynamic = 'force-dynamic';
 export default async function PurchasesPage({
   searchParams,
 }: {
-  searchParams?: { search?: string }
+  searchParams?: Promise<{ search?: string }>
 }) {
+  const sp = await searchParams;
   const session = await getServerSession(authOptions);
   const isOwner = (session?.user as any)?.role === 'OWNER';
 
-  const purchases = await getPurchases(searchParams?.search);
+  const purchases = await getPurchases(sp?.search);
   const suppliers = await getSuppliers();
   const products = await getProducts();
 

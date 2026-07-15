@@ -51,7 +51,7 @@ export default function AddCustomerModal() {
               </div>
               <div className="form-group">
                 <label>Phone Number</label>
-                <input name="phone" required placeholder="e.g. +91 9876543210" />
+                <input name="phone" placeholder="e.g. +91 9876543210 (Optional)" />
               </div>
               
               <div className="modal-footer">
