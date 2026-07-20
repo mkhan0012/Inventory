@@ -82,6 +82,16 @@ export async function getDashboardStats() {
 
   const chartDataMonthMap = new Map<string, { sales: number, profit: number }>();
   
+  // Initialize map with all days from the 1st to today to ensure chronological order
+  // and include days with 0 sales
+  const todayForChart = new Date();
+  const daysInMonth = todayForChart.getDate();
+  for (let i = 1; i <= daysInMonth; i++) {
+    const d = new Date(todayForChart.getFullYear(), todayForChart.getMonth(), i);
+    const dayStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    chartDataMonthMap.set(dayStr, { sales: 0, profit: 0 });
+  }
+
   monthlyInvoices.forEach(inv => {
     const day = inv.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
     if (!chartDataMonthMap.has(day)) {
