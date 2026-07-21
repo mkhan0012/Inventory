@@ -60,8 +60,8 @@ export default function RecordPaymentModal({ customers, suppliers }: { customers
                 <select name="partyId" required style={{ padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
                   <option value="">-- Select {type === 'INCOMING' ? 'Customer' : 'Supplier'} --</option>
                   {type === 'INCOMING' 
-                    ? customers.filter(c => c.dueAmount > 0).map(c => <option key={c.id} value={c.id}>{c.name} (Due: ₹{c.dueAmount.toFixed(2)})</option>)
-                    : suppliers.filter(s => s.dueAmount > 0).map(s => <option key={s.id} value={s.id}>{s.name} (Due: ₹{s.dueAmount.toFixed(2)})</option>)
+                    ? customers.map(c => <option key={c.id} value={c.id}>{c.name} (Due: ₹{c.dueAmount.toFixed(2)})</option>)
+                    : suppliers.map(s => <option key={s.id} value={s.id}>{s.name} (Due: ₹{s.dueAmount.toFixed(2)})</option>)
                   }
                 </select>
               </div>

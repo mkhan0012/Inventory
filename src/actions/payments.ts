@@ -2,8 +2,14 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function getPayments() {
+export async function getPayments(search?: string) {
   return await prisma.payment.findMany({
+    where: search ? {
+      OR: [
+        { customer: { name: { contains: search, mode: 'insensitive' } } },
+        { supplier: { name: { contains: search, mode: 'insensitive' } } },
+      ]
+    } : undefined,
     include: {
       customer: true,
       supplier: true

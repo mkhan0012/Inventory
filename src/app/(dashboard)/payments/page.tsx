@@ -5,11 +5,17 @@ import { getPayments } from '@/actions/payments';
 import RecordPaymentModal from '@/components/RecordPaymentModal';
 import { getCustomers } from '@/actions/customers';
 import { getSuppliers } from '@/actions/suppliers';
+import SearchBar from '@/components/SearchBar';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PaymentsPage() {
-  const payments = await getPayments();
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ search?: string }>
+}) {
+  const sp = await searchParams;
+  const payments = await getPayments(sp?.search);
   const customers = await getCustomers();
   const suppliers = await getSuppliers();
 
@@ -18,10 +24,7 @@ export default async function PaymentsPage() {
       <div className="page-header">
         <h1 className="page-title">Payments & Ledger</h1>
         <div className="header-actions">
-          <div className="search-box">
-            <Search size={16} color="var(--text-muted)" />
-            <input type="text" placeholder="Search payments..." />
-          </div>
+          <SearchBar placeholder="Search payments..." basePath="/payments" />
           <RecordPaymentModal customers={customers} suppliers={suppliers} />
         </div>
       </div>
