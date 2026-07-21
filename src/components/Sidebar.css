@@ -262,6 +262,12 @@
   box-shadow: 0 2px 8px var(--primary-glow);
 }
 
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 240px;
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
