@@ -1,173 +1,311 @@
-.print-container {
-  max-width: 850px;
-  margin: 0 auto;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #111827 !important;
-  background: #fff !important;
-  padding: 40px;
+/* Professional Invoice Styles */
+
+.print-wrapper {
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
+.print-container {
+  width: 210mm; /* A4 width */
+  min-height: 297mm; /* A4 height */
+  margin: 0 auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+  background: #ffffff;
+  padding: 40px 50px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  position: relative;
+}
+
+/* Watermark */
+.invoice-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.05;
+  width: 400px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.print-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
 .print-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 30px;
-  margin-bottom: 40px;
+  border-bottom: 3px solid #0f172a;
+  padding-bottom: 25px;
+  margin-bottom: 35px;
+}
+
+.company-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.company-logo {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
 }
 
 .shop-name {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
-  margin: 0 0 8px 0;
-  color: #111827 !important;
-  letter-spacing: -0.5px;
+  margin: 0 0 4px 0;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .shop-address, .shop-gst {
-  margin: 0 0 4px 0;
-  font-size: 14px;
-  color: #4b5563 !important;
+  margin: 0 0 3px 0;
+  font-size: 13px;
+  color: #475569;
   line-height: 1.5;
 }
 
 .invoice-meta {
   text-align: right;
-  background: #f9fafb;
-  padding: 20px 24px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
 }
 
-.invoice-meta h2 {
-  margin: 0 0 12px 0;
-  color: #2962ff !important;
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 1px;
+.invoice-title {
+  margin: 0 0 15px 0;
+  color: #0f172a;
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
-.invoice-meta p {
-  margin: 0 0 8px 0;
+.meta-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 8px 24px;
+  text-align: left;
+}
+
+.meta-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.meta-value {
   font-size: 14px;
-  color: #374151 !important;
+  color: #0f172a;
+  font-weight: 600;
+  text-align: right;
 }
 
-.invoice-meta p strong {
-  color: #111827 !important;
-}
-
-.bill-to {
+/* Info Section (Bill To) */
+.info-section {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 40px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 6px;
+  border-left: 4px solid #0f172a;
 }
 
 .bill-to h3 {
-  margin: 0 0 12px 0;
-  font-size: 13px;
-  color: #6b7280 !important;
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   font-weight: 700;
 }
 
-.bill-to p {
+.customer-name {
   margin: 0 0 4px 0;
-  color: #111827 !important;
-  font-size: 15px;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
 }
 
+.customer-phone {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+/* Table */
 .print-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .print-table th {
-  background-color: #f3f4f6 !important;
-  color: #374151 !important;
+  background-color: #0f172a;
+  color: #ffffff;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 0.5px;
-  padding: 12px 16px;
-  border-bottom: 2px solid #e5e7eb;
-  border-top: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  text-align: left;
+  border: 1px solid #0f172a;
 }
 
 .print-table td {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-  color: #111827 !important;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
   font-size: 14px;
 }
 
-.print-table td:nth-child(3),
-.print-table td:nth-child(4),
-.print-table td:nth-child(5),
-.print-table th:nth-child(3),
-.print-table th:nth-child(4),
-.print-table th:nth-child(5) {
-  text-align: right;
+.print-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+/* Summary Section */
+.summary-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 50px;
+  page-break-inside: avoid;
+}
+
+.amount-in-words {
+  width: 50%;
+  padding-right: 40px;
+}
+
+.amount-in-words h4 {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+}
+
+.amount-in-words p {
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.5;
+  background: #f1f5f9;
+  padding: 10px 15px;
+  border-radius: 4px;
 }
 
 .print-totals {
-  width: 320px;
-  margin-left: auto;
-  margin-bottom: 50px;
-  background: #f9fafb;
-  padding: 24px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  width: 300px;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
+  padding: 10px 0;
   font-size: 14px;
-  color: #4b5563 !important;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.total-row:last-child {
+  border-bottom: none;
 }
 
 .total-row span:last-child {
-  color: #111827 !important;
-  font-weight: 500;
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .grand-total {
   font-size: 18px;
-  border-top: 2px solid #e5e7eb;
-  margin-top: 12px;
-  padding-top: 16px;
-  color: #111827 !important;
+  background-color: #0f172a;
+  color: #ffffff !important;
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 
-.grand-total span:last-child {
-  color: #2962ff !important;
-  font-weight: 800;
-  font-size: 22px;
+.grand-total span {
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
+/* Footer */
 .print-footer {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   margin-top: 50px;
-  font-size: 14px;
-  color: #6b7280 !important;
+  padding-top: 30px;
+  border-top: 1px solid #cbd5e1;
+  page-break-inside: avoid;
+}
+
+.terms-section h4 {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+}
+
+.terms-section ul {
+  margin: 0;
+  padding-left: 15px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.terms-section li {
+  margin-bottom: 4px;
 }
 
 .signatory {
-  border-top: 1px solid #9ca3af;
-  padding-top: 8px;
-  width: 200px;
   text-align: center;
+  width: 200px;
 }
 
-.print-btn {
-  margin-top: 40px;
-  padding: 10px 20px;
-  background: #2962ff;
-  color: #fff;
+.signature-line {
+  border-top: 1px solid #0f172a;
+  margin-top: 50px;
+  padding-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Actions Bar */
+.actions-bar {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.action-btn {
+  padding: 12px 24px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -175,18 +313,51 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s;
 }
 
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+.print-btn {
+  background: #0f172a;
+  color: #fff;
+}
+
+.whatsapp-btn {
+  background: #25D366;
+  color: #fff;
+}
+
+/* Print Media Query */
 @media print {
-  .no-print {
-    display: none !important;
+  @page {
+    size: A4;
+    margin: 0; /* Let container handle margins */
   }
+
   body {
     background: #fff;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  .print-container {
+
+  .print-wrapper {
+    background: none;
     padding: 0;
+  }
+
+  .print-container {
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+    padding: 15mm;
+  }
+
+  .no-print {
+    display: none !important;
   }
 }
