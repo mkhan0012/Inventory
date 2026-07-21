@@ -12,12 +12,18 @@ export async function askAI(query: string) {
     const stats = await getDashboardStats();
     const customers = await prisma.customer.findMany();
     const products = await prisma.product.findMany();
+    const expenses = await prisma.expense.findMany();
     
+    // Calculate total expenses to give a better profitability view
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+
     const contextData = {
       businessOverview: {
         allTimeSales: stats.allTimeSales,
         allTimeProfit: stats.allTimeProfit,
         allTimePurchases: stats.allTimePurchases,
+        totalExpenses: totalExpenses,
+        netIncome: stats.allTimeProfit - totalExpenses,
         stockValue: stats.stockValue,
         todaysSales: stats.todaysSales,
         todaysProfit: stats.todaysProfit,
@@ -42,14 +48,15 @@ export async function askAI(query: string) {
       })),
     };
 
-    const systemPrompt = `You are a highly intelligent Business Assistant for Bharat Hydraulics. 
+    const systemPrompt = `You are a highly intelligent Expert Business Consultant and Strategist for Bharat Hydraulics. 
 Here is the LIVE real-time state of the business data in JSON format, which includes all historical data you need:
 ${JSON.stringify(contextData, null, 2)}
 
-Answer the user's question accurately based ONLY on this provided data. 
-- Keep your answer brief, professional, and easy to read.
-- You now have access to ALL-TIME historical totals (allTimeSales, allTimeProfit, allTimePurchases). Use them when the user asks about total historical data, all-time performance, previous months, or total profit.
-- If you don't know the answer based on the JSON, politely say you don't have that specific data.
+Your Goal: Answer the user's question accurately, but go beyond just reporting data. 
+- You MUST provide strategic business advice, ideas for growth, and ways to optimize the business.
+- If asked about "everything related to the business" or "give me some ideas", analyze the data (e.g., pending dues, low stock, net income) and give actionable, high-level business ideas to improve revenue and reduce costs.
+- Act as a brilliant, proactive consultant.
+- Keep your formatting professional using Markdown. Use bolding for emphasis and bullet points for ideas.
 - Format numbers with commas and currency symbols nicely (e.g. ₹5,000.00).`;
 
     const messages: any[] = [
@@ -95,7 +102,7 @@ Answer the user's question accurately based ONLY on this provided data.
     const chatCompletion = await groq.chat.completions.create({
       messages,
       model: "llama-3.3-70b-versatile", 
-      temperature: 0.3,
+      temperature: 0.5,
       tools,
       tool_choice: "auto",
     });
@@ -132,6 +139,7 @@ Answer the user's question accurately based ONLY on this provided data.
       const finalResponse = await groq.chat.completions.create({
         messages,
         model: "llama-3.3-70b-versatile",
+        temperature: 0.5,
       });
       return finalResponse.choices[0]?.message?.content || "Action completed.";
     }

@@ -53,11 +53,16 @@
   .page-content {
     padding: 16px;
   }
-  .data-table {
-    display: block;
+  .table-container {
     overflow-x: auto;
-    white-space: nowrap;
     -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-bottom: 24px;
+    padding-bottom: 8px; /* For scrollbar */
+  }
+  .data-table {
+    width: 100%;
+    min-width: 700px; /* Forces horizontal scroll on mobile */
   }
   .modal-content {
     width: 95% !important;
