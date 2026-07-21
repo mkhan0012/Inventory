@@ -119,11 +119,31 @@ export default function SalesClient({ sales, isOwner }: SalesClientProps) {
           <tbody>
             {filteredSales.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ padding: '60px 20px', textAlign: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-                    <FileText size={48} color="var(--border)" style={{ marginBottom: '16px', opacity: 0.5 }} />
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-main)' }}>No Sales Found</span>
-                    <span style={{ fontSize: '12px', marginTop: '4px' }}>Try adjusting your filters or search terms.</span>
+                <td colSpan={8} style={{ padding: '80px 20px', textAlign: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', animation: 'fadeInUp 0.6s ease-out' }}>
+                    <div style={{ position: 'relative', width: '120px', height: '120px', marginBottom: '24px' }}>
+                      {/* Decorative background blobs */}
+                      <div style={{ position: 'absolute', top: '10%', left: '10%', width: '80%', height: '80%', background: 'var(--primary-glow)', filter: 'blur(20px)', borderRadius: '50%', opacity: 0.6 }}></div>
+                      
+                      {/* Custom premium SVG illustration */}
+                      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ position: 'relative', zIndex: 1 }}>
+                        <rect x="35" y="25" width="50" height="70" rx="8" fill="var(--bg-card)" stroke="var(--border)" strokeWidth="2" />
+                        <rect x="45" y="40" width="30" height="4" rx="2" fill="var(--primary)" opacity="0.8" />
+                        <rect x="45" y="52" width="20" height="4" rx="2" fill="var(--text-muted)" opacity="0.4" />
+                        <rect x="45" y="64" width="25" height="4" rx="2" fill="var(--text-muted)" opacity="0.4" />
+                        <path d="M45 78 L55 78 M65 78 L75 78" stroke="var(--text-muted)" strokeWidth="4" strokeLinecap="round" opacity="0.4" />
+                        
+                        {/* Floating elements */}
+                        <circle cx="85" cy="40" r="8" fill="var(--success)" fillOpacity="0.2" stroke="var(--success)" strokeWidth="1.5" />
+                        <rect x="25" y="70" width="12" height="12" rx="3" fill="var(--warning)" fillOpacity="0.2" stroke="var(--warning)" strokeWidth="1.5" transform="rotate(-15 25 70)" />
+                      </svg>
+                    </div>
+                    <span style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '8px', letterSpacing: '-0.5px' }}>No Sales Found</span>
+                    <span style={{ fontSize: '14px', maxWidth: '260px', lineHeight: '1.5' }}>Looks like there are no sales matching your criteria right now.</span>
+                    
+                    <Link href="/sales/new" style={{ marginTop: '24px', padding: '10px 20px', background: 'var(--primary)', color: 'white', borderRadius: '8px', fontSize: '13px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px var(--primary-glow)', transition: 'all 0.3s ease' }} className="active-scale">
+                      Create New Sale
+                    </Link>
                   </div>
                 </td>
               </tr>

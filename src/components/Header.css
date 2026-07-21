@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 var(--space-xl);
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -110,6 +110,11 @@
   color: var(--primary);
 }
 
+.icon-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
 .icon-btn.primary {
   background: var(--primary);
   color: white;
@@ -119,6 +124,11 @@
 .icon-btn.primary:hover {
   background: #4338ca;
   box-shadow: 0 6px 16px var(--primary-glow);
+}
+
+.icon-btn.primary:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px var(--primary-glow);
 }
 
 .badge {
@@ -148,6 +158,10 @@
 .user-profile:hover {
   background: var(--bg-main);
   border-color: var(--border);
+}
+
+.user-profile:active {
+  transform: scale(0.98);
 }
 
 .avatar {

@@ -25,6 +25,13 @@
   --gradient-purple: rgba(139, 92, 246, 0.08);
   --gradient-pink: rgba(236, 72, 153, 0.05);
 
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
   /* Layout */
   --sidebar-width: 280px;
   --header-height: 80px;
@@ -32,8 +39,8 @@
   /* Shadows */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
-  --shadow-card: 0 8px 32px rgba(31, 38, 135, 0.06);
-  --shadow-hover: 0 16px 48px rgba(31, 38, 135, 0.1);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 12px 24px -4px rgba(31, 38, 135, 0.08);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04), 0 20px 40px -8px rgba(31, 38, 135, 0.12);
 }
 
 .dark {
@@ -63,8 +70,8 @@
   --gradient-purple: rgba(168, 85, 247, 0.1);
   --gradient-pink: rgba(236, 72, 153, 0.08);
 
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 24px var(--primary-glow);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 12px 24px -4px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2), 0 20px 40px -8px rgba(0, 0, 0, 0.5), 0 0 24px var(--primary-glow);
 }
 
 * {
@@ -76,6 +83,7 @@
 body {
   background-color: var(--bg-main);
   background-image: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E"),
     radial-gradient(circle at 10% 20%, var(--gradient-blue), transparent 30%),
     radial-gradient(circle at 90% 80%, var(--gradient-purple), transparent 30%),
     radial-gradient(circle at 50% 50%, var(--gradient-pink), transparent 40%);
@@ -266,3 +274,25 @@ h1, h2, h3, h4, h5, h6 {
   background-size: 1000px 100%;
 }
 
+/* Micro-interactions */
+.active-scale:active {
+  transform: scale(0.96);
+}
+
+.stagger-1 { animation-delay: 0.05s !important; }
+.stagger-2 { animation-delay: 0.1s !important; }
+.stagger-3 { animation-delay: 0.15s !important; }
+.stagger-4 { animation-delay: 0.2s !important; }
+.stagger-5 { animation-delay: 0.25s !important; }
+.stagger-6 { animation-delay: 0.3s !important; }
+
+/* Pulse Ripple Effect */
+@keyframes ripple {
+  0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+}
+
+.btn-ripple:active {
+  animation: ripple 0.6s linear;
+}
