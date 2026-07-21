@@ -201,7 +201,7 @@
 @media (max-width: 768px) {
   .header {
     padding: 0 16px;
-    gap: 12px;
+    gap: 8px;
     justify-content: flex-start;
     height: 70px;
   }
@@ -209,7 +209,8 @@
     display: flex;
     align-items: center;
     order: 0;
-    max-width: 140px;
+    flex: 1;
+    min-width: 0;
   }
   .header-left .sub-greeting {
     display: none;
@@ -220,13 +221,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0;
+    min-width: 0;
   }
   .header-right {
     width: auto;
     justify-content: flex-end;
-    margin-left: auto;
     order: 1;
     gap: 8px;
+    flex-shrink: 0;
   }
   .search-bar {
     display: none !important;
@@ -234,7 +236,9 @@
   .mobile-menu-btn {
     display: flex;
     order: -1;
-    margin-right: 0;
+    flex-shrink: 0;
+    padding: 4px;
+    margin-right: 4px;
   }
   .user-name, .user-role {
     display: none;
