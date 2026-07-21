@@ -1,7 +1,7 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
 .dashboard-header {
@@ -11,22 +11,34 @@
 }
 
 .page-title {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 800;
   color: var(--text-main);
+  letter-spacing: -0.03em;
 }
 
 .date-picker {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background-color: var(--bg-card);
-  padding: 8px 16px;
-  border-radius: 8px;
+  gap: 12px;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 10px 20px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   font-size: 14px;
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.date-picker:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
 }
 
 .stats-grid {
@@ -57,22 +69,38 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .card-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
 }
 
 .card-link {
   font-size: 13px;
   color: var(--primary);
-  font-weight: 500;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.card-link:hover {
+  background: var(--bg-main);
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 1024px) {
-  .stats-grid, .bottom-grid {
+  .bottom-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   .middle-grid {
@@ -81,7 +109,23 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard {
+    gap: 24px;
+  }
   .stats-grid, .bottom-grid {
     grid-template-columns: 1fr;
   }
+  .page-title {
+    font-size: 24px;
+  }
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .date-picker {
+    width: 100%;
+    justify-content: center;
+  }
 }
+
