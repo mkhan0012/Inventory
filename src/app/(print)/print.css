@@ -335,18 +335,22 @@
 @media print {
   @page {
     size: A4;
-    margin: 0; /* Let container handle margins */
+    margin: 10mm;
   }
 
-  body {
+  body, html {
     background: #fff;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    margin: 0;
+    padding: 0;
+    height: 100%;
   }
 
   .print-wrapper {
     background: none;
     padding: 0;
+    min-height: auto;
   }
 
   .print-container {
@@ -354,7 +358,8 @@
     border-radius: 0;
     width: 100%;
     min-height: auto;
-    padding: 15mm;
+    padding: 0;
+    margin: 0;
   }
 
   .no-print {
