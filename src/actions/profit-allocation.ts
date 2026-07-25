@@ -46,20 +46,20 @@ export async function getMonthProfit(year: number, month: number) {
     }
   });
 
-  const calculateProfit = (invs: any[]) => {
-    return invs.reduce((totalProfit, inv) => {
-      const invoiceProfit = inv.items.reduce((itemProfit: number, item: any) => {
-        return itemProfit + ((item.rate - item.purchaseRate) * item.quantity);
-      }, 0);
-      return totalProfit + invoiceProfit;
-    }, 0);
-  };
+  const purchases = await prisma.purchase.findMany({
+    where: {
+      date: {
+        gte: startDate,
+        lte: endDate
+      }
+    }
+  });
 
-  let totalProfit = calculateProfit(invoices) + calculateProfit(directSales);
-  totalProfit -= expenses.reduce((acc, e) => acc + e.amount, 0);
-  totalProfit += historicalRecords.reduce((acc, r) => acc + r.profit, 0);
+  const totalSales = invoices.reduce((acc, inv) => acc + inv.total, 0) + directSales.reduce((acc, ds) => acc + ds.total, 0) + historicalRecords.reduce((acc, h) => acc + h.sales, 0);
+  const totalPurchases = purchases.reduce((acc, pur) => acc + pur.total, 0) + historicalRecords.reduce((acc, h) => acc + h.purchases, 0);
+  const totalExpenses = expenses.reduce((acc, e) => acc + e.amount, 0);
 
-  return totalProfit;
+  return totalSales - totalPurchases - totalExpenses;
 }
 
 export async function getProfitAllocations(year: number, month: number) {
