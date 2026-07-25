@@ -224,3 +224,11 @@ model DirectSaleItem {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 }
+
+model ProfitAllocation {
+  id          String   @id @default(cuid())
+  month       DateTime
+  description String
+  amount      Float
+  date        DateTime @default(now())
+}

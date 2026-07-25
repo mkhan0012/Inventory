@@ -33,6 +33,7 @@ const navItems = [
   { name: 'Suppliers', path: '/suppliers', icon: Truck },
   { name: 'Reports', path: '/reports', icon: BarChart2, ownerOnly: true },
   { name: 'Expenses', path: '/expenses', icon: Wallet, ownerOnly: true },
+  { name: 'Profit Alloc.', path: '/profit-management', icon: BarChart2, ownerOnly: true },
   { name: 'Payments', path: '/payments', icon: CreditCard, ownerOnly: true },
   { name: 'Communications', path: '/communications', icon: MessageCircle },
   { name: 'Audit Logs', path: '/audit', icon: ShieldAlert, ownerOnly: true },

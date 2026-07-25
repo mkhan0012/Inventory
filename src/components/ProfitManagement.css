@@ -1,0 +1,338 @@
+.pm-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pm-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 4px 0;
+}
+
+.pm-subtitle {
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  font-size: 14px;
+}
+
+.pm-month-selector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-surface, #ffffff);
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.pm-month-label {
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 120px;
+  text-align: center;
+  color: var(--text-primary, #1e293b);
+}
+
+.pm-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #64748b);
+  transition: all 0.2s;
+}
+
+.pm-icon-btn:hover {
+  background: var(--bg-hover, #f1f5f9);
+  color: var(--text-primary, #1e293b);
+}
+
+.pm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.pm-stat-card {
+  background: var(--bg-surface, #ffffff);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pm-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+}
+
+.pm-stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pm-stat-details h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pm-stat-value {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+
+.pm-negative .pm-stat-value {
+  color: #ef4444;
+}
+
+.pm-alert-badge {
+  display: inline-block;
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.pm-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .pm-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pm-card {
+  background: var(--bg-surface, #ffffff);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.pm-card h2 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.pm-chart-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+}
+
+.pm-empty-chart {
+  color: var(--text-secondary, #94a3b8);
+  font-style: italic;
+}
+
+.pm-action-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pm-form-group {
+  margin-bottom: 16px;
+}
+
+.pm-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #334155);
+}
+
+.pm-form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.2s;
+  background: var(--bg-main, #f8fafc);
+  color: var(--text-primary, #0f172a);
+}
+
+.pm-form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: var(--bg-surface, #ffffff);
+}
+
+.pm-submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pm-submit-btn:hover {
+  background: #1d4ed8;
+}
+
+.pm-submit-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.pm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.pm-list::-webkit-scrollbar {
+  width: 6px;
+}
+.pm-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.pm-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-main, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  transition: transform 0.2s;
+}
+
+.pm-list-item:hover {
+  transform: translateX(4px);
+  background: var(--bg-surface, #ffffff);
+  border-color: #cbd5e1;
+}
+
+.pm-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pm-item-desc {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  font-size: 15px;
+}
+
+.pm-item-date {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
+.pm-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pm-item-amount {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 15px;
+}
+
+.pm-delete-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pm-delete-btn:hover {
+  background: #fef2f2;
+  transform: scale(1.1);
+}
+
+.pm-empty-text {
+  text-align: center;
+  color: var(--text-secondary, #94a3b8);
+  font-style: italic;
+  padding: 24px 0;
+}
+
+/* Dark mode overrides */
+.dark .pm-container {
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --bg-surface: #1e293b;
+  --bg-main: #0f172a;
+  --border-color: #334155;
+  --bg-hover: #334155;
+}
+
+.dark .pm-item-amount {
+  color: #f8fafc;
+}
