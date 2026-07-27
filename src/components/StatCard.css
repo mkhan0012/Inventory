@@ -83,53 +83,39 @@
 }
 
 .trend-arrow {
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.trend-value {
+  font-weight: 700;
+}
+
 .trend-label {
-  color: var(--text-muted);
+  color: var(--text-light);
+  font-size: 12px;
   font-weight: 500;
 }
 
 .stat-icon-wrapper {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, var(--bg-main), var(--bg-card));
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  opacity: 0.8;
   color: var(--primary);
   z-index: 1;
-  border: 1px solid var(--border);
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover .stat-icon-wrapper {
-  transform: rotate(5deg) scale(1.1);
-  box-shadow: 0 8px 16px var(--primary-glow);
-  background: linear-gradient(135deg, var(--primary), #8b5cf6);
-  color: white;
-  border-color: transparent;
 }
 
 @media (max-width: 768px) {
   .stat-card {
-    padding: 20px 16px;
-    align-items: center;
+    min-height: 100px;
+    padding: 16px;
   }
-
+  
   .stat-value {
     font-size: 24px;
-  }
-
-  .stat-title {
-    font-size: 13px;
   }
 }
 
