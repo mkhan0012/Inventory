@@ -19,6 +19,8 @@ export default async function InventoryPage({
   const isOwner = (session?.user as any)?.role === 'OWNER';
   
   const inventoryData = await getProducts(sp?.search);
+  const { getInventoryAnalytics } = await import('@/actions/inventory-analytics');
+  const analyticsData = await getInventoryAnalytics();
 
   return (
     <div className="page-container">
@@ -32,7 +34,7 @@ export default async function InventoryPage({
         </div>
       </div>
       
-      <InventoryClient inventoryData={inventoryData} isOwner={isOwner} />
+      <InventoryClient inventoryData={inventoryData} isOwner={isOwner} analyticsData={analyticsData} />
     </div>
   );
 }

@@ -23,14 +23,16 @@ interface Product {
 interface InventoryClientProps {
   inventoryData: Product[];
   isOwner: boolean;
+  analyticsData?: Record<string, any>;
 }
 
-export default function InventoryClient({ inventoryData, isOwner }: InventoryClientProps) {
+export default function InventoryClient({ inventoryData, isOwner, analyticsData }: InventoryClientProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -101,6 +103,16 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
     return 'var(--success)';
   };
 
+  const renderBadge = (productId: string) => {
+    if (!analyticsData || !analyticsData[productId]) return null;
+    const stats = analyticsData[productId];
+    
+    if (stats.badge === 'FAST_MOVING') return <span style={{ marginLeft: '6px', fontSize: '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold' }}>🚀 FAST</span>;
+    if (stats.badge === 'DEAD_STOCK') return <span style={{ marginLeft: '6px', fontSize: '10px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold' }}>💀 DEAD</span>;
+    if (stats.badge === 'REORDER_SOON') return <span style={{ marginLeft: '6px', fontSize: '10px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', padding: '2px 6px', borderRadius: '10px', fontWeight: 'bold' }}>⚠️ SOON</span>;
+    return null;
+  };
+
   return (
     <>
       <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -122,6 +134,21 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
           <option value="Low Stock">Low Stock</option>
           <option value="Out of Stock">Out of Stock</option>
         </select>
+        
+        <button 
+          onClick={() => setShowAnalytics(!showAnalytics)}
+          style={{ 
+            padding: '8px 12px', 
+            borderRadius: '8px', 
+            border: showAnalytics ? '1px solid var(--primary)' : '1px solid var(--border)', 
+            background: showAnalytics ? 'rgba(41,98,255,0.1)' : 'var(--bg-card)', 
+            color: showAnalytics ? 'var(--primary)' : 'var(--text-main)',
+            fontWeight: showAnalytics ? 600 : 400,
+            transition: 'all 0.2s'
+          }}
+        >
+          {showAnalytics ? 'Hide Analytics View' : 'Deep Insights View'}
+        </button>
 
         {selectedIds.size > 0 && (
           <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', background: 'var(--primary)', padding: '6px 12px', borderRadius: '8px', color: 'white', alignItems: 'center', animation: 'fadeInUp 0.2s ease-out' }}>
@@ -157,8 +184,18 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
               <th>Location</th>
               <th>Unit</th>
               <th>Price</th>
-              <th>Est. Empty</th>
-              <th>Status</th>
+              {showAnalytics ? (
+                <>
+                  <th>ABC Class</th>
+                  <th>Velocity/Day</th>
+                  <th>Est. Empty</th>
+                </>
+              ) : (
+                <>
+                  <th>Est. Empty</th>
+                  <th>Status</th>
+                </>
+              )}
               {isOwner && <th className="desktop-only text-right">Actions</th>}
             </tr>
           </thead>
@@ -184,7 +221,10 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
                   />
                 </td>
                 <td className="text-primary font-medium">{item.code}</td>
-                <td className="font-medium">{item.name}</td>
+                <td className="font-medium">
+                  {item.name}
+                  {renderBadge(item.id)}
+                </td>
                 <td>{item.category}</td>
                 <td style={{ minWidth: '100px' }}>
                   <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{item.stock.toFixed(2)}</div>
@@ -199,20 +239,42 @@ export default function InventoryClient({ inventoryData, isOwner }: InventoryCli
                 </td>
                 <td>{item.unit}</td>
                 <td style={{ fontWeight: 500 }}>₹{item.price.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                <td>
-                  {item.daysUntilEmpty === -1 ? (
-                    <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Insufficient Data</span>
-                  ) : item.daysUntilEmpty <= 7 ? (
-                    <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>{item.daysUntilEmpty} Days ⚠️</span>
-                  ) : (
-                    <span style={{ color: 'var(--success)' }}>{item.daysUntilEmpty} Days</span>
-                  )}
-                </td>
-                <td>
-                  <span className={`status-badge ${item.status.replace(/ /g, '-').toLowerCase()}`}>
-                    {item.status}
-                  </span>
-                </td>
+                
+                {showAnalytics ? (
+                  <>
+                    <td style={{ fontWeight: 'bold', color: analyticsData?.[item.id]?.abcClass === 'A' ? 'var(--success)' : analyticsData?.[item.id]?.abcClass === 'B' ? 'var(--primary)' : 'var(--text-muted)' }}>
+                      {analyticsData?.[item.id]?.abcClass || '-'} Class
+                    </td>
+                    <td>{analyticsData?.[item.id]?.velocityPerDay?.toFixed(2) || '0.00'} / day</td>
+                    <td>
+                      {analyticsData?.[item.id]?.daysRemaining !== null ? (
+                        <span style={{ color: analyticsData?.[item.id]?.daysRemaining <= 7 ? 'var(--danger)' : 'var(--success)', fontWeight: 'bold' }}>
+                          {analyticsData?.[item.id]?.daysRemaining} Days
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-muted)' }}>-</span>
+                      )}
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>
+                      {item.daysUntilEmpty === -1 ? (
+                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>Insufficient Data</span>
+                      ) : item.daysUntilEmpty <= 7 ? (
+                        <span style={{ color: 'var(--danger)', fontWeight: 'bold' }}>{item.daysUntilEmpty} Days ⚠️</span>
+                      ) : (
+                        <span style={{ color: 'var(--success)' }}>{item.daysUntilEmpty} Days</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${item.status.replace(/ /g, '-').toLowerCase()}`}>
+                        {item.status}
+                      </span>
+                    </td>
+                  </>
+                )}
+                
                 {isOwner && (
                   <td className="desktop-only">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>

@@ -10,7 +10,9 @@ import ExportTableButton from '@/components/ExportTableButton';
 import ProfitWaterfall from '@/components/ProfitWaterfall';
 import CategoryDonutChart from '@/components/CategoryDonutChart';
 import WeeklyHeatmapChart from '@/components/WeeklyHeatmapChart';
-import { getMonthlyComparisonData, getAdvancedBiData } from '@/actions/reports';
+import CashFlowChart from '@/components/CashFlowChart';
+import RiskAnalysisTable from '@/components/RiskAnalysisTable';
+import { getMonthlyComparisonData, getAdvancedBiData, getCashFlowAndRiskData } from '@/actions/reports';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,6 +91,7 @@ export default async function ReportsPage({
 
   const { chartData, averages } = await getMonthlyComparisonData();
   const advancedBiData = await getAdvancedBiData(startOfMonth.toISOString(), endOfMonth.toISOString());
+  const cashFlowAndRisk = await getCashFlowAndRiskData();
 
   // New Request: Monthly Stock Summary
   const products = await prisma.product.findMany();
@@ -229,6 +232,22 @@ export default async function ReportsPage({
       <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
          <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '16px' }}>Profit Waterfall (Where the money goes)</h2>
          <ProfitWaterfall data={advancedBiData.waterfall} />
+      </div>
+
+      {/* NEW: Cash Flow & Liquidity */}
+      <div className="card" style={{ marginTop: '24px', padding: '24px' }}>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+           <div>
+             <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--text-main)' }}>Cash Flow Timeline (Last 30 Days)</h2>
+             <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>Actual money entering and leaving the business.</p>
+           </div>
+         </div>
+         <CashFlowChart data={cashFlowAndRisk.cashFlow} />
+      </div>
+
+      {/* NEW: Risk Analysis */}
+      <div style={{ marginTop: '24px' }}>
+         <RiskAnalysisTable data={cashFlowAndRisk.risk} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px', marginTop: '24px' }}>

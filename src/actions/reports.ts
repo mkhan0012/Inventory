@@ -189,3 +189,78 @@ export async function getAdvancedBiData(startOfMonthStr: string, endOfMonthStr: 
     heatmapData
   };
 }
+
+export async function getCashFlowAndRiskData() {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const payments = await prisma.payment.findMany({
+    where: { date: { gte: thirtyDaysAgo } }
+  });
+
+  const expenses = await prisma.expense.findMany({
+    where: { date: { gte: thirtyDaysAgo } }
+  });
+
+  // Build daily cash flow map
+  const cashFlowMap = new Map<string, { incoming: number, outgoing: number }>();
+  
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    cashFlowMap.set(d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }), { incoming: 0, outgoing: 0 });
+  }
+
+  payments.forEach(p => {
+    const day = p.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (cashFlowMap.has(day)) {
+      if (p.type === 'INCOMING') cashFlowMap.get(day)!.incoming += p.amount;
+      if (p.type === 'OUTGOING') cashFlowMap.get(day)!.outgoing += p.amount;
+    }
+  });
+
+  expenses.forEach(e => {
+    const day = e.date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    if (cashFlowMap.has(day)) {
+      cashFlowMap.get(day)!.outgoing += e.amount;
+    }
+  });
+
+  const cashFlow = Array.from(cashFlowMap.entries()).map(([date, data]) => ({
+    date,
+    incoming: data.incoming,
+    outgoing: data.outgoing
+  }));
+
+  // Get Risk Analysis Data
+  const customers = await prisma.customer.findMany({
+    where: { dueAmount: { gt: 0 } },
+    orderBy: { dueAmount: 'desc' },
+    take: 5
+  });
+
+  const suppliers = await prisma.supplier.findMany({
+    where: { dueAmount: { gt: 0 } },
+    orderBy: { dueAmount: 'desc' },
+    take: 5
+  });
+
+  return {
+    cashFlow,
+    risk: {
+      receivables: customers.map(c => ({
+        id: c.id,
+        name: c.name,
+        dueAmount: c.dueAmount,
+        creditLimit: c.creditLimit,
+        riskPercentage: c.creditLimit > 0 ? (c.dueAmount / c.creditLimit) * 100 : 0
+      })),
+      payables: suppliers.map(s => ({
+        id: s.id,
+        name: s.name,
+        dueAmount: s.dueAmount
+      }))
+    }
+  };
+}
