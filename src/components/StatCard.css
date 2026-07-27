@@ -1,9 +1,8 @@
 .stat-card {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 24px;
-  gap: 16px;
+  flex-direction: column;
+  padding: 20px;
+  gap: 12px;
   border-radius: 20px;
   background: var(--bg-card);
   box-shadow: var(--shadow-sm);
@@ -11,6 +10,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  min-height: 120px;
 }
 
 .stat-card::before {
@@ -48,11 +48,18 @@
   z-index: 1;
 }
 
+.stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .stat-title {
   font-size: 14px;
   color: var(--text-muted);
   font-weight: 600;
-  margin-bottom: 8px;
+  margin: 0;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
