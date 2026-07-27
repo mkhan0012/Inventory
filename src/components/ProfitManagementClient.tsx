@@ -49,7 +49,7 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-const COLORS = ['#4f46e5', '#9333ea', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'];
+const COLORS = ['#0f172a', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#64748b'];
 
 export default function ProfitManagementClient({ initialMonth, initialYear, profit, allocations }: Props) {
   const router = useRouter();
@@ -148,7 +148,7 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
   return (
     <div className="pm-container">
       <div className="pm-header">
-        <div>
+        <div className="pm-header-content">
           <h1 className="pm-title">Profit Allocation & Analysis</h1>
           <p className="pm-subtitle">Track how you spend your monthly profits</p>
         </div>
@@ -172,7 +172,7 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
         </div>
 
         <div className="pm-stat-card">
-          <div className="pm-stat-icon" style={{ backgroundColor: 'rgba(244, 63, 94, 0.15)', color: '#f43f5e' }}>
+          <div className="pm-stat-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>
             <TrendingDown size={32} />
           </div>
           <div className="pm-stat-details">
@@ -182,7 +182,7 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
         </div>
 
         <div className={`pm-stat-card ${isNegative ? 'pm-negative' : 'pm-positive'}`}>
-          <div className="pm-stat-icon" style={{ backgroundColor: isNegative ? 'rgba(239, 68, 68, 0.15)' : 'rgba(79, 70, 229, 0.15)', color: isNegative ? '#ef4444' : '#4f46e5' }}>
+          <div className="pm-stat-icon" style={{ backgroundColor: isNegative ? 'rgba(239, 68, 68, 0.15)' : 'rgba(15, 23, 42, 0.1)', color: isNegative ? '#ef4444' : '#0f172a' }}>
             <IndianRupee size={32} />
           </div>
           <div className="pm-stat-details">
@@ -237,7 +237,7 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
                   <Tooltip formatter={(value: any) => formatCurrency(Number(value))} />
                   <Legend />
                   <Bar dataKey="Total Profit" fill="#10b981" radius={[0, 8, 8, 0]} barSize={28} animationDuration={1200} />
-                  <Bar dataKey="Total Spent" fill="#f43f5e" radius={[0, 8, 8, 0]} barSize={28} animationDuration={1200} />
+                  <Bar dataKey="Total Spent" fill="#3b82f6" radius={[0, 8, 8, 0]} barSize={28} animationDuration={1200} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
