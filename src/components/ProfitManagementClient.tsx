@@ -49,7 +49,7 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5'];
+const COLORS = ['#4f46e5', '#9333ea', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'];
 
 export default function ProfitManagementClient({ initialMonth, initialYear, profit, allocations }: Props) {
   const router = useRouter();
@@ -162,8 +162,8 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
 
       <div className="pm-stats-grid">
         <div className="pm-stat-card">
-          <div className="pm-stat-icon" style={{ backgroundColor: 'rgba(76, 175, 80, 0.1)', color: '#4CAF50' }}>
-            <Wallet size={24} />
+          <div className="pm-stat-icon" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
+            <Wallet size={32} />
           </div>
           <div className="pm-stat-details">
             <h3>Total Profit</h3>
@@ -172,8 +172,8 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
         </div>
 
         <div className="pm-stat-card">
-          <div className="pm-stat-icon" style={{ backgroundColor: 'rgba(255, 152, 0, 0.1)', color: '#FF9800' }}>
-            <TrendingDown size={24} />
+          <div className="pm-stat-icon" style={{ backgroundColor: 'rgba(244, 63, 94, 0.15)', color: '#f43f5e' }}>
+            <TrendingDown size={32} />
           </div>
           <div className="pm-stat-details">
             <h3>Total Spent/Allocated</h3>
@@ -182,8 +182,8 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
         </div>
 
         <div className={`pm-stat-card ${isNegative ? 'pm-negative' : 'pm-positive'}`}>
-          <div className="pm-stat-icon" style={{ backgroundColor: isNegative ? 'rgba(244, 67, 54, 0.1)' : 'rgba(33, 150, 243, 0.1)', color: isNegative ? '#F44336' : '#2196F3' }}>
-            <IndianRupee size={24} />
+          <div className="pm-stat-icon" style={{ backgroundColor: isNegative ? 'rgba(239, 68, 68, 0.15)' : 'rgba(79, 70, 229, 0.15)', color: isNegative ? '#ef4444' : '#4f46e5' }}>
+            <IndianRupee size={32} />
           </div>
           <div className="pm-stat-details">
             <h3>Remaining Balance</h3>
@@ -207,10 +207,12 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
+                      innerRadius={70}
+                      outerRadius={110}
+                      paddingAngle={6}
                       dataKey="value"
+                      animationDuration={1200}
+                      animationBegin={100}
                     >
                       {pieData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -234,8 +236,8 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
                   <YAxis dataKey="name" type="category" />
                   <Tooltip formatter={(value: any) => formatCurrency(Number(value))} />
                   <Legend />
-                  <Bar dataKey="Total Profit" fill="#4CAF50" radius={[0, 4, 4, 0]} />
-                  <Bar dataKey="Total Spent" fill="#FF9800" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="Total Profit" fill="#10b981" radius={[0, 8, 8, 0]} barSize={28} animationDuration={1200} />
+                  <Bar dataKey="Total Spent" fill="#f43f5e" radius={[0, 8, 8, 0]} barSize={28} animationDuration={1200} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
