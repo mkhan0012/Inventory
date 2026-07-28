@@ -78,7 +78,7 @@ export default async function PrintQuotation({ params }: { params: Promise<{ id:
             </table>
           </div>
 
-          <div className="summary-section" style={{ justifyContent: 'flex-end' }}>
+          <div className="summary-section">
             <div className="print-totals">
               <div className="total-row">
                 <span>Subtotal:</span>

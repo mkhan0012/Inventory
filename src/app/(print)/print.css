@@ -10,7 +10,6 @@ body {
 }
 
 .print-wrapper {
-  min-height: 100vh;
   padding: 40px 20px;
   display: flex;
   justify-content: center;
@@ -22,7 +21,6 @@ body {
   max-width: 100%;
   margin: 0 auto;
   background: #ffffff;
-  /* Removed top/horizontal padding so header can bleed to edges */
   padding: 0 0 40px 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -41,26 +39,26 @@ body {
   padding: 40px 50px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; /* Better alignment */
   margin-bottom: 40px;
 }
 
 .company-details {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  flex-direction: row; /* Fix alignment: Logo side-by-side with text */
+  align-items: center;
+  gap: 20px;
 }
 
 .company-logo {
-  height: 45px;
+  height: 60px;
   width: auto;
   object-fit: contain;
-  /* Logo filter to make it white if it is dark */
   filter: brightness(0) invert(1);
 }
 
 .shop-name {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   margin: 0 0 5px 0;
   color: #ffffff;
@@ -71,7 +69,7 @@ body {
 .shop-address, .shop-gst {
   margin: 0 0 4px 0;
   font-size: 13px;
-  color: #9ca3af; /* Light Gray */
+  color: #9ca3af;
   line-height: 1.5;
 }
 
@@ -84,10 +82,10 @@ body {
 }
 
 .invoice-title {
-  margin: 0 0 20px 0;
+  margin: 0 0 15px 0;
   color: #ffffff;
   font-size: 32px;
-  font-weight: 300; /* Elegant thin font for title */
+  font-weight: 300;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -100,7 +98,7 @@ body {
 }
 
 .meta-label {
-  font-size: 11px;
+  font-size: 12px;
   color: #9ca3af;
   font-weight: 600;
   text-transform: uppercase;
@@ -108,7 +106,7 @@ body {
 }
 
 .meta-value {
-  font-size: 13px;
+  font-size: 14px;
   color: #ffffff;
   font-weight: 600;
   text-align: right;
@@ -124,7 +122,7 @@ body {
 
 .bill-to h3 {
   margin: 0 0 10px 0;
-  font-size: 11px;
+  font-size: 12px;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -141,7 +139,7 @@ body {
 .customer-phone {
   margin: 0;
   color: #4b5563;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* Executive Borderless Table */
@@ -162,16 +160,16 @@ body {
   color: #111827;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 1px;
   text-align: left;
 }
 
 .print-table td {
   padding: 14px 10px;
-  font-size: 13px;
+  font-size: 14px;
   color: #374151;
-  border-bottom: 1px dotted #d1d5db; /* Very subtle dotted line */
+  border-bottom: 1px dotted #d1d5db;
 }
 
 .print-table tbody tr:last-child td {
@@ -196,13 +194,18 @@ body {
   page-break-inside: avoid;
 }
 
+/* Fallback for when there's no amount-in-words on the left */
+.summary-section:has(> .print-totals:only-child) {
+  justify-content: flex-end;
+}
+
 .amount-in-words {
   width: 50%;
   padding-right: 30px;
 }
 
 .amount-in-words h4 {
-  font-size: 11px;
+  font-size: 12px;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -210,17 +213,18 @@ body {
 }
 
 .amount-in-words p {
-  font-size: 13px;
+  font-size: 14px;
   color: #111827;
   font-weight: 600;
   line-height: 1.5;
   background: #f9fafb;
   padding: 15px;
-  border-left: 3px solid #1e40af; /* Accent Blue */
+  border-left: 3px solid #1e40af;
 }
 
 .print-totals {
   width: 300px;
+  margin-left: auto; /* Fixes alignment for purchases/quotations */
 }
 
 .total-row {
@@ -243,7 +247,7 @@ body {
 
 .grand-total {
   font-size: 18px;
-  color: #1e40af !important; /* Accent Blue */
+  color: #1e40af !important;
   font-weight: 800;
   border-top: 2px solid #111827;
   border-bottom: 2px solid #111827;
@@ -266,7 +270,7 @@ body {
 }
 
 .terms-section h4 {
-  font-size: 11px;
+  font-size: 12px;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -276,7 +280,7 @@ body {
 .terms-section ul {
   margin: 0;
   padding-left: 15px;
-  font-size: 11px;
+  font-size: 12px;
   color: #4b5563;
   line-height: 1.6;
 }
@@ -290,7 +294,7 @@ body {
   border-top: 1px solid #111827;
   margin-top: 50px;
   padding-top: 10px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #111827;
   text-transform: uppercase;
@@ -338,36 +342,59 @@ body {
   border-color: #1f2937;
 }
 
-/* Print Media Query - Strict 1 Page Fit */
+/* Print Media Query - Foolproof 1-Page Guarantee & Alignment */
 @media print {
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 5mm; /* Minimal margins */
   }
 
+  /* Completely strip any height/min-height constraints that cause 2-page blank overflows */
   body, html {
     background: #ffffff;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important; /* DO NOT use 100% or 100vh here */
+    overflow: visible !important;
   }
 
   .print-wrapper {
-    padding: 0;
-    min-height: 0;
-    background: none;
-    display: block;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    background: none !important;
+    display: block !important;
   }
 
   .print-container {
-    box-shadow: none;
-    padding: 0 0 20px 0;
-    margin: 0;
-    width: 100%;
-    max-width: 100%;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    
+    /* Foolproof Scale adjustment: 
+       If content is slightly too big, this ensures it scales down to fit the A4 page perfectly */
+    transform: scale(0.96);
+    transform-origin: top center;
+  }
+
+  /* Tighter Spacing to Prevent Spillage */
+  .print-header-block {
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .info-section, .table-wrapper, .summary-section, .print-footer {
+    padding: 0 20px !important;
+    margin-bottom: 20px !important;
   }
 
   .no-print {

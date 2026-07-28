@@ -80,7 +80,7 @@ export default async function PrintPurchase({ params }: { params: Promise<{ id: 
             </table>
           </div>
 
-          <div className="summary-section" style={{ justifyContent: 'flex-end' }}>
+          <div className="summary-section">
             <div className="print-totals">
               <div className="total-row grand-total">
                 <span>Grand Total:</span>
