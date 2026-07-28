@@ -19,70 +19,93 @@ export default async function PrintPurchase({ params }: { params: Promise<{ id: 
   const settings = await getSettings();
 
   return (
-    <div className="print-container">
-      <div className="print-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <img src="/logo.png" alt="Bharat Hydraulics" style={{ width: '150px', height: 'auto' }} />
-          <div>
-            <h1 className="shop-name">{settings.shopName}</h1>
-            <p className="shop-address">{settings.address}</p>
-            <p className="shop-gst">GSTIN: {settings.gstNumber}</p>
+    <div className="print-wrapper">
+      <div className="print-container">
+        {/* Watermark Logo */}
+        <img src="/logo.png" alt="" className="invoice-watermark" />
+        
+        <div className="print-content">
+          <div className="print-header">
+            <div className="company-details">
+              <img src="/logo.png" alt="Company Logo" className="company-logo" />
+              <div>
+                <h1 className="shop-name">{settings.shopName}</h1>
+                <p className="shop-address">{settings.address}</p>
+                <p className="shop-gst">GSTIN: {settings.gstNumber}</p>
+              </div>
+            </div>
+            <div className="invoice-meta">
+              <h2 className="invoice-title" style={{ fontSize: '32px' }}>PURCHASE</h2>
+              <div className="meta-grid">
+                <span className="meta-label">Purchase No:</span>
+                <span className="meta-value">{purchase.purchaseNo}</span>
+                <span className="meta-label">Date:</span>
+                <span className="meta-value">{new Date(purchase.date).toLocaleDateString('en-IN')}</span>
+                <span className="meta-label">Status:</span>
+                <span className="meta-value">{purchase.status}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="info-section">
+            <div className="bill-to">
+              <h3>Supplier:</h3>
+              <p className="customer-name">{purchase.supplier.name}</p>
+              {purchase.supplier.phone && <p className="customer-phone">Phone: {purchase.supplier.phone}</p>}
+            </div>
+          </div>
+
+          <table className="print-table">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Item Description</th>
+                <th className="text-center">Qty</th>
+                <th className="text-right">Rate</th>
+                <th className="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {purchase.items.map((item, index) => (
+                <tr key={item.id}>
+                  <td>{index + 1}</td>
+                  <td>{item.product.name}</td>
+                  <td className="text-center">{item.quantity}</td>
+                  <td className="text-right">₹{item.rate.toFixed(2)}</td>
+                  <td className="text-right">₹{item.amount.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="summary-section" style={{ justifyContent: 'flex-end' }}>
+            <div className="print-totals">
+              <div className="total-row grand-total">
+                <span>Grand Total:</span>
+                <span>₹{purchase.total.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="print-footer">
+            <div className="terms-section">
+              <h4>Note</h4>
+              <ul>
+                <li>Thank you for supplying to us!</li>
+              </ul>
+            </div>
+            <div className="signatory">
+              <div className="signature-line">
+                Authorized Signatory
+              </div>
+            </div>
+          </div>
+
+          <div className="actions-bar no-print">
+            <PrintButton />
           </div>
         </div>
-        <div className="invoice-meta">
-          <h2>PURCHASE ORDER</h2>
-          <p><strong>Purchase No:</strong> {purchase.purchaseNo}</p>
-          <p><strong>Date:</strong> {new Date(purchase.date).toLocaleDateString()}</p>
-          <p><strong>Status:</strong> {purchase.status}</p>
-        </div>
       </div>
-
-      <div className="bill-to">
-        <h3>Supplier:</h3>
-        <p><strong>{purchase.supplier.name}</strong></p>
-        {purchase.supplier.phone && <p>Phone: {purchase.supplier.phone}</p>}
-      </div>
-
-      <table className="print-table">
-        <thead>
-          <tr>
-            <th>S.No</th>
-            <th>Item Description</th>
-            <th>Qty</th>
-            <th>Rate</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {purchase.items.map((item, index) => (
-            <tr key={item.id}>
-              <td>{index + 1}</td>
-              <td>{item.product.name}</td>
-              <td>{item.quantity}</td>
-              <td>₹{item.rate.toFixed(2)}</td>
-              <td>₹{item.amount.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="print-totals">
-        <div className="total-row grand-total">
-          <span>Grand Total:</span>
-          <span>₹{purchase.total.toFixed(2)}</span>
-        </div>
-      </div>
-
-      <div className="print-footer">
-        <div style={{ fontStyle: 'italic', color: '#6b7280' }}>
-          <p>Thank you for supplying to us!</p>
-        </div>
-        <div className="signatory">
-          <p>Authorized Signatory</p>
-        </div>
-      </div>
-
-      <PrintButton />
     </div>
   );
 }
