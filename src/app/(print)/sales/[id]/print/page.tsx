@@ -48,7 +48,7 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
         <img src="/logo.png" alt="" className="invoice-watermark" />
         
         <div className="print-content">
-          <div className="print-header">
+          <div className="print-header-block">
             <div className="company-details">
               <img src="/logo.png" alt="Company Logo" className="company-logo" />
               <div>
@@ -78,28 +78,30 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
             </div>
           </div>
 
-          <table className="print-table">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>Item Description</th>
-                <th className="text-center">Qty</th>
-                <th className="text-right">Rate</th>
-                <th className="text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoice.items.map((item, index) => (
-                <tr key={item.id}>
-                  <td>{index + 1}</td>
-                  <td>{item.product.name}</td>
-                  <td className="text-center">{item.quantity}</td>
-                  <td className="text-right">₹{item.rate.toFixed(2)}</td>
-                  <td className="text-right">₹{item.amount.toFixed(2)}</td>
+          <div className="table-wrapper">
+            <table className="print-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Item Description</th>
+                  <th className="text-center">Qty</th>
+                  <th className="text-right">Rate</th>
+                  <th className="text-right">Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {invoice.items.map((item, index) => (
+                  <tr key={item.id}>
+                    <td>{index + 1}</td>
+                    <td>{item.product.name}</td>
+                    <td className="text-center">{item.quantity}</td>
+                    <td className="text-right">₹{item.rate.toFixed(2)}</td>
+                    <td className="text-right">₹{item.amount.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="summary-section">
             <div className="amount-in-words">
