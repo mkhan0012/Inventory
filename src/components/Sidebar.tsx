@@ -30,6 +30,7 @@ const navGroups = [
     items: [
       { name: 'Dashboard', path: '/', icon: LayoutDashboard, ownerOnly: true },
       { name: 'Reports', path: '/reports', icon: PieChart, ownerOnly: true },
+      { name: 'Deep Analytics', path: '/analytics', icon: BarChart2, ownerOnly: true },
     ]
   },
   {
