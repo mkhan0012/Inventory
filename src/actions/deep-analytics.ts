@@ -19,6 +19,7 @@ export type DeepAnalyticsItem = {
   cogs: number;
   netProfit: number;
   marginPercent: number;
+  currentStock: number;
 };
 
 export async function getDeepAnalytics(startDate?: Date, endDate?: Date): Promise<DeepAnalyticsItem[]> {
@@ -78,7 +79,8 @@ export async function getDeepAnalytics(startDate?: Date, endDate?: Date): Promis
       grossRevenue,
       cogs,
       netProfit,
-      marginPercent
+      marginPercent,
+      currentStock: item.product.stock
     });
   });
 
@@ -105,7 +107,8 @@ export async function getDeepAnalytics(startDate?: Date, endDate?: Date): Promis
       grossRevenue,
       cogs,
       netProfit,
-      marginPercent
+      marginPercent,
+      currentStock: item.product.stock
     });
   });
 
