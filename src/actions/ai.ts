@@ -273,7 +273,8 @@ Include sections for:
 2. Profitability Analysis (mention the waterfall: Revenue, COGS, Gross Profit, Expenses, Net Profit)
 3. Year-over-Year Growth (sales and profit growth %)
 4. Category Performance
-Do not make up any numbers. Be concise and professional. Do NOT use introductory or concluding conversational filler like "Here is the report", just output the markdown report directly.`;
+Do not make up any numbers. Be concise and professional. Do NOT use introductory or concluding conversational filler like "Here is the report", just output the markdown report directly.
+IMPORTANT: ALWAYS format currency and money values using the Indian Rupee symbol (₹) and proper comma placement (e.g. ₹50,000.00). NEVER use Dollars ($).`;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "system", content: prompt }],
