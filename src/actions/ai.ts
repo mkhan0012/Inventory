@@ -17,39 +17,41 @@ export async function askAI(query: string) {
     // Calculate total expenses to give a better profitability view
     const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
 
+    const formatInr = (val: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
+
     const contextData = {
       businessOverview: {
-        allTimeSales: stats.allTimeSales,
-        allTimeProfit: stats.allTimeProfit,
-        allTimePurchases: stats.allTimePurchases,
-        totalExpenses: totalExpenses,
-        netIncome: stats.allTimeProfit - totalExpenses,
-        stockValue: stats.stockValue,
-        todaysSales: stats.todaysSales,
-        todaysProfit: stats.todaysProfit,
-        thisMonthSales: stats.monthlySales,
-        thisMonthProfit: stats.monthlyProfit,
-        totalPendingDuesFromCustomers: stats.duePayments,
+        allTimeSales: formatInr(stats.allTimeSales),
+        allTimeProfit: formatInr(stats.allTimeProfit),
+        allTimePurchases: formatInr(stats.allTimePurchases),
+        totalExpenses: formatInr(totalExpenses),
+        netIncome: formatInr(stats.allTimeProfit - totalExpenses),
+        stockValue: formatInr(stats.stockValue),
+        todaysSales: formatInr(stats.todaysSales),
+        todaysProfit: formatInr(stats.todaysProfit),
+        thisMonthSales: formatInr(stats.monthlySales),
+        thisMonthProfit: formatInr(stats.monthlyProfit),
+        totalPendingDuesFromCustomers: formatInr(stats.duePayments),
       },
       inventoryAlerts: {
         outOfStock: stats.outOfStockProducts.map(p => p.name),
         lowStock: stats.lowStockProducts.map(p => ({ name: p.name, stock: p.stock })),
       },
-      recentInvoices: stats.recentSales.map(s => ({ invoiceNo: s.invoiceNo, total: s.total, status: s.status, date: s.date })),
-      topCustomers: customers.sort((a,b) => b.totalPurchases - a.totalPurchases).slice(0, 5).map(c => ({ name: c.name, totalBought: c.totalPurchases, pendingDues: c.dueAmount })),
+      recentInvoices: stats.recentSales.map(s => ({ invoiceNo: s.invoiceNo, total: formatInr(s.total), status: s.status, date: s.date })),
+      topCustomers: customers.sort((a,b) => b.totalPurchases - a.totalPurchases).slice(0, 5).map(c => ({ name: c.name, totalBought: formatInr(c.totalPurchases), pendingDues: formatInr(c.dueAmount) })),
       inventoryCatalog: products.map(p => ({
         code: p.code,
         name: p.name,
         stock: p.stock,
-        price: p.price,
-        purchasePrice: p.purchasePrice,
+        price: formatInr(p.price),
+        purchasePrice: formatInr(p.purchasePrice),
         category: p.category,
         location: p.location,
       })),
     };
 
     const systemPrompt = `You are a highly intelligent Expert Business Consultant and 'Super AI' for Bharat Hydraulics. 
-Here is the LIVE real-time state of the business data in JSON format, which includes all historical data you need:
+Here is the LIVE real-time state of the business data in JSON format, which includes all historical data you need. The financial numbers are already accurately formatted in Indian Rupees (₹).
 ${JSON.stringify(contextData, null, 2)}
 
 Your Goal: Answer the user's question accurately, and take action when requested.
@@ -59,7 +61,7 @@ Your Goal: Answer the user's question accurately, and take action when requested
 - If asked about "everything related to the business" or "give me some ideas", analyze the data (e.g., pending dues, low stock, net income) and give actionable, high-level business ideas to improve revenue and reduce costs.
 - Act as a brilliant, proactive consultant.
 - Keep your formatting professional using Markdown. Use bolding for emphasis and bullet points for ideas.
-- Format numbers with commas and currency symbols nicely (e.g. ₹5,000.00).`;
+- CRITICAL: DO NOT invent, hallucinate, or recalculate any numbers! ONLY quote the EXACT formatted financial numbers provided in the JSON data.`;
 
     const messages: any[] = [
       { role: "system", content: systemPrompt },
@@ -274,7 +276,8 @@ Include sections for:
 3. Year-over-Year Growth (sales and profit growth %)
 4. Category Performance
 Do not make up any numbers. Be concise and professional. Do NOT use introductory or concluding conversational filler like "Here is the report", just output the markdown report directly.
-IMPORTANT: ALWAYS format currency and money values using the Indian Rupee symbol (₹) and proper comma placement (e.g. ₹50,000.00). NEVER use Dollars ($).`;
+IMPORTANT: ALWAYS format currency and money values using the Indian Rupee symbol (₹) and proper Indian comma placement (e.g. ₹4,25,799.21). NEVER use Dollars ($).
+CRITICAL: DO NOT invent, hallucinate, or recalculate any numbers! ONLY use the EXACT numerical values provided in the JSON data, taking care to format them correctly without changing the actual value.`;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "system", content: prompt }],
