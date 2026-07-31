@@ -12,20 +12,28 @@ interface Props {
 
 export default function InventoryHealthClient({ initialData }: Props) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   
-  const filteredData = initialData.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = initialData.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter 
+      ? (statusFilter === 'DEAD_SLOW' ? (p.status === 'DEAD_STOCK' || p.status === 'SLOW_MOVING') : p.status === statusFilter) 
+      : true;
+
+    return matchesSearch && matchesStatus;
+  });
 
   const totalCapitalTiedUp = initialData.reduce((acc, p) => acc + p.stockValue, 0);
   
   const deadStockItems = initialData.filter(p => p.status === 'DEAD_STOCK');
-  const deadStockCapital = deadStockItems.reduce((acc, p) => acc + p.stockValue, 0);
+  const slowMovingItems = initialData.filter(p => p.status === 'SLOW_MOVING');
+  const deadAndSlowItems = [...deadStockItems, ...slowMovingItems];
+  const deadStockCapital = deadAndSlowItems.reduce((acc, p) => acc + p.stockValue, 0);
   
-  const fastMovingItems = initialData.filter(p => p.status === 'FAST_MOVING').length;
-  const slowMovingItems = initialData.filter(p => p.status === 'SLOW_MOVING').length;
+  const fastMovingItemsCount = initialData.filter(p => p.status === 'FAST_MOVING').length;
 
   const exportData = filteredData.map(p => ({
     "Product Code": p.code,
@@ -60,37 +68,45 @@ export default function InventoryHealthClient({ initialData }: Props) {
           trend="Stock Value" 
           trendUp={true} 
           icon={<DollarSign size={24} color="#2962ff" />} 
-          iconBg="rgba(41,98,255,0.1)" 
+          iconBg="rgba(41,98,255,0.1)"
+          onClick={() => setStatusFilter(null)}
+          isActive={statusFilter === null}
         />
         <StatCard 
-          title="Capital in Dead Stock" 
+          title="Capital in Dead/Slow Stock" 
           numericValue={deadStockCapital} 
           prefix="₹"
           decimals={0}
           trend="At Risk" 
           trendUp={deadStockCapital === 0} 
           icon={<AlertCircle size={24} color={deadStockCapital > 0 ? "#ef4444" : "#10b981"} />} 
-          iconBg={deadStockCapital > 0 ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.1)"} 
+          iconBg={deadStockCapital > 0 ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.1)"}
+          onClick={() => setStatusFilter('DEAD_SLOW')}
+          isActive={statusFilter === 'DEAD_SLOW'}
         />
         <StatCard 
           title="Fast Moving Items" 
-          numericValue={fastMovingItems} 
+          numericValue={fastMovingItemsCount} 
           prefix=""
           decimals={0}
           trend="High Velocity" 
           trendUp={true} 
           icon={<Activity size={24} color="#10b981" />} 
-          iconBg="rgba(16,185,129,0.1)" 
+          iconBg="rgba(16,185,129,0.1)"
+          onClick={() => setStatusFilter('FAST_MOVING')}
+          isActive={statusFilter === 'FAST_MOVING'}
         />
         <StatCard 
           title="Dead / Slow Items" 
-          numericValue={deadStockItems.length + slowMovingItems} 
+          numericValue={deadAndSlowItems.length} 
           prefix=""
           decimals={0}
           trend="Requires Liquidation" 
-          trendUp={(deadStockItems.length + slowMovingItems) === 0} 
-          icon={<TrendingDown size={24} color={(deadStockItems.length + slowMovingItems) > 0 ? "#ef4444" : "#10b981"} />} 
-          iconBg={(deadStockItems.length + slowMovingItems) > 0 ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.1)"} 
+          trendUp={deadAndSlowItems.length === 0} 
+          icon={<TrendingDown size={24} color={deadAndSlowItems.length > 0 ? "#ef4444" : "#10b981"} />} 
+          iconBg={deadAndSlowItems.length > 0 ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.1)"}
+          onClick={() => setStatusFilter('DEAD_SLOW')}
+          isActive={statusFilter === 'DEAD_SLOW'}
         />
       </div>
 

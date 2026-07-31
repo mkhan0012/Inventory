@@ -16,11 +16,25 @@ interface StatCardProps {
   iconBg?: string;
   trendLabel?: string;
   sparklineData?: { value: number }[];
+  onClick?: () => void;
+  isActive?: boolean;
 }
 
-export default function StatCard({ title, value, numericValue, prefix, decimals = 0, trend, trendUp, icon, iconBg, trendLabel, sparklineData }: StatCardProps) {
+export default function StatCard({ title, value, numericValue, prefix, decimals = 0, trend, trendUp, icon, iconBg, trendLabel, sparklineData, onClick, isActive }: StatCardProps) {
   return (
-    <div className="card stat-card" style={{ position: 'relative', overflow: 'hidden', padding: '20px' }}>
+    <div 
+      className={`card stat-card ${isActive ? 'active' : ''} ${onClick ? 'clickable' : ''}`} 
+      style={{ 
+        position: 'relative', 
+        overflow: 'hidden', 
+        padding: '20px', 
+        cursor: onClick ? 'pointer' : 'default',
+        border: isActive ? '2px solid var(--primary, #2962ff)' : '1px solid var(--border)',
+        boxShadow: isActive ? '0 4px 12px rgba(41, 98, 255, 0.15)' : 'var(--shadow-sm)',
+        transition: 'all 0.2s ease-in-out'
+      }}
+      onClick={onClick}
+    >
       <div className="stat-header">
         <h3 className="stat-title">{title}</h3>
         {icon && (
