@@ -150,12 +150,13 @@ export async function getDashboardStats() {
   const buildMonthlyBuckets = (monthsBack: number) => {
     const dataMap = new Map<string, { sales: number, profit: number }>();
     const startDate = new Date();
+    startDate.setDate(1); // Set to 1st to prevent rollover when subtracting months (e.g. Feb 31 -> Mar 3)
     startDate.setMonth(startDate.getMonth() - (monthsBack - 1));
-    startDate.setDate(1);
     startDate.setHours(0,0,0,0);
 
     for (let i = monthsBack - 1; i >= 0; i--) {
       const d = new Date();
+      d.setDate(1); // Set to 1st to prevent rollover
       d.setMonth(d.getMonth() - i);
       const monthName = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
       dataMap.set(monthName, { sales: 0, profit: 0 });
