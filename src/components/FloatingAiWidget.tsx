@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Bot, Send, Sparkles, X, MessageSquare, FileText, Maximize2 } from 'lucide-react';
 import { askAI, generateCEOBriefing } from '@/actions/ai';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './FloatingAiWidget.css';
 
 export default function FloatingAiWidget() {
@@ -106,8 +108,10 @@ export default function FloatingAiWidget() {
           )}
 
           {response && (
-            <div className="ai-response" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '13px' }}>
-              {response}
+            <div className="ai-response">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {response}
+              </ReactMarkdown>
             </div>
           )}
         </div>

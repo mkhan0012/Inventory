@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Send, Sparkles, AlertCircle, Plus, RefreshCw, BarChart, FileText } from 'lucide-react';
 import { askAI, generateCEOBriefing } from '@/actions/ai';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './page.css';
 
 export default function AiCommandCenter() {
@@ -79,8 +81,10 @@ export default function AiCommandCenter() {
                   <Bot size={18} />
                 </div>
               )}
-              <div className="message-bubble" style={{ whiteSpace: 'pre-wrap' }}>
-                {msg.content}
+              <div className="message-bubble">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {msg.content}
+                </ReactMarkdown>
               </div>
               {msg.role === 'user' && (
                 <div className="message-avatar user">
