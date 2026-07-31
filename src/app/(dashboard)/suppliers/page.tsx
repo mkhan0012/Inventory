@@ -6,6 +6,7 @@ import SearchBar from '@/components/SearchBar';
 import SuppliersClient from '@/components/SuppliersClient';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
+import PageTabs from '@/components/PageTabs';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +32,13 @@ export default async function SuppliersPage({
           </div>
         </div>
       </div>
+
+      <PageTabs 
+        tabs={[
+          { name: 'Supplier Directory', href: '/suppliers' },
+          { name: 'Supplier Analytics', href: '/suppliers/analytics' }
+        ]} 
+      />
 
       <SuppliersClient suppliers={suppliers} isOwner={isOwner} />
     </div>

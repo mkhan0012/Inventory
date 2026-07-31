@@ -7,6 +7,8 @@ import CustomersClient from '@/components/CustomersClient';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 
+import PageTabs from '@/components/PageTabs';
+
 export const dynamic = 'force-dynamic';
 
 export default async function CustomersPage({
@@ -31,6 +33,13 @@ export default async function CustomersPage({
           </div>
         </div>
       </div>
+
+      <PageTabs 
+        tabs={[
+          { name: 'Customer Directory', href: '/customers' },
+          { name: 'Customer Intelligence', href: '/customers/analytics' }
+        ]} 
+      />
 
       <CustomersClient customers={customers} isOwner={isOwner} />
     </div>

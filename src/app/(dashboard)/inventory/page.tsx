@@ -6,21 +6,21 @@ import InventorySearch from '@/components/InventorySearch';
 import InventoryClient from '@/components/InventoryClient';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
+import PageTabs from '@/components/PageTabs';
+import { getInventoryHealth } from '@/actions/inventory-analytics';
 
 export const dynamic = 'force-dynamic';
 
 export default async function InventoryPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ search?: string }>
+  searchParams?: Promise<{ search?: string, filter?: string }>
 }) {
   const sp = await searchParams;
   const session = await getServerSession(authOptions);
   const isOwner = (session?.user as any)?.role === 'OWNER';
   
   const inventoryData = await getProducts(sp?.search);
-  const { getInventoryAnalytics } = await import('@/actions/inventory-analytics');
-  const analyticsData = await getInventoryAnalytics();
 
   return (
     <div className="page-container">
@@ -34,7 +34,14 @@ export default async function InventoryPage({
         </div>
       </div>
       
-      <InventoryClient inventoryData={inventoryData} isOwner={isOwner} analyticsData={analyticsData} />
+      <PageTabs 
+        tabs={[
+          { name: 'Stock List', href: '/inventory' },
+          { name: 'Inventory Health', href: '/inventory/health' }
+        ]} 
+      />
+
+      <InventoryClient inventoryData={inventoryData} isOwner={isOwner} />
     </div>
   );
 }
