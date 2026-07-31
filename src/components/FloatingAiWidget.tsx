@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from 'react';
-import { Bot, Send, Sparkles, X, MessageSquare, FileText } from 'lucide-react';
+import { Bot, Send, Sparkles, X, MessageSquare, FileText, Maximize2 } from 'lucide-react';
 import { askAI, generateCEOBriefing } from '@/actions/ai';
+import Link from 'next/link';
 import './FloatingAiWidget.css';
 
 export default function FloatingAiWidget() {
@@ -89,6 +90,10 @@ export default function FloatingAiWidget() {
               >
                 <FileText size={16} /> Generate CEO Briefing
               </button>
+
+              <Link href="/ai" style={{ textDecoration: 'none', marginTop: '8px', width: '100%', padding: '10px', background: 'var(--bg-main)', border: '1px solid var(--border)', color: 'var(--text-main)', borderRadius: '8px', fontSize: '13px', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.2s' }}>
+                <Maximize2 size={16} /> Open Full AI Command Center
+              </Link>
             </div>
           )}
 

@@ -48,11 +48,13 @@ export async function askAI(query: string) {
       })),
     };
 
-    const systemPrompt = `You are a highly intelligent Expert Business Consultant and Strategist for Bharat Hydraulics. 
+    const systemPrompt = `You are a highly intelligent Expert Business Consultant and 'Super AI' for Bharat Hydraulics. 
 Here is the LIVE real-time state of the business data in JSON format, which includes all historical data you need:
 ${JSON.stringify(contextData, null, 2)}
 
-Your Goal: Answer the user's question accurately, but go beyond just reporting data. 
+Your Goal: Answer the user's question accurately, and take action when requested.
+- You have tools to create customers, record expenses, add products, and update stock. Use them proactively!
+- If a user asks to add a product or update stock, USE YOUR TOOLS.
 - You MUST provide strategic business advice, ideas for growth, and ways to optimize the business.
 - If asked about "everything related to the business" or "give me some ideas", analyze the data (e.g., pending dues, low stock, net income) and give actionable, high-level business ideas to improve revenue and reduce costs.
 - Act as a brilliant, proactive consultant.
@@ -96,6 +98,42 @@ Your Goal: Answer the user's question accurately, but go beyond just reporting d
             required: ["description", "amount", "category"]
           }
         }
+      },
+      {
+        type: "function",
+        function: {
+          name: "add_product",
+          description: "Adds a new product to the inventory system.",
+          parameters: {
+            type: "object",
+            properties: {
+              name: { type: "string", description: "Name of the product" },
+              code: { type: "string", description: "Unique code for the product" },
+              category: { type: "string", description: "Category of the product" },
+              price: { type: "number", description: "Selling price" },
+              purchasePrice: { type: "number", description: "Purchase price (default 0)" },
+              stock: { type: "number", description: "Initial stock quantity (default 0)" },
+              unit: { type: "string", description: "Unit of measurement (e.g., Pcs, Ltr, Kg)" },
+              location: { type: "string", description: "Storage location (e.g., Store Front, Warehouse)" }
+            },
+            required: ["name", "code", "category", "price", "unit"]
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "update_stock",
+          description: "Updates the stock quantity of an existing product.",
+          parameters: {
+            type: "object",
+            properties: {
+              productCode: { type: "string", description: "The unique code of the product" },
+              quantityToAdd: { type: "number", description: "The quantity to ADD to the current stock. Use negative numbers to reduce stock." }
+            },
+            required: ["productCode", "quantityToAdd"]
+          }
+        }
       }
     ];
 
@@ -123,6 +161,35 @@ Your Goal: Answer the user's question accurately, but go beyond just reporting d
             const args = JSON.parse(toolCall.function.arguments);
             await prisma.expense.create({ data: { description: args.description, amount: args.amount, category: args.category }});
             result = `Successfully recorded expense of ₹${args.amount} for ${args.description}.`;
+          } else if (toolCall.function.name === 'add_product') {
+            const args = JSON.parse(toolCall.function.arguments);
+            await prisma.product.create({ 
+              data: { 
+                name: args.name, 
+                code: args.code, 
+                category: args.category, 
+                price: args.price, 
+                purchasePrice: args.purchasePrice || 0,
+                stock: args.stock || 0,
+                unit: args.unit,
+                location: args.location || "Store Front"
+              }
+            });
+            result = `Successfully added product ${args.name} (Code: ${args.code}).`;
+          } else if (toolCall.function.name === 'update_stock') {
+            const args = JSON.parse(toolCall.function.arguments);
+            const product = await prisma.product.findUnique({ where: { code: args.productCode } });
+            if (product) {
+              const newStock = product.stock + args.quantityToAdd;
+              const status = newStock <= 0 ? "Out of Stock" : newStock <= 10 ? "Low Stock" : "In Stock";
+              await prisma.product.update({
+                where: { code: args.productCode },
+                data: { stock: newStock, status }
+              });
+              result = `Successfully updated stock for ${product.name}. New stock is ${newStock}.`;
+            } else {
+              result = `Error: Product with code ${args.productCode} not found.`;
+            }
           }
         } catch (e: any) {
           result = `Error: ${e.message}`;

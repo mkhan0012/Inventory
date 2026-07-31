@@ -18,7 +18,8 @@ import {
   ShieldAlert,
   ChevronLeft,
   Menu,
-  PieChart
+  PieChart,
+  Bot
 } from 'lucide-react';
 import LogoutButton from './LogoutButton';
 import { useSession } from 'next-auth/react';
@@ -29,6 +30,7 @@ const navGroups = [
     title: 'Overview',
     items: [
       { name: 'Dashboard', path: '/', icon: LayoutDashboard, ownerOnly: true },
+      { name: 'AI Command Center', path: '/ai', icon: Bot, ownerOnly: false },
       { name: 'Reports', path: '/reports', icon: PieChart, ownerOnly: true },
       { name: 'Deep Analytics', path: '/analytics', icon: BarChart2, ownerOnly: true },
     ]
