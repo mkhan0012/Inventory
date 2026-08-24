@@ -141,7 +141,7 @@ Your Goal: Answer the user's question accurately, and take action when requested
 
     const chatCompletion = await groq.chat.completions.create({
       messages,
-      model: "llama-3.3-70b-versatile", 
+      model: "qwen/qwen3.6-27b", 
       temperature: 0.5,
       tools,
       tool_choice: "auto",
@@ -207,7 +207,7 @@ Your Goal: Answer the user's question accurately, and take action when requested
       
       const finalResponse = await groq.chat.completions.create({
         messages,
-        model: "llama-3.3-70b-versatile",
+        model: "qwen/qwen3.6-27b",
         temperature: 0.5,
       });
       return finalResponse.choices[0]?.message?.content || "Action completed.";
@@ -242,8 +242,8 @@ Example: "Sales are looking steady at ₹X today, but note that you have Y items
 Be creative but extremely concise. Use currency symbol ₹ where appropriate.`;
 
     const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "system", content: systemPrompt }],
-      model: "llama-3.3-70b-versatile", 
+      messages: [{ role: "user", content: systemPrompt }],
+      model: "qwen/qwen3.6-27b", 
       temperature: 0.7,
       max_tokens: 50,
     });
@@ -280,8 +280,8 @@ IMPORTANT: ALWAYS format currency and money values using the Indian Rupee symbol
 CRITICAL: DO NOT invent, hallucinate, or recalculate any numbers! ONLY use the EXACT numerical values provided in the JSON data, taking care to format them correctly without changing the actual value.`;
 
     const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "system", content: prompt }],
-      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      model: "qwen/qwen3.6-27b",
       temperature: 0.4
     });
     

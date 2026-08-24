@@ -5,7 +5,9 @@
   justify-content: space-between;
   padding: 0 var(--space-xl);
   gap: 24px;
-  background: var(--bg-card);
+  background: var(--bg-sidebar);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
