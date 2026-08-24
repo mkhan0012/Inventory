@@ -1,8 +1,6 @@
 .sidebar {
   width: var(--sidebar-width);
   background: var(--bg-sidebar);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;

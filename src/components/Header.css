@@ -5,9 +5,7 @@
   justify-content: space-between;
   padding: 0 var(--space-xl);
   gap: 24px;
-  background: var(--bg-sidebar);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  background: var(--bg-card);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -288,9 +286,6 @@
   .user-profile:hover {
     background: none;
     border: none;
-  }
-  .desktop-only {
-    display: none !important;
   }
 }
 

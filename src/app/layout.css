@@ -71,8 +71,5 @@
     padding: 24px !important;
     border-radius: 16px !important;
   }
-  .desktop-only {
-    display: none !important;
-  }
 }
 

@@ -6,6 +6,12 @@ import { getAdvancedBiData } from "./reports";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+function cleanAIResponse(text: string | null | undefined, fallback: string): string {
+  if (!text) return fallback;
+  const stripped = text.replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, '').trim();
+  return stripped === '' ? fallback : stripped;
+}
+
 export async function askAI(query: string) {
   try {
     // 1. Fetch live summary data
@@ -51,17 +57,14 @@ export async function askAI(query: string) {
     };
 
     const systemPrompt = `You are a highly intelligent Expert Business Consultant and 'Super AI' for Bharat Hydraulics. 
-Here is the LIVE real-time state of the business data in JSON format, which includes all historical data you need. The financial numbers are already accurately formatted in Indian Rupees (₹).
+Here is the LIVE real-time state of the business data in JSON format:
 ${JSON.stringify(contextData, null, 2)}
 
-Your Goal: Answer the user's question accurately, and take action when requested.
-- You have tools to create customers, record expenses, add products, and update stock. Use them proactively!
-- If a user asks to add a product or update stock, USE YOUR TOOLS.
-- You MUST provide strategic business advice, ideas for growth, and ways to optimize the business.
-- If asked about "everything related to the business" or "give me some ideas", analyze the data (e.g., pending dues, low stock, net income) and give actionable, high-level business ideas to improve revenue and reduce costs.
-- Act as a brilliant, proactive consultant.
-- Keep your formatting professional using Markdown. Use bolding for emphasis and bullet points for ideas.
-- CRITICAL: DO NOT invent, hallucinate, or recalculate any numbers! ONLY quote the EXACT formatted financial numbers provided in the JSON data.`;
+Your Goal: Provide brilliant, highly structured, and insightful answers.
+- PROACTIVE TOOLS: If the user asks to add/edit anything, USE YOUR TOOLS immediately. Don't ask for permission if the data is provided.
+- DEEP INSIGHTS: When asked for advice, don't just state the obvious. Analyze the data (e.g. pending dues vs net profit, slow moving stock) and offer 3 clear, actionable strategies.
+- STRUCTURE: Use beautiful Markdown formatting. Use headings, bold text, and bullet points. Make your response look like a premium consulting report.
+- CRITICAL: DO NOT invent, hallucinate, or recalculate any numbers. Use EXACT figures from the JSON.`;
 
     const messages: any[] = [
       { role: "system", content: systemPrompt },
@@ -141,7 +144,7 @@ Your Goal: Answer the user's question accurately, and take action when requested
 
     const chatCompletion = await groq.chat.completions.create({
       messages,
-      model: "qwen/qwen3.6-27b", 
+      model: "groq/compound", 
       temperature: 0.5,
       tools,
       tool_choice: "auto",
@@ -207,13 +210,13 @@ Your Goal: Answer the user's question accurately, and take action when requested
       
       const finalResponse = await groq.chat.completions.create({
         messages,
-        model: "qwen/qwen3.6-27b",
+        model: "groq/compound",
         temperature: 0.5,
       });
-      return finalResponse.choices[0]?.message?.content || "Action completed.";
+      return cleanAIResponse(finalResponse.choices[0]?.message?.content, "Action completed.");
     }
 
-    return responseMessage?.content || "Sorry, I couldn't generate an answer.";
+    return cleanAIResponse(responseMessage?.content, "Sorry, I couldn't generate an answer.");
   } catch (error: any) {
     console.error("AI Error:", error);
     return "Error connecting to AI: " + error.message;
@@ -243,12 +246,12 @@ Be creative but extremely concise. Use currency symbol ₹ where appropriate.`;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: systemPrompt }],
-      model: "qwen/qwen3.6-27b", 
+      model: "groq/compound", 
       temperature: 0.7,
-      max_tokens: 50,
+      max_tokens: 1024,
     });
 
-    return chatCompletion.choices[0]?.message?.content || "Sales are looking steady today; keep up the great work!";
+    return cleanAIResponse(chatCompletion.choices[0]?.message?.content, "Sales are looking steady today; keep up the great work!");
   } catch (error: any) {
     console.error("AI Insight Error:", error);
     return "Welcome back to Bharat Hydraulics dashboard.";
@@ -281,11 +284,11 @@ CRITICAL: DO NOT invent, hallucinate, or recalculate any numbers! ONLY use the E
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "qwen/qwen3.6-27b",
+      model: "groq/compound",
       temperature: 0.4
     });
     
-    return chatCompletion.choices[0]?.message?.content || "Failed to generate report.";
+    return cleanAIResponse(chatCompletion.choices[0]?.message?.content, "Failed to generate report.");
   } catch (error: any) {
     console.error("AI CEO Briefing Error:", error);
     return "Error generating briefing: " + error.message;
