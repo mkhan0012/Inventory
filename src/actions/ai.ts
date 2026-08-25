@@ -122,6 +122,53 @@ Your Goal: Provide brilliant, highly structured, and insightful answers.
             },
             required: ["productCode", "quantityToAdd"]
           }
+        },
+        {
+          name: "create_direct_sale",
+          description: "Records a quick direct cash sale (without a customer).",
+          parameters: {
+            type: Type.OBJECT,
+            properties: {
+              items: { 
+                type: Type.ARRAY, 
+                description: "List of items being sold. Find matching product codes if possible.",
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    productCode: { type: Type.STRING },
+                    quantity: { type: Type.NUMBER },
+                    rate: { type: Type.NUMBER, description: "Unit price (leave 0 if unknown, system will use default)" }
+                  },
+                  required: ["productCode", "quantity"]
+                }
+              }
+            },
+            required: ["items"]
+          }
+        },
+        {
+          name: "create_invoice_ai",
+          description: "Creates an invoice for a specific customer.",
+          parameters: {
+            type: Type.OBJECT,
+            properties: {
+              customerName: { type: Type.STRING, description: "Name of the customer" },
+              status: { type: Type.STRING, description: "PAID or DUE" },
+              items: { 
+                type: Type.ARRAY, 
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    productCode: { type: Type.STRING },
+                    quantity: { type: Type.NUMBER },
+                    rate: { type: Type.NUMBER }
+                  },
+                  required: ["productCode", "quantity"]
+                }
+              }
+            },
+            required: ["customerName", "items"]
+          }
         }
       ]
     }];
@@ -180,6 +227,78 @@ Your Goal: Provide brilliant, highly structured, and insightful answers.
               result = `Successfully updated stock for ${product.name}. New stock is ${newStock}.`;
             } else {
               result = `Error: Product with code ${args.productCode} not found.`;
+            }
+          } else if (call.name === 'create_direct_sale') {
+            const args = call.args as any;
+            const saleItems = [];
+            for (const item of args.items) {
+              const product = await prisma.product.findUnique({ where: { code: item.productCode } });
+              if (product) {
+                saleItems.push({
+                  productId: product.id,
+                  quantity: item.quantity,
+                  rate: item.rate || product.price,
+                  purchaseRate: product.purchasePrice,
+                  amount: item.quantity * (item.rate || product.price)
+                });
+                await prisma.product.update({ where: { id: product.id }, data: { stock: product.stock - item.quantity } });
+              }
+            }
+            if (saleItems.length > 0) {
+              const subtotal = saleItems.reduce((acc, curr) => acc + curr.amount, 0);
+              const sale = await prisma.directSale.create({
+                data: {
+                  saleNo: 'DS-' + Date.now().toString().slice(-6),
+                  subtotal,
+                  tax: 0,
+                  total: subtotal,
+                  items: { create: saleItems }
+                }
+              });
+              result = `Successfully created Quick Sale #${sale.saleNo} for ₹${subtotal}.`;
+            } else {
+              result = "Failed: Could not find valid products.";
+            }
+          } else if (call.name === 'create_invoice_ai') {
+            const args = call.args as any;
+            let customer = await prisma.customer.findFirst({ where: { name: { contains: args.customerName, mode: 'insensitive' } } });
+            if (!customer) {
+              customer = await prisma.customer.create({ data: { name: args.customerName } });
+            }
+            const saleItems = [];
+            for (const item of args.items) {
+              const product = await prisma.product.findUnique({ where: { code: item.productCode } });
+              if (product) {
+                saleItems.push({
+                  productId: product.id,
+                  quantity: item.quantity,
+                  rate: item.rate || product.price,
+                  purchaseRate: product.purchasePrice,
+                  amount: item.quantity * (item.rate || product.price)
+                });
+                await prisma.product.update({ where: { id: product.id }, data: { stock: product.stock - item.quantity } });
+              }
+            }
+            if (saleItems.length > 0) {
+              const subtotal = saleItems.reduce((acc, curr) => acc + curr.amount, 0);
+              const total = subtotal;
+              const inv = await prisma.invoice.create({
+                data: {
+                  invoiceNo: 'INV-' + Date.now().toString().slice(-6),
+                  customerId: customer.id,
+                  subtotal, tax: 0, total,
+                  status: args.status || 'PAID',
+                  items: { create: saleItems }
+                }
+              });
+              if (args.status === 'DUE') {
+                await prisma.customer.update({ where: { id: customer.id }, data: { dueAmount: customer.dueAmount + total } });
+              } else {
+                await prisma.customer.update({ where: { id: customer.id }, data: { totalPurchases: customer.totalPurchases + total } });
+              }
+              result = `Successfully created Invoice #${inv.invoiceNo} for ${customer.name} (Total: ₹${total}).`;
+            } else {
+              result = "Failed: Could not find valid products.";
             }
           }
         } catch (e: any) {

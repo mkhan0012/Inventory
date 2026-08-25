@@ -56,7 +56,7 @@ export default async function SalesPage({
         <h1 className="page-title">Sales & Invoices</h1>
         <div className="header-actions">
           <SearchBar placeholder="Search invoices..." basePath="/sales" />
-          <div className="desktop-only" style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px' }}>
             <CreateDirectSaleModal products={products} />
             <CreateInvoiceModal customers={customers} products={products} />
           </div>
