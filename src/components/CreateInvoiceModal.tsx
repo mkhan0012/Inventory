@@ -298,7 +298,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                 )}
               </div>
 
-              <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div className="summary-row" style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ color: 'var(--text-muted)', fontSize: '13px', maxWidth: '300px' }}>
                   <p style={{ margin: 0 }}>Ensure all items and rates are correct. Taxes will be added to the final grand total.</p>
                 </div>

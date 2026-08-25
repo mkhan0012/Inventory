@@ -26,7 +26,9 @@ function numberToWords(num: number): string {
 
 export default async function PrintInvoice({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const invoice = await prisma.invoice.findUnique({
+  let isDirectSale = false;
+  
+  let invoice: any = await prisma.invoice.findUnique({
     where: { id },
     include: {
       customer: true,
@@ -34,7 +36,21 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
     }
   });
 
-  if (!invoice) return <div>Invoice not found</div>;
+  if (!invoice) {
+    invoice = await prisma.directSale.findUnique({
+      where: { id },
+      include: {
+        items: { include: { product: true } }
+      }
+    });
+    if (invoice) {
+      isDirectSale = true;
+      invoice.invoiceNo = invoice.saleNo; // Map for template
+      invoice.customer = { name: 'Walk-in Customer (Quick Sale)', phone: '' };
+    }
+  }
+
+  if (!invoice) return <div>Invoice/Sale not found</div>;
 
   const settings = await getSettings();
   
@@ -58,14 +74,14 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
               </div>
             </div>
             <div className="invoice-meta">
-              <h2 className="invoice-title">INVOICE</h2>
+              <h2 className="invoice-title">{isDirectSale ? 'CASH MEMO' : 'INVOICE'}</h2>
               <div className="meta-grid">
                 <span className="meta-label">Invoice No:</span>
                 <span className="meta-value">{invoice.invoiceNo}</span>
                 <span className="meta-label">Date:</span>
                 <span className="meta-value">{new Date(invoice.date).toLocaleDateString('en-IN')}</span>
                 <span className="meta-label">Status:</span>
-                <span className="meta-value">{invoice.status}</span>
+                <span className="meta-value">{invoice.status || 'PAID'}</span>
               </div>
             </div>
           </div>
@@ -90,7 +106,7 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
                 </tr>
               </thead>
               <tbody>
-                {invoice.items.map((item, index) => (
+                {invoice.items.map((item: any, index: number) => (
                   <tr key={item.id}>
                     <td>{index + 1}</td>
                     <td>{item.product.name}</td>

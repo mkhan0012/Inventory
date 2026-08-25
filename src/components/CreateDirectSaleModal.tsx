@@ -256,7 +256,7 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
                 )}
               </div>
 
-              <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div className="summary-row" style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{ color: 'var(--text-muted)', fontSize: '13px', maxWidth: '300px' }}>
                   <p style={{ margin: 0 }}>Quick sales deduct stock instantly and log revenue. Ensure amounts are correct before recording.</p>
                 </div>

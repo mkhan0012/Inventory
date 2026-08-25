@@ -170,13 +170,11 @@ export default function SalesClient({ sales, isOwner }: SalesClientProps) {
                     {sale.status}
                   </span>
                 </td>
-                <td className="desktop-only">
+                <td className="text-right">
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    {sale.type === 'INVOICE' && (
-                      <Link href={`/sales/${sale.id}/print`} className="btn-icon" target="_blank" title="Print Invoice">
-                        <FileText size={16} />
-                      </Link>
-                    )}
+                    <Link href={`/sales/${sale.id}/print`} className="btn-icon" target="_blank" title="Print Invoice">
+                      <FileText size={16} />
+                    </Link>
                     {isOwner && (
                       sale.type === 'INVOICE' 
                         ? <DeleteButton id={sale.id} action={deleteInvoice} itemType="invoice" />
