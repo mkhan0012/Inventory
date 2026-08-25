@@ -95,116 +95,160 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
 
       {isOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '700px' }}>
+          <div className="modal-content" style={{ maxWidth: '850px', background: 'var(--bg-card)' }}>
             <div className="modal-header">
-              <h2>{createdSaleId ? 'Success' : 'Direct Quick Sale'}</h2>
+              <h2>{createdSaleId ? 'Success' : 'Advanced Quick Sale'}</h2>
               <button className="close-btn" type="button" onClick={handleClose}><X size={20} /></button>
             </div>
             
             {createdSaleId ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                <div style={{ width: '60px', height: '60px', borderRadius: '30px', background: '#10b981', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <div style={{ textAlign: 'center', padding: '50px 20px' }}>
+                <div style={{ width: '70px', height: '70px', borderRadius: '35px', background: 'var(--success)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)' }}>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
-                <h3 style={{ fontSize: '20px', marginBottom: '10px' }}>Sale Recorded Successfully!</h3>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '30px' }}>Stock has been deducted and revenue logged.</p>
+                <h3 style={{ fontSize: '24px', marginBottom: '10px', color: 'var(--text-main)' }}>Sale Recorded Successfully!</h3>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '30px', fontSize: '15px' }}>Stock has been deducted and revenue logged instantly.</p>
                 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-                  <button className="btn-outline" onClick={handleClose}>Close Window</button>
+                  <button className="btn-outline" onClick={handleClose} style={{ padding: '12px 24px', fontSize: '15px' }}>Close Window</button>
                 </div>
               </div>
             ) : (
             <form onSubmit={handleSubmit} className="modal-form">
               <div className="form-row">
-                <div className="form-group">
+                <div className="form-group" style={{ flex: 1 }}>
                   <label>Date (Optional)</label>
-                  <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
+                  <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', width: '100%' }} />
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginTop: '10px' }}>
-                  <label>Scan Barcode</label>
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-main)', padding: '0 10px' }}>
-                     <ScanLine size={16} color="var(--text-muted)" />
+              <div className="form-group" style={{ marginTop: '16px' }}>
+                  <label>Quick Add Item (Barcode or Name)</label>
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-main)', padding: '4px 12px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+                     <ScanLine size={18} color="var(--primary)" />
                      <input 
                        type="text" 
-                       placeholder="Scan or type code + Enter" 
+                       placeholder="Scan barcode or type exact product name + Enter..." 
                        value={barcodeInput} 
                        onChange={e => setBarcodeInput(e.target.value)} 
-                       onKeyDown={handleBarcodeScan}
-                       style={{ border: 'none', background: 'transparent', padding: '10px', color: 'var(--text-main)', width: '100%', outline: 'none' }} 
+                       onKeyDown={(e) => {
+                         if (e.key === 'Enter') {
+                           e.preventDefault();
+                           const search = barcodeInput.toLowerCase().trim();
+                           const product = products.find(p => 
+                             (p.barcode && p.barcode.toLowerCase() === search) || 
+                             p.code.toLowerCase() === search ||
+                             p.name.toLowerCase() === search
+                           );
+                           if (product) {
+                             const existingIndex = items.findIndex(i => i.productId === product.id);
+                             if (existingIndex >= 0) {
+                               const newItems = [...items];
+                               newItems[existingIndex].quantity += 1;
+                               setItems(newItems);
+                             } else {
+                               setItems([...items, { productId: product.id, quantity: 1, rate: product.price }]);
+                             }
+                             setBarcodeInput('');
+                           } else {
+                             toast.error("Product not found! Try searching manually.");
+                           }
+                         }
+                       }}
+                       style={{ border: 'none', background: 'transparent', padding: '12px', color: 'var(--text-main)', width: '100%', outline: 'none', fontSize: '14px' }} 
                      />
                   </div>
               </div>
 
-              <div style={{ marginTop: '16px', borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '14px', color: 'var(--text-main)' }}>Items Sold</h3>
-                  <button type="button" onClick={addItem} className="btn-outline" style={{ padding: '6px 12px', fontSize: '12px' }}>
-                    <Plus size={14} /> Add Item
+              <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', color: 'var(--text-main)', fontWeight: 600 }}>Billing Items</h3>
+                  <button type="button" onClick={addItem} className="btn-outline" style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Plus size={16} /> Manually Add Row
                   </button>
                 </div>
 
-                {items.map((item, index) => (
-                  <div key={index} className="form-row" style={{ alignItems: 'flex-end', marginBottom: '8px' }}>
-                    <div className="form-group" style={{ flex: 2 }}>
-                      <label style={{ fontSize: '11px' }}>Product</label>
-                      <select required value={item.productId} onChange={e => updateItem(index, 'productId', e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
-                        <option value="">-- Select --</option>
-                        {products.map(p => (
-                          <option key={p.id} value={p.id}>
-                            {p.name} | Cat: {p.category} | Stock: {p.stock} | Buy: ₹{p.purchasePrice} | Sell: ₹{p.price}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="form-group" style={{ flex: 1 }}>
-                      <label style={{ fontSize: '11px' }}>Qty (Meters)</label>
-                      <input type="number" required min="0.01" step="0.01" value={item.quantity} onChange={e => updateItem(index, 'quantity', e.target.value)} style={{ padding: '8px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
-                    </div>
-                    <div className="form-group" style={{ flex: 1 }}>
-                      <label style={{ fontSize: '11px' }}>Rate</label>
-                      <input type="number" required step="0.01" value={item.rate} onChange={e => updateItem(index, 'rate', e.target.value)} style={{ padding: '8px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
-                    </div>
-                    <div className="form-group" style={{ flex: 1 }}>
-                      <label style={{ fontSize: '11px' }}>Amount</label>
-                      <div style={{ padding: '8px', background: 'var(--bg-card)', borderRadius: '6px', border: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-                        ₹{(item.quantity * item.rate).toFixed(2)}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {items.map((item, index) => (
+                    <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'var(--bg-main)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                      <div className="form-group" style={{ flex: 2, margin: 0 }}>
+                        <label style={{ fontSize: '12px', marginBottom: '4px' }}>Search Product</label>
+                        <input 
+                          list={`product-list-ds-${index}`} 
+                          placeholder="Type to search product..."
+                          required
+                          value={products.find(p => p.id === item.productId)?.name || item.productId}
+                          onChange={e => {
+                            const val = e.target.value;
+                            const product = products.find(p => p.name === val || p.code === val);
+                            if (product) {
+                              updateItem(index, 'productId', product.id);
+                            } else {
+                              updateItem(index, 'productId', val);
+                            }
+                          }}
+                          style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', width: '100%', fontSize: '13px' }}
+                        />
+                        <datalist id={`product-list-ds-${index}`}>
+                          {products.map(p => (
+                            <option key={p.id} value={p.name}>{p.code} | ₹{p.price} | Stock: {p.stock}</option>
+                          ))}
+                        </datalist>
                       </div>
+                      <div className="form-group" style={{ flex: 1, margin: 0 }}>
+                        <label style={{ fontSize: '12px', marginBottom: '4px' }}>Qty (Units/Meters)</label>
+                        <input type="number" required min="0.01" step="0.01" value={item.quantity} onChange={e => updateItem(index, 'quantity', e.target.value)} style={{ padding: '10px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-card)', color: 'var(--text-main)', width: '100%', fontSize: '13px' }} />
+                      </div>
+                      <div className="form-group" style={{ flex: 1, margin: 0 }}>
+                        <label style={{ fontSize: '12px', marginBottom: '4px' }}>Unit Price (₹)</label>
+                        <input type="number" required step="0.01" value={item.rate} onChange={e => updateItem(index, 'rate', e.target.value)} style={{ padding: '10px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-card)', color: 'var(--text-main)', width: '100%', fontSize: '13px' }} />
+                      </div>
+                      <div className="form-group" style={{ flex: 1, margin: 0 }}>
+                        <label style={{ fontSize: '12px', marginBottom: '4px' }}>Total (₹)</label>
+                        <div style={{ padding: '10px', background: 'rgba(0,0,0,0.03)', borderRadius: '6px', border: '1px solid var(--border)', color: 'var(--text-main)', fontWeight: 600, fontSize: '13px', textAlign: 'right' }}>
+                          {(item.quantity * item.rate).toFixed(2)}
+                        </div>
+                      </div>
+                      <button type="button" onClick={() => removeItem(index)} className="btn-icon" style={{ padding: '10px', color: 'var(--danger)', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg-card)', marginTop: '22px' }}>
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                    <button type="button" onClick={() => removeItem(index)} className="btn-icon" style={{ padding: '8px', color: 'var(--danger)', border: '1px solid var(--border)' }}>
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
                 
                 {items.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)', fontSize: '13px', border: '1px dashed var(--border)', borderRadius: '8px' }}>
-                    No items added. Click "Add Item" to start.
+                  <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)', fontSize: '14px', border: '2px dashed var(--border)', borderRadius: '12px', background: 'var(--bg-main)' }}>
+                    No items added. <br/> Scan a barcode or click "Add Row" to start billing.
                   </div>
                 )}
               </div>
 
-              <div className="form-row" style={{ marginTop: '16px', borderTop: '1px solid var(--border)', paddingTop: '16px', justifyContent: 'flex-end' }}>
-                <div style={{ width: '250px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-muted)' }}>
+              <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '13px', maxWidth: '300px' }}>
+                  <p style={{ margin: 0 }}>Quick sales deduct stock instantly and log revenue. Ensure amounts are correct before recording.</p>
+                </div>
+                <div style={{ width: '300px', background: 'var(--bg-main)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '12px' }}>
                     <span>Subtotal:</span>
-                    <span>₹{subtotal.toFixed(2)}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>₹{subtotal.toFixed(2)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Tax (₹):</span>
-                    <input type="number" value={tax} onChange={e => setTax(Number(e.target.value))} style={{ width: '100px', padding: '6px', textAlign: 'right', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Tax Amount (+):</span>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: '13px' }}>₹</span>
+                      <input type="number" min="0" step="0.01" value={tax} onChange={e => setTax(Number(e.target.value))} style={{ width: '120px', padding: '8px 8px 8px 24px', textAlign: 'right', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontWeight: 500 }} />
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 'bold', color: 'var(--text-main)', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--border)' }}>
-                    <span>Total:</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 'bold', color: 'var(--text-main)', marginTop: '16px', paddingTop: '16px', borderTop: '2px solid var(--border)' }}>
+                    <span>Grand Total:</span>
                     <span className="text-primary">₹{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
               
-              <div className="modal-footer">
-                <button type="button" className="btn-outline" onClick={handleClose}>Cancel</button>
-                <button type="submit" className="btn-primary" disabled={loading || items.length === 0}>
+              <div className="modal-footer" style={{ marginTop: '24px' }}>
+                <button type="button" className="btn-outline" onClick={handleClose} style={{ padding: '12px 24px' }}>Cancel</button>
+                <button type="submit" className="btn-primary" disabled={loading || items.length === 0} style={{ padding: '12px 32px', fontSize: '15px' }}>
                   {loading ? 'Recording...' : 'Record Sale'}
                 </button>
               </div>
