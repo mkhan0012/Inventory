@@ -7,7 +7,8 @@ export default async function ReturnsPage() {
       customer: true,
       items: { include: { product: true } }
     },
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    take: 100
   });
 
   const customers = await prisma.customer.findMany({

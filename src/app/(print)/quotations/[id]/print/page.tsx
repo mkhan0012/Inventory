@@ -84,6 +84,12 @@ export default async function PrintQuotation({ params }: { params: Promise<{ id:
                 <span>Subtotal:</span>
                 <span>₹{quotation.subtotal.toFixed(2)}</span>
               </div>
+              {(quotation.discount > 0) && (
+                <div className="total-row">
+                  <span>Discount:</span>
+                  <span>-₹{quotation.discount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="total-row">
                 <span>Tax:</span>
                 <span>₹{quotation.tax.toFixed(2)}</span>

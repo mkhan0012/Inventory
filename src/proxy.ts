@@ -8,7 +8,7 @@ export default withAuth(
 
     if (token?.role === "STAFF") {
       // Staff cannot access financial/sensitive pages
-      const restrictedPaths = ['/', '/reports', '/expenses', '/settings', '/purchases', '/payments', '/audit'];
+      const restrictedPaths = ['/', '/reports', '/expenses', '/settings', '/purchases', '/payments', '/audit', '/profit-management', '/analytics'];
       
       // If path is exactly '/' or starts with any restricted path
       const isRestricted = restrictedPaths.some(p => path === p || (p !== '/' && path.startsWith(p)));

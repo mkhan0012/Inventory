@@ -56,8 +56,10 @@ export default function CreateQuotationModal({ customers, products }: { customer
     setItems(items.filter((_, i) => i !== index));
   };
 
+  const [discount, setDiscount] = useState(0);
+
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const total = subtotal + tax;
+  const total = subtotal - discount + tax;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +74,7 @@ export default function CreateQuotationModal({ customers, products }: { customer
         customerId,
         items,
         tax,
+        discount,
         date: date ? date : undefined
       });
       
@@ -205,6 +208,10 @@ export default function CreateQuotationModal({ customers, products }: { customer
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-muted)' }}>
                     <span>Subtotal:</span>
                     <span>₹{subtotal.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Discount (₹):</span>
+                    <input type="number" value={discount} onChange={e => setDiscount(Number(e.target.value))} style={{ width: '100px', padding: '6px', textAlign: 'right', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)' }} />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Tax (₹):</span>

@@ -11,7 +11,28 @@ export default function ProcessReturnModal({ customers, products }: { customers:
   const [customerId, setCustomerId] = useState('');
   const [reason, setReason] = useState('');
   const [items, setItems] = useState<{ productId: string; quantity: number; refundAmount: number }[]>([]);
+  const [barcodeInput, setBarcodeInput] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const handleBarcodeScan = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const product = products.find(p => p.barcode === barcodeInput || p.code === barcodeInput);
+      if (product) {
+        const existingIndex = items.findIndex(i => i.productId === product.id);
+        if (existingIndex >= 0) {
+          const newItems = [...items];
+          newItems[existingIndex].quantity += 1;
+          setItems(newItems);
+        } else {
+          setItems([...items, { productId: product.id, quantity: 1, refundAmount: product.price }]);
+        }
+      } else {
+        toast.error("Product with barcode/code not found!");
+      }
+      setBarcodeInput('');
+    }
+  };
 
   const addItem = () => setItems([...items, { productId: '', quantity: 1, refundAmount: 0 }]);
 
@@ -42,7 +63,11 @@ export default function ProcessReturnModal({ customers, products }: { customers:
       await processSalesReturn({
         customerId: customerId || undefined,
         reason,
-        items
+        items: items.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          refundAmount: item.quantity * item.refundAmount // here item.refundAmount in state is actually the unit rate
+        }))
       });
       setSuccess(true);
     } catch (error: any) {
@@ -121,6 +146,20 @@ export default function ProcessReturnModal({ customers, products }: { customers:
                     onChange={e => setReason(e.target.value)} 
                     style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', width: '100%' }}
                   />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label>Scan Barcode</label>
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-main)', padding: '0 10px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)' }}><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><line x1="7" y1="8" x2="7" y2="16"></line><line x1="12" y1="8" x2="12" y2="16"></line><line x1="17" y1="8" x2="17" y2="16"></line></svg>
+                    <input 
+                      type="text" 
+                      placeholder="Scan + Enter" 
+                      value={barcodeInput} 
+                      onChange={e => setBarcodeInput(e.target.value)} 
+                      onKeyDown={handleBarcodeScan}
+                      style={{ border: 'none', background: 'transparent', padding: '10px', color: 'var(--text-main)', width: '100%', outline: 'none' }} 
+                    />
+                  </div>
                 </div>
               </div>
 
