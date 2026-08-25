@@ -106,16 +106,24 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
 
   return (
     <>
-      <button className="btn-primary" onClick={() => setIsOpen(true)}>
-        <Plus size={16} /> Create Invoice
+      <button className="btn-primary" onClick={() => setIsOpen(true)} style={{ background: 'linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 15px rgba(41,98,255,0.3)', border: 'none' }}>
+        <Sparkles size={16} /> Smart Invoice
       </button>
 
       {isOpen && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ maxWidth: '850px', background: 'var(--bg-card)' }}>
-            <div className="modal-header">
-              <h2>{createdInvoiceId ? 'Success' : 'Advanced Invoice Billing'}</h2>
-              <button className="close-btn" type="button" onClick={handleClose}><X size={20} /></button>
+            <div className="modal-header" style={{ borderBottom: '1px solid rgba(41,98,255,0.1)', paddingBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 8px 16px rgba(41,98,255,0.3)' }}>
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '22px', background: 'linear-gradient(90deg, var(--text-main) 0%, var(--primary) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>Smart Invoice</h2>
+                  <span style={{ fontSize: '12px', color: '#8b5cf6', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>AI Enhanced Billing</span>
+                </div>
+              </div>
+              <button className="close-btn" type="button" onClick={handleClose} style={{ background: 'transparent', border: '1px solid rgba(139,92,246,0.2)' }}><X size={20} /></button>
             </div>
             
             {createdInvoiceId ? (
@@ -170,13 +178,18 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginTop: '16px' }}>
-                  <label>Quick Add Item (Barcode or Name)</label>
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--bg-main)', padding: '4px 12px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
-                     <ScanLine size={18} color="var(--primary)" />
+              <div className="form-group" style={{ marginTop: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <label style={{ margin: 0, color: 'var(--primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <ScanLine size={16} /> Neural Scan / Add Item
+                    </label>
+                    <span style={{ fontSize: '11px', background: 'rgba(139,92,246,0.1)', color: '#8b5cf6', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>AUTO-DETECT</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '12px', background: 'var(--bg-card)', padding: '4px 12px', boxShadow: '0 0 0 4px rgba(139,92,246,0.05), inset 0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden' }}>
+                     <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'linear-gradient(to bottom, var(--primary), #8b5cf6)' }}></div>
                      <input 
                        type="text" 
-                       placeholder="Scan barcode or type exact product name + Enter..." 
+                       placeholder="Scan barcode or type exact product name + Enter to trigger AI match..." 
                        value={barcodeInput} 
                        onChange={e => setBarcodeInput(e.target.value)} 
                        onKeyDown={(e) => {
@@ -199,11 +212,11 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                              }
                              setBarcodeInput('');
                            } else {
-                             toast.error("Product not found! Try searching manually.");
+                             toast.error("AI couldn't find a match! Try searching manually.");
                            }
                          }
                        }}
-                       style={{ border: 'none', background: 'transparent', padding: '12px', color: 'var(--text-main)', width: '100%', outline: 'none', fontSize: '14px' }} 
+                       style={{ border: 'none', background: 'transparent', padding: '12px 12px 12px 16px', color: 'var(--text-main)', width: '100%', outline: 'none', fontSize: '14px', fontWeight: 500 }} 
                      />
                   </div>
               </div>
@@ -275,11 +288,12 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                 )}
 
                 {suggestions.length > 0 && (
-                  <div style={{ marginTop: '20px', padding: '16px', background: 'var(--primary-glow)', borderRadius: '12px', border: '1px solid rgba(41,98,255,0.2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: 'var(--primary)', fontWeight: 600, fontSize: '14px' }}>
-                      <Sparkles size={18} /> Frequently Bought Together
+                  <div style={{ marginTop: '20px', padding: '16px', background: 'linear-gradient(145deg, rgba(139,92,246,0.05) 0%, rgba(41,98,255,0.05) 100%)', borderRadius: '12px', border: '1px solid rgba(139,92,246,0.2)', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', background: 'radial-gradient(circle, rgba(139,92,246,0.2) 0%, rgba(255,255,255,0) 70%)', filter: 'blur(10px)' }}></div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: '#8b5cf6', fontWeight: 600, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      <Sparkles size={16} className="pulse-anim" /> AI Recommendations
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
                       {suggestions.map(s => (
                         <button 
                           key={s.id} 
@@ -288,9 +302,11 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                             const newItems = [...items, { productId: s.id, quantity: 1, rate: s.price }];
                             setItems(newItems);
                           }}
-                          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: 'var(--shadow-sm)', fontWeight: 500 }}
+                          style={{ background: 'var(--bg-card)', border: '1px solid rgba(139,92,246,0.2)', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 8px rgba(139,92,246,0.05)', fontWeight: 500, transition: 'all 0.2s ease' }}
+                          onMouseOver={(e) => e.currentTarget.style.borderColor = '#8b5cf6'}
+                          onMouseOut={(e) => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.2)'}
                         >
-                          <Plus size={14} color="var(--primary)" /> {s.name} <span style={{ color: 'var(--text-muted)' }}>| ₹{s.price}</span>
+                          <Plus size={14} color="#8b5cf6" /> {s.name} <span style={{ color: 'var(--text-muted)' }}>| ₹{s.price}</span>
                         </button>
                       ))}
                     </div>
