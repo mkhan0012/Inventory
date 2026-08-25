@@ -152,23 +152,19 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
               <div className="form-row">
                 <div className="form-group" style={{ flex: 1.5 }}>
                   <label>Customer Name</label>
-                  <input 
-                    list="customers-list" 
+                  <select 
                     required 
-                    placeholder="Search Customer..."
-                    value={customers.find(c => c.id === customerId)?.name || customerId}
-                    onChange={e => {
-                      const match = customers.find(c => c.name === e.target.value);
-                      if (match) setCustomerId(match.id);
-                      else setCustomerId(e.target.value); // fallback to text, though validation will fail if not actual ID. Ideally handled via specific search component.
-                    }} 
+                    value={customerId}
+                    onChange={e => setCustomerId(e.target.value)} 
                     style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', width: '100%' }} 
-                  />
-                  <datalist id="customers-list">
+                  >
+                    <option value="">-- Select Customer --</option>
                     {customers.map(c => (
-                      <option key={c.id} value={c.name}>{c.phone || 'No Phone'}</option>
+                      <option key={c.id} value={c.id}>
+                        {c.name} {c.phone ? `- ${c.phone}` : ''}
+                      </option>
                     ))}
-                  </datalist>
+                  </select>
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label>Payment Status</label>
@@ -244,28 +240,19 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                     <div key={index} className="billing-item-row" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'var(--bg-main)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
                       <div className="form-group" style={{ flex: 2, margin: 0 }}>
                         <label style={{ fontSize: '12px', marginBottom: '4px' }}>Search Product</label>
-                        <input 
-                          list={`product-list-${index}`} 
-                          placeholder="Type to search product..."
+                        <select
                           required
-                          value={products.find(p => p.id === item.productId)?.name || item.productId}
-                          onChange={e => {
-                            const val = e.target.value;
-                            const product = products.find(p => p.name === val || p.code === val);
-                            if (product) {
-                              updateItem(index, 'productId', product.id);
-                            } else {
-                              // Temporarily store typed value, it will fail validation if not a real product ID when submitting
-                              updateItem(index, 'productId', val);
-                            }
-                          }}
+                          value={item.productId}
+                          onChange={e => updateItem(index, 'productId', e.target.value)}
                           style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', width: '100%', fontSize: '13px' }}
-                        />
-                        <datalist id={`product-list-${index}`}>
+                        >
+                          <option value="">-- Select Product --</option>
                           {products.map(p => (
-                            <option key={p.id} value={p.name}>{p.code} | ₹{p.price} | Stock: {p.stock}</option>
+                            <option key={p.id} value={p.id}>
+                              {p.name} ({p.code}) - ₹{p.price} | Stock: {p.stock}
+                            </option>
                           ))}
-                        </datalist>
+                        </select>
                       </div>
                       <div className="form-group" style={{ flex: 1, margin: 0 }}>
                         <label style={{ fontSize: '12px', marginBottom: '4px' }}>Quantity</label>

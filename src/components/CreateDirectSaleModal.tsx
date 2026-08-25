@@ -196,27 +196,19 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
                     <div key={index} className="billing-item-row" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'var(--bg-main)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
                       <div className="form-group" style={{ flex: 2, margin: 0 }}>
                         <label style={{ fontSize: '12px', marginBottom: '4px' }}>Search Product</label>
-                        <input 
-                          list={`product-list-ds-${index}`} 
-                          placeholder="Type to search product..."
+                        <select
                           required
-                          value={products.find(p => p.id === item.productId)?.name || item.productId}
-                          onChange={e => {
-                            const val = e.target.value;
-                            const product = products.find(p => p.name === val || p.code === val);
-                            if (product) {
-                              updateItem(index, 'productId', product.id);
-                            } else {
-                              updateItem(index, 'productId', val);
-                            }
-                          }}
+                          value={item.productId}
+                          onChange={e => updateItem(index, 'productId', e.target.value)}
                           style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', width: '100%', fontSize: '13px' }}
-                        />
-                        <datalist id={`product-list-ds-${index}`}>
+                        >
+                          <option value="">-- Select Product --</option>
                           {products.map(p => (
-                            <option key={p.id} value={p.name}>{p.code} | ₹{p.price} | Stock: {p.stock}</option>
+                            <option key={p.id} value={p.id}>
+                              {p.name} ({p.code}) - ₹{p.price} | Stock: {p.stock}
+                            </option>
                           ))}
-                        </datalist>
+                        </select>
                       </div>
                       <div className="form-group" style={{ flex: 1, margin: 0 }}>
                         <label style={{ fontSize: '12px', marginBottom: '4px' }}>Qty (Units/Meters)</label>
