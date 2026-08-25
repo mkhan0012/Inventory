@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from 'react';
-import { Plus, X, Trash2, ScanLine, Zap } from 'lucide-react';
-import { createDirectSale } from '@/actions/sales';
+import React, { useState, useEffect } from 'react';
+import { Plus, X, Trash2, ScanLine, Zap, Sparkles } from 'lucide-react';
+import { createDirectSale, getUpsellSuggestions } from '@/actions/sales';
 import toast from 'react-hot-toast';
 import './AddProductModal.css';
 
@@ -14,6 +14,16 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
   const [items, setItems] = useState<{ productId: string; quantity: number; rate: number }[]>([]);
   const [barcodeInput, setBarcodeInput] = useState('');
   const [createdSaleId, setCreatedSaleId] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+
+  useEffect(() => {
+    const pIds = items.filter(i => i.productId).map(i => i.productId);
+    if (pIds.length > 0) {
+      getUpsellSuggestions(pIds).then(res => setSuggestions(res));
+    } else {
+      setSuggestions([]);
+    }
+  }, [items]);
 
   const handleBarcodeScan = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -219,6 +229,29 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
                 {items.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)', fontSize: '14px', border: '2px dashed var(--border)', borderRadius: '12px', background: 'var(--bg-main)' }}>
                     No items added. <br/> Scan a barcode or click "Add Row" to start billing.
+                  </div>
+                )}
+
+                {suggestions.length > 0 && (
+                  <div style={{ marginTop: '20px', padding: '16px', background: 'var(--primary-glow)', borderRadius: '12px', border: '1px solid rgba(41,98,255,0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: 'var(--primary)', fontWeight: 600, fontSize: '14px' }}>
+                      <Sparkles size={18} /> Frequently Bought Together
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      {suggestions.map(s => (
+                        <button 
+                          key={s.id} 
+                          type="button"
+                          onClick={() => {
+                            const newItems = [...items, { productId: s.id, quantity: 1, rate: s.price }];
+                            setItems(newItems);
+                          }}
+                          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: 'var(--shadow-sm)', fontWeight: 500 }}
+                        >
+                          <Plus size={14} color="var(--primary)" /> {s.name} <span style={{ color: 'var(--text-muted)' }}>| ₹{s.price}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
