@@ -21,7 +21,13 @@ export default function PrintButton() {
         (el as HTMLElement).style.display = 'none';
       });
 
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true,
+        scrollY: -window.scrollY,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight
+      });
       
       // Restore no-print elements
       noPrintElements.forEach((el) => {
@@ -29,12 +35,15 @@ export default function PrintButton() {
       });
 
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
       
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      // Create PDF with custom dimensions matching the canvas
+      const pdf = new jsPDF({
+        orientation: canvas.width > canvas.height ? 'l' : 'p',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
       pdf.save(`Invoice_${Date.now()}.pdf`);
       
       toast.success('PDF Exported Successfully!', { id: toastId });

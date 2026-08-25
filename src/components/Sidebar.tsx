@@ -37,6 +37,7 @@ const navGroups = [
     title: 'Operations',
     items: [
       { name: 'Sales / Bills', path: '/sales', icon: Receipt },
+      { name: 'Sales Returns', path: '/returns', icon: Receipt },
       { name: 'Purchases', path: '/purchases', icon: ShoppingCart, ownerOnly: true },
       { name: 'Inventory', path: '/inventory', icon: Package },
     ]
