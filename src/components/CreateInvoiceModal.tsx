@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Plus, X, Trash2, ScanLine, Sparkles } from 'lucide-react';
+import { Plus, X, Trash2, ScanLine, Sparkles, Camera } from 'lucide-react';
 import { createInvoice, getUpsellSuggestions } from '@/actions/sales';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
