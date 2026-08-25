@@ -181,13 +181,17 @@
   }
 
   /* Target the horizontal spreadsheet layout for mobile */
-  div[style*="display: flex"][style*="gap: 12px"][style*="align-items: flex-start"] {
+  .billing-item-row {
     flex-direction: column !important;
     gap: 8px !important;
   }
   
+  .billing-item-row > div {
+    width: 100% !important;
+  }
+  
   /* Trash button inside the billing items */
-  button.btn-icon[style*="margin-top: 22px"] {
+  .billing-item-row button.btn-icon {
     margin-top: 4px !important;
     width: 100%;
     display: flex;
@@ -195,7 +199,7 @@
   }
 
   /* Make summary block responsive */
-  div[style*="width: 300px"][style*="background: var(--bg-main)"] {
+  .summary-totals {
     width: 100% !important;
   }
   
@@ -206,5 +210,24 @@
   
   .summary-row > div:first-child {
     max-width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-footer {
+    flex-direction: column;
+    width: 100%;
+  }
+  .modal-footer button {
+    width: 100%;
+    justify-content: center;
+  }
+  .success-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .success-actions a, .success-actions button {
+    width: 100%;
+    justify-content: center;
   }
 }

@@ -119,7 +119,7 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
                 <h3 style={{ fontSize: '24px', marginBottom: '10px', color: 'var(--text-main)' }}>Sale Recorded Successfully!</h3>
                 <p style={{ color: 'var(--text-muted)', marginBottom: '30px', fontSize: '15px' }}>Stock has been deducted and revenue logged instantly.</p>
                 
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+                <div className="success-actions" style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
                   <button className="btn-outline" onClick={handleClose} style={{ padding: '12px 24px', fontSize: '15px' }}>Close Window</button>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {items.map((item, index) => (
-                    <div key={index} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'var(--bg-main)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                    <div key={index} className="billing-item-row" style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'var(--bg-main)', padding: '12px', borderRadius: '8px', border: '1px solid var(--border)' }}>
                       <div className="form-group" style={{ flex: 2, margin: 0 }}>
                         <label style={{ fontSize: '12px', marginBottom: '4px' }}>Search Product</label>
                         <input 
@@ -260,7 +260,7 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
                 <div style={{ color: 'var(--text-muted)', fontSize: '13px', maxWidth: '300px' }}>
                   <p style={{ margin: 0 }}>Quick sales deduct stock instantly and log revenue. Ensure amounts are correct before recording.</p>
                 </div>
-                <div style={{ width: '300px', background: 'var(--bg-main)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                <div className="summary-totals" style={{ width: '300px', background: 'var(--bg-main)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '12px' }}>
                     <span>Subtotal:</span>
                     <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>₹{subtotal.toFixed(2)}</span>
