@@ -40,18 +40,27 @@ export default function WeeklyHeatmapChart({ data }: { data: any[] }) {
     <div style={{ height: '300px', width: '100%' }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
-          <XAxis dataKey="day" axisLine={false} tickLine={false} tickFormatter={(val) => val.substring(0, 3)} tick={{fill: 'var(--text-muted)', fontSize: 12}} />
+          <defs>
+            <linearGradient id="heatmapGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#8B5CF6" stopOpacity={1}/>
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.8}/>
+            </linearGradient>
+            <filter id="barShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.1" />
+            </filter>
+          </defs>
+          <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
+          <XAxis dataKey="day" axisLine={false} tickLine={false} tickFormatter={(val) => val.substring(0, 3)} tick={{fill: 'var(--text-muted)', fontSize: 13, fontWeight: 500}} dy={10} />
           <YAxis tickFormatter={(val) => {
             if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
             if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
             return `₹${val}`;
-          }} axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 12}} />
+          }} axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 13, fontWeight: 500}} dx={-10} />
           <Tooltip content={<CustomTooltip />} cursor={{fill: 'var(--bg-main)', opacity: 0.5}} />
-          <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
+          <Bar dataKey="sales" radius={[8, 8, 8, 8]}>
             {data.map((entry, index) => {
-              const opacity = entry.sales === 0 ? 0.2 : 0.3 + (0.7 * (entry.sales / maxSales));
-              return <Cell key={`cell-${index}`} fill={`rgba(59, 130, 246, ${opacity})`} />;
+              const intensity = entry.sales === 0 ? 0.2 : 0.4 + (0.6 * (entry.sales / maxSales));
+              return <Cell key={`cell-${index}`} fill="url(#heatmapGradient)" fillOpacity={intensity} filter="url(#barShadow)" />;
             })}
           </Bar>
         </BarChart>

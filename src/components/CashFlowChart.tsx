@@ -24,55 +24,67 @@ export default function CashFlowChart({ data }: CashFlowChartProps) {
         >
           <defs>
             <linearGradient id="colorIncoming" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#10B981" stopOpacity={0.6}/>
+              <stop offset="95%" stopColor="#10B981" stopOpacity={0.05}/>
             </linearGradient>
             <linearGradient id="colorOutgoing" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#EF4444" stopOpacity={0.6}/>
+              <stop offset="95%" stopColor="#EF4444" stopOpacity={0.05}/>
             </linearGradient>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
+            </filter>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+          <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
           <XAxis 
             dataKey="date" 
-            tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+            tick={{ fill: 'var(--text-muted)', fontSize: 13, fontWeight: 500 }}
             axisLine={false}
             tickLine={false}
             minTickGap={30}
+            dy={10}
           />
           <YAxis 
-            tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+            tick={{ fill: 'var(--text-muted)', fontSize: 13, fontWeight: 500 }}
             axisLine={false}
             tickLine={false}
+            dx={-10}
             tickFormatter={(value) => `₹${value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value}`}
           />
           <Tooltip 
             contentStyle={{ 
               background: 'var(--bg-card)', 
+              backdropFilter: 'blur(12px)',
               border: '1px solid var(--border)',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              color: 'var(--text-main)'
+              borderRadius: '12px',
+              boxShadow: 'var(--shadow-hover)',
+              color: 'var(--text-main)',
+              fontWeight: 600,
+              padding: '12px 16px',
             }}
+            itemStyle={{ fontWeight: 600, paddingTop: '4px' }}
+            cursor={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '4 4' }}
             formatter={(value: any) => [`₹${Number(value).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, '']}
           />
           <Area 
             type="monotone" 
             dataKey="incoming" 
             name="Incoming Payments"
-            stroke="#10b981" 
-            strokeWidth={3}
+            stroke="#10B981" 
+            strokeWidth={4}
             fillOpacity={1} 
             fill="url(#colorIncoming)" 
+            activeDot={{ r: 6, strokeWidth: 0, fill: '#10B981', filter: 'url(#shadow)' }}
           />
           <Area 
             type="monotone" 
             dataKey="outgoing" 
             name="Outgoing & Expenses"
-            stroke="#ef4444" 
-            strokeWidth={3}
+            stroke="#EF4444" 
+            strokeWidth={4}
             fillOpacity={1} 
             fill="url(#colorOutgoing)" 
+            activeDot={{ r: 6, strokeWidth: 0, fill: '#EF4444', filter: 'url(#shadow)' }}
           />
         </AreaChart>
       </ResponsiveContainer>

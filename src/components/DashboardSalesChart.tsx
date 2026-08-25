@@ -20,13 +20,13 @@ export default function DashboardSalesChart({ data }: DashboardSalesChartProps) 
       <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
          <h3 className="card-title">Sales Overview</h3>
          
-         <div style={{ display: 'flex', gap: '8px', background: 'var(--bg-main)', padding: '4px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+         <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-main)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
             <button 
               onClick={() => setTimeRange('month')}
               style={{ 
-                padding: '4px 12px', fontSize: '12px', fontWeight: 500, borderRadius: '4px', border: 'none', cursor: 'pointer',
+                padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', border: 'none', cursor: 'pointer',
                 background: timeRange === 'month' ? 'var(--primary)' : 'transparent',
-                color: timeRange === 'month' ? 'white' : 'var(--text-muted)'
+                color: timeRange === 'month' ? 'var(--bg-card)' : 'var(--text-muted)'
               }}
             >
               Month
@@ -34,9 +34,9 @@ export default function DashboardSalesChart({ data }: DashboardSalesChartProps) 
             <button 
               onClick={() => setTimeRange('sixMonths')}
               style={{ 
-                padding: '4px 12px', fontSize: '12px', fontWeight: 500, borderRadius: '4px', border: 'none', cursor: 'pointer',
+                padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', border: 'none', cursor: 'pointer',
                 background: timeRange === 'sixMonths' ? 'var(--primary)' : 'transparent',
-                color: timeRange === 'sixMonths' ? 'white' : 'var(--text-muted)'
+                color: timeRange === 'sixMonths' ? 'var(--bg-card)' : 'var(--text-muted)'
               }}
             >
               6 Months
@@ -44,9 +44,9 @@ export default function DashboardSalesChart({ data }: DashboardSalesChartProps) 
             <button 
               onClick={() => setTimeRange('year')}
               style={{ 
-                padding: '4px 12px', fontSize: '12px', fontWeight: 500, borderRadius: '4px', border: 'none', cursor: 'pointer',
+                padding: '6px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '6px', border: 'none', cursor: 'pointer',
                 background: timeRange === 'year' ? 'var(--primary)' : 'transparent',
-                color: timeRange === 'year' ? 'white' : 'var(--text-muted)'
+                color: timeRange === 'year' ? 'var(--bg-card)' : 'var(--text-muted)'
               }}
             >
               Year

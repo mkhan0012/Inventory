@@ -55,31 +55,35 @@ export default function SalesChart({ data }: { data: any[] }) {
         >
           <defs>
             <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#2962ff" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#2962ff" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.6}/>
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.05}/>
             </linearGradient>
             <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#10B981" stopOpacity={0.6}/>
+              <stop offset="95%" stopColor="#10B981" stopOpacity={0.05}/>
             </linearGradient>
+            <filter id="areaShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
+            </filter>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.4} />
+          <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--border)" strokeOpacity={0.6} />
           <XAxis 
             dataKey="name" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+            tick={{ fill: 'var(--text-muted)', fontSize: 13, fontWeight: 500 }} 
             dy={10} 
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+            tick={{ fill: 'var(--text-muted)', fontSize: 13, fontWeight: 500 }} 
+            dx={-10}
             tickFormatter={formatYAxis} 
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--text-muted)', strokeWidth: 1, strokeDasharray: '4 4', fill: 'transparent' }} />
-          <Area type="monotone" dataKey="sales" stroke="#2962ff" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
-          <Area type="monotone" dataKey="profit" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorProfit)" />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '4 4', fill: 'transparent' }} />
+          <Area type="monotone" dataKey="sales" stroke="#3B82F6" strokeWidth={4} fillOpacity={1} fill="url(#colorSales)" activeDot={{ r: 6, strokeWidth: 0, fill: '#3B82F6', filter: 'url(#areaShadow)' }} />
+          <Area type="monotone" dataKey="profit" stroke="#10B981" strokeWidth={4} fillOpacity={1} fill="url(#colorProfit)" activeDot={{ r: 6, strokeWidth: 0, fill: '#10B981', filter: 'url(#areaShadow)' }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

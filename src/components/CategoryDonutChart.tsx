@@ -39,21 +39,29 @@ export default function CategoryDonutChart({ data }: { data: any[] }) {
     <div style={{ height: '300px', width: '100%' }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
+          <defs>
+            <filter id="pieShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
+            </filter>
+          </defs>
           <Pie
             data={data}
             cx="50%"
             cy="45%"
-            innerRadius={70}
-            outerRadius={100}
-            paddingAngle={2}
+            innerRadius={65}
+            outerRadius={105}
+            paddingAngle={4}
+            cornerRadius={8}
             dataKey="value"
+            stroke="none"
+            filter="url(#pieShadow)"
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '12px' }} />
+          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '13px', fontWeight: 500 }} iconType="circle" />
         </PieChart>
       </ResponsiveContainer>
     </div>

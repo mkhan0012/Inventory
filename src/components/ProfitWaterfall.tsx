@@ -70,30 +70,30 @@ export default function ProfitWaterfall({ data }: { data: any[] }) {
         <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <defs>
             <linearGradient id="colorPositive" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={1}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0.6}/>
+              <stop offset="5%" stopColor="#10B981" stopOpacity={1}/>
+              <stop offset="95%" stopColor="#10B981" stopOpacity={0.6}/>
             </linearGradient>
             <linearGradient id="colorNegative" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.6}/>
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={1}/>
+              <stop offset="5%" stopColor="#EF4444" stopOpacity={0.7}/>
+              <stop offset="95%" stopColor="#EF4444" stopOpacity={1}/>
             </linearGradient>
             <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#2962ff" stopOpacity={1}/>
-              <stop offset="95%" stopColor="#2962ff" stopOpacity={0.6}/>
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={1}/>
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.6}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
-          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 12}} />
+          <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="var(--border)" strokeOpacity={0.5} />
+          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500}} dy={10} />
           <YAxis tickFormatter={(val) => {
             if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
             if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
             return `₹${val}`;
-          }} axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 12}} />
+          }} axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500}} dx={-10} />
           <Tooltip content={<CustomTooltip />} cursor={{fill: 'var(--bg-main)', opacity: 0.5}} />
           <Bar dataKey="transparent" stackId="a" fill="transparent" isAnimationActive={false} />
-          <Bar dataKey="positive" stackId="a" fill="url(#colorPositive)" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="negative" stackId="a" fill="url(#colorNegative)" radius={[0, 0, 4, 4]} />
-          <Bar dataKey="total" stackId="a" fill="url(#colorTotal)" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="positive" stackId="a" fill="url(#colorPositive)" radius={[8, 8, 8, 8]} />
+          <Bar dataKey="negative" stackId="a" fill="url(#colorNegative)" radius={[8, 8, 8, 8]} />
+          <Bar dataKey="total" stackId="a" fill="url(#colorTotal)" radius={[8, 8, 8, 8]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
