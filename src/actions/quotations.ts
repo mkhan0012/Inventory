@@ -17,9 +17,11 @@ export async function createQuotation(data: {
   items: Array<{ productId: string; quantity: number; rate: number }>;
   tax: number;
   date?: string;
+  discount?: number;
 }) {
   const subtotal = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const total = subtotal + data.tax;
+  const discountAmount = data.discount || 0;
+  const total = subtotal - discountAmount + data.tax;
 
   const quotation = await prisma.$transaction(async (tx) => {
     return await tx.quotation.create({
@@ -28,6 +30,7 @@ export async function createQuotation(data: {
         date: data.date ? new Date(data.date) : undefined,
         customerId: data.customerId,
         subtotal,
+        discount: discountAmount,
         tax: data.tax,
         total,
         items: {

@@ -29,9 +29,11 @@ export async function createInvoice(data: {
   tax: number;
   status: string;
   date?: string;
+  discount?: number;
 }) {
   const subtotal = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const total = subtotal + data.tax;
+  const discountAmount = data.discount || 0;
+  const total = subtotal - discountAmount + data.tax;
 
   const invoice = await prisma.$transaction(async (tx) => {
     const productCache = new Map<string, number>();
@@ -66,6 +68,7 @@ export async function createInvoice(data: {
         date: data.date ? new Date(data.date) : undefined,
         customerId: data.customerId,
         subtotal,
+        discount: discountAmount,
         tax: data.tax,
         total,
         status: data.status,
@@ -234,9 +237,11 @@ export async function createDirectSale(data: {
   items: Array<{ productId: string; quantity: number; rate: number }>;
   tax: number;
   date?: string;
+  discount?: number;
 }) {
   const subtotal = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const total = subtotal + data.tax;
+  const discountAmount = data.discount || 0;
+  const total = subtotal - discountAmount + data.tax;
 
   const directSale = await prisma.$transaction(async (tx) => {
     const productCache = new Map<string, number>();
@@ -270,6 +275,7 @@ export async function createDirectSale(data: {
         saleNo: `DS-${Date.now().toString().substring(7)}`,
         date: data.date ? new Date(data.date) : undefined,
         subtotal,
+        discount: discountAmount,
         tax: data.tax,
         total,
         items: {

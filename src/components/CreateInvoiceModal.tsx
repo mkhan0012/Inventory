@@ -68,8 +68,10 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
     setItems(items.filter((_, i) => i !== index));
   };
 
+  const [discount, setDiscount] = useState(0);
+
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
-  const total = subtotal + tax;
+  const total = subtotal - discount + tax;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +86,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
         customerId,
         items,
         tax,
+        discount,
         status,
         date: date ? date : undefined
       });
@@ -322,6 +325,13 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-muted)', marginBottom: '12px' }}>
                     <span>Subtotal:</span>
                     <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>₹{subtotal.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Discount (-):</span>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: '13px' }}>₹</span>
+                      <input type="number" min="0" step="0.01" value={discount} onChange={e => setDiscount(Number(e.target.value))} style={{ width: '120px', padding: '8px 8px 8px 24px', textAlign: 'right', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)', fontWeight: 500 }} />
+                    </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Tax Amount (+):</span>

@@ -35,6 +35,7 @@ model Product {
   purchaseItems PurchaseItem[]
   quotationItems QuotationItem[]
   directSaleItems DirectSaleItem[]
+  salesReturnItems SalesReturnItem[]
 }
 
 model Customer {
@@ -50,6 +51,7 @@ model Customer {
   invoices Invoice[]
   quotations Quotation[]
   payments Payment[] @relation("CustomerPayments")
+  salesReturns SalesReturn[]
 }
 
 model Supplier {
@@ -70,6 +72,7 @@ model Invoice {
   invoiceNo  String   @unique
   date       DateTime @default(now())
   subtotal   Float    @default(0.0)
+  discount   Float    @default(0.0)
   tax        Float    @default(0.0)
   total      Float    @default(0.0)
   status     String   @default("PAID") // "PAID", "DUE"
@@ -157,6 +160,7 @@ model Quotation {
   quoteNo    String   @unique
   date       DateTime @default(now())
   subtotal   Float    @default(0.0)
+  discount   Float    @default(0.0)
   tax        Float    @default(0.0)
   total      Float    @default(0.0)
   createdAt  DateTime @default(now())
@@ -204,6 +208,7 @@ model DirectSale {
   saleNo     String   @unique
   date       DateTime @default(now())
   subtotal   Float    @default(0.0)
+  discount   Float    @default(0.0)
   tax        Float    @default(0.0)
   total      Float    @default(0.0)
   createdAt  DateTime @default(now())
@@ -231,4 +236,30 @@ model ProfitAllocation {
   description String
   amount      Float
   date        DateTime @default(now())
+}
+
+model SalesReturn {
+  id          String   @id @default(cuid())
+  returnNo    String   @unique
+  date        DateTime @default(now())
+  totalAmount Float    @default(0.0)
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  customerId  String?
+  customer    Customer? @relation(fields: [customerId], references: [id])
+
+  items       SalesReturnItem[]
+}
+
+model SalesReturnItem {
+  id           String  @id @default(cuid())
+  quantity     Float
+  refundAmount Float
+
+  returnId     String
+  salesReturn  SalesReturn @relation(fields: [returnId], references: [id], onDelete: Cascade)
+
+  productId    String
+  product      Product @relation(fields: [productId], references: [id])
 }

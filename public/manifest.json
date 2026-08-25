@@ -1,0 +1,16 @@
+{
+  "name": "Bharat Hydraulics POS",
+  "short_name": "BharatPOS",
+  "description": "Inventory Management and POS System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#18181b",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon"
+    }
+  ]
+}

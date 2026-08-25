@@ -4,7 +4,7 @@ import { getMonthProfit, getProfitAllocations } from "@/actions/profit-allocatio
 export default async function ProfitManagementPage({
   searchParams
 }: {
-  searchParams: Promise<{ month?: string; year?: string }> | { month?: string; year?: string }
+  searchParams: Promise<{ month?: string; year?: string }>
 }) {
   const resolvedParams = await Promise.resolve(searchParams);
   

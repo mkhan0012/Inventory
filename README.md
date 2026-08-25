@@ -46,7 +46,7 @@ To run this project locally on your machine:
    DATABASE_URL="your_neon_postgres_url"
    NEXTAUTH_SECRET="your_secret_key"
    NEXTAUTH_URL="http://localhost:3000"
-   GROQ_API_KEY="your_groq_api_key"
+   GEMINI_API_KEY="your_gemini_api_key"
    ```
 
 4. **Sync the Database & Seed Users:**
@@ -66,7 +66,7 @@ To run this project locally on your machine:
 This app is fully optimized for Vercel's serverless environment.
 
 1. Import this repository into your Vercel Dashboard.
-2. In the deployment settings, add all of your Environment Variables (`DATABASE_URL`, `NEXTAUTH_SECRET`, `GROQ_API_KEY`).
+2. In the deployment settings, add all of your Environment Variables (`DATABASE_URL`, `NEXTAUTH_SECRET`, `GEMINI_API_KEY`).
 3. Set `NEXTAUTH_URL` to your live Vercel domain (e.g., `https://bharat-hydraulics.vercel.app`).
 4. Vercel will automatically run `npm run build` and launch your production application!
 

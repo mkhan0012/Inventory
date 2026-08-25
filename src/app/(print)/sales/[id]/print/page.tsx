@@ -129,6 +129,12 @@ export default async function PrintInvoice({ params }: { params: Promise<{ id: s
                 <span>Subtotal:</span>
                 <span>₹{invoice.subtotal.toFixed(2)}</span>
               </div>
+              {(invoice.discount > 0) && (
+                <div className="total-row">
+                  <span>Discount:</span>
+                  <span>-₹{invoice.discount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="total-row">
                 <span>Tax:</span>
                 <span>₹{invoice.tax.toFixed(2)}</span>

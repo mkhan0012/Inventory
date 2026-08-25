@@ -8,6 +8,7 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 export const metadata: Metadata = {
   title: "Bharat Hydraulics - Inventory Management",
   description: "Advanced inventory management system for Bharat Hydraulics",
+  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
