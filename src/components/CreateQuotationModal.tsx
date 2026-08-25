@@ -171,7 +171,7 @@ export default function CreateQuotationModal({ customers, products }: { customer
                         <option value="">-- Select --</option>
                         {products.map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name} | Cat: {p.category} | Stock: {p.stock} | Buy: ₹{p.purchasePrice} | Sell: ₹{p.price}
+                            {p.name} (Stock: {p.stock})
                           </option>
                         ))}
                       </select>

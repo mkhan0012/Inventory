@@ -117,7 +117,7 @@ export default function CreateStockAdjustmentModal({ products }: { products: any
                         <option value="">-- Select --</option>
                         {products.map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name} | Current Stock: {p.stock}
+                            {p.name} (Stock: {p.stock})
                           </option>
                         ))}
                       </select>

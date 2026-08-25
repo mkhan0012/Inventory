@@ -110,7 +110,7 @@ export default function CreatePurchaseOrderModal({ suppliers, products }: { supp
                         <option value="">-- Select --</option>
                         {products.map(p => (
                           <option key={p.id} value={p.id}>
-                            {p.name} | Stock: {p.stock}
+                            {p.name} (Stock: {p.stock})
                           </option>
                         ))}
                       </select>

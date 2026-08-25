@@ -249,7 +249,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                           <option value="">-- Select Product --</option>
                           {products.map(p => (
                             <option key={p.id} value={p.id}>
-                              {p.name} ({p.code}) - ₹{p.price} | Stock: {p.stock}
+                              {p.name} (Stock: {p.stock})
                             </option>
                           ))}
                         </select>
