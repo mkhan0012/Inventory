@@ -17,25 +17,33 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  name        String
-  barcode     String?  @unique
-  category    String
-  stock       Float      @default(0.0)
-  location    String   @default("Store Front") // e.g. "Store Front", "Warehouse"
-  unit        String
-  price       Float    @default(0.0)
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  barcode       String?  @unique
+  category      String
+  stock         Float    @default(0.0)
+  location      String   @default("Store Front")
+  unit          String
+  price         Float    @default(0.0)
   purchasePrice Float  @default(0.0)
-  status      String   @default("In Stock") // "In Stock", "Low Stock", "Out of Stock"
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  hsnCode       String?
+  taxRate       Float?
+  status        String   @default("In Stock")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  invoiceItems InvoiceItem[]
-  purchaseItems PurchaseItem[]
-  quotationItems QuotationItem[]
-  directSaleItems DirectSaleItem[]
-  salesReturnItems SalesReturnItem[]
+  invoiceItems         InvoiceItem[]
+  purchaseItems        PurchaseItem[]
+  quotationItems       QuotationItem[]
+  directSaleItems      DirectSaleItem[]
+  salesReturnItems     SalesReturnItem[]
+  purchaseOrderItems   PurchaseOrderItem[]
+  stockAdjustmentItems StockAdjustmentItem[]
+  stockLedger          StockLedger[]
+
+  @@index([category])
+  @@index([status])
 }
 
 model Customer {
@@ -52,6 +60,8 @@ model Customer {
   quotations Quotation[]
   payments Payment[] @relation("CustomerPayments")
   salesReturns SalesReturn[]
+
+  @@index([name])
 }
 
 model Supplier {
@@ -64,7 +74,10 @@ model Supplier {
   updatedAt     DateTime @updatedAt
 
   purchases Purchase[]
+  purchaseOrders PurchaseOrder[]
   payments Payment[] @relation("SupplierPayments")
+
+  @@index([name])
 }
 
 model Invoice {
@@ -75,13 +88,18 @@ model Invoice {
   discount   Float    @default(0.0)
   tax        Float    @default(0.0)
   total      Float    @default(0.0)
-  status     String   @default("PAID") // "PAID", "DUE"
+  status     String   @default("PAID")
+  isDeleted  Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
   items InvoiceItem[]
+
+  @@index([date])
+  @@index([customerId])
+  @@index([status])
 }
 
 model InvoiceItem {
@@ -96,6 +114,9 @@ model InvoiceItem {
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([invoiceId])
+  @@index([productId])
 }
 
 model Purchase {
@@ -103,13 +124,18 @@ model Purchase {
   purchaseNo String   @unique
   date       DateTime @default(now())
   total      Float    @default(0.0)
-  status     String   @default("PAID") // "PAID", "DUE"
+  status     String   @default("PAID")
+  isDeleted  Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   supplierId String
   supplier   Supplier @relation(fields: [supplierId], references: [id])
 
   items PurchaseItem[]
+
+  @@index([date])
+  @@index([supplierId])
+  @@index([status])
 }
 
 model PurchaseItem {
@@ -123,32 +149,80 @@ model PurchaseItem {
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([purchaseId])
+  @@index([productId])
+}
+
+model PurchaseOrder {
+  id         String   @id @default(cuid())
+  poNumber   String   @unique
+  date       DateTime @default(now())
+  total      Float    @default(0.0)
+  status     String   @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+
+  items PurchaseOrderItem[]
+
+  @@index([date])
+  @@index([supplierId])
+  @@index([status])
+}
+
+model PurchaseOrderItem {
+  id        String  @id @default(cuid())
+  quantity  Float
+  rate      Float
+  amount    Float
+
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@index([purchaseOrderId])
+  @@index([productId])
 }
 
 model Expense {
   id          String   @id @default(cuid())
   description String
   amount      Float
-  category    String   // e.g. "Electricity", "Tea", "Transport", "Misc"
+  category    String
   date        DateTime @default(now())
+  isDeleted   Boolean  @default(false)
+
+  @@index([date])
+  @@index([category])
 }
 
 model Payment {
   id          String   @id @default(cuid())
   amount      Float
-  type        String   // "INCOMING" (from Customer), "OUTGOING" (to Supplier)
-  method      String   // "CASH", "UPI", "BANK_TRANSFER"
+  type        String
+  method      String
   date        DateTime @default(now())
+  isDeleted   Boolean  @default(false)
   
   customerId  String?
   customer    Customer? @relation("CustomerPayments", fields: [customerId], references: [id])
 
   supplierId  String?
   supplier    Supplier? @relation("SupplierPayments", fields: [supplierId], references: [id])
+
+  @@index([date])
+  @@index([customerId])
+  @@index([supplierId])
+  @@index([type])
 }
 
 model Settings {
-  id          String   @id @default("singleton") // enforce single row
+  id          String   @id @default("singleton")
   shopName    String   @default("Bharat Hydraulics")
   address     String   @default("")
   gstNumber   String   @default("")
@@ -163,12 +237,16 @@ model Quotation {
   discount   Float    @default(0.0)
   tax        Float    @default(0.0)
   total      Float    @default(0.0)
+  isDeleted  Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
   items QuotationItem[]
+
+  @@index([date])
+  @@index([customerId])
 }
 
 model QuotationItem {
@@ -182,6 +260,9 @@ model QuotationItem {
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([quotationId])
+  @@index([productId])
 }
 
 model ActivityLog {
@@ -191,6 +272,8 @@ model ActivityLog {
   userName  String
   userRole  String
   timestamp DateTime @default(now())
+
+  @@index([timestamp])
 }
 
 model HistoricalRecord {
@@ -201,6 +284,8 @@ model HistoricalRecord {
   purchases Float    @default(0.0)
   notes     String?
   createdAt DateTime @default(now())
+
+  @@index([date])
 }
 
 model DirectSale {
@@ -211,9 +296,12 @@ model DirectSale {
   discount   Float    @default(0.0)
   tax        Float    @default(0.0)
   total      Float    @default(0.0)
+  isDeleted  Boolean  @default(false)
   createdAt  DateTime @default(now())
 
   items DirectSaleItem[]
+
+  @@index([date])
 }
 
 model DirectSaleItem {
@@ -228,6 +316,9 @@ model DirectSaleItem {
 
   productId String
   product   Product @relation(fields: [productId], references: [id])
+
+  @@index([directSaleId])
+  @@index([productId])
 }
 
 model ProfitAllocation {
@@ -244,12 +335,16 @@ model SalesReturn {
   date        DateTime @default(now())
   totalAmount Float    @default(0.0)
   reason      String?
+  isDeleted   Boolean  @default(false)
   createdAt   DateTime @default(now())
 
   customerId  String?
   customer    Customer? @relation(fields: [customerId], references: [id])
 
   items       SalesReturnItem[]
+
+  @@index([date])
+  @@index([customerId])
 }
 
 model SalesReturnItem {
@@ -262,4 +357,52 @@ model SalesReturnItem {
 
   productId    String
   product      Product @relation(fields: [productId], references: [id])
+
+  @@index([returnId])
+  @@index([productId])
+}
+
+model StockAdjustment {
+  id          String   @id @default(cuid())
+  adjustNo    String   @unique
+  date        DateTime @default(now())
+  reason      String   // e.g., "Damage", "Audit", "Theft"
+  notes       String?
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  items       StockAdjustmentItem[]
+
+  @@index([date])
+}
+
+model StockAdjustmentItem {
+  id                String  @id @default(cuid())
+  quantityChanged   Float   // Can be negative or positive
+  
+  stockAdjustmentId String
+  stockAdjustment   StockAdjustment @relation(fields: [stockAdjustmentId], references: [id], onDelete: Cascade)
+
+  productId         String
+  product           Product @relation(fields: [productId], references: [id])
+
+  @@index([stockAdjustmentId])
+  @@index([productId])
+}
+
+model StockLedger {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  type        String   // SALE, PURCHASE, RETURN, ADJUSTMENT, INITIAL
+  quantity    Float    // amount changed (+/-)
+  balance     Float    // resulting stock balance
+  referenceId String?  // Invoice ID, Purchase ID, etc.
+  notes       String?
+  
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+
+  @@index([date])
+  @@index([productId])
+  @@index([type])
 }

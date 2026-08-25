@@ -2,11 +2,11 @@
 import prisma from '@/lib/prisma';
 
 export async function getMonthlyComparisonData() {
-  const sales = await prisma.invoice.findMany();
-  const purchases = await prisma.purchase.findMany();
-  const expenses = await prisma.expense.findMany();
+  const sales = await prisma.invoice.findMany({ where: { isDeleted: false } });
+  const purchases = await prisma.purchase.findMany({ where: { isDeleted: false } });
+  const expenses = await prisma.expense.findMany({ where: { isDeleted: false } });
   const historical = await prisma.historicalRecord.findMany();
-  const directSales = await prisma.directSale.findMany();
+  const directSales = await prisma.directSale.findMany({ where: { isDeleted: false } });
 
   // Find the earliest date
   let earliestDate = new Date();
@@ -91,13 +91,13 @@ export async function getAdvancedBiData(startOfMonthStr: string, endOfMonthStr: 
   const endOfLastYear = new Date(endOfMonth);
   endOfLastYear.setFullYear(endOfLastYear.getFullYear() - 1);
 
-  const thisMonthSales = await prisma.invoice.findMany({ where: { date: { gte: startOfMonth, lte: endOfMonth } }, include: { items: true } });
-  const thisMonthDirect = await prisma.directSale.findMany({ where: { date: { gte: startOfMonth, lte: endOfMonth } }, include: { items: true } });
+  const thisMonthSales = await prisma.invoice.findMany({ where: { isDeleted: false, date: { gte: startOfMonth, lte: endOfMonth } }, include: { items: true } });
+  const thisMonthDirect = await prisma.directSale.findMany({ where: { isDeleted: false, date: { gte: startOfMonth, lte: endOfMonth } }, include: { items: true } });
   const thisMonthHist = await prisma.historicalRecord.findMany({ where: { date: { gte: startOfMonth, lte: endOfMonth } } });
-  const thisMonthExpenses = await prisma.expense.findMany({ where: { date: { gte: startOfMonth, lte: endOfMonth } } });
+  const thisMonthExpenses = await prisma.expense.findMany({ where: { isDeleted: false, date: { gte: startOfMonth, lte: endOfMonth } } });
 
-  const lastYearSales = await prisma.invoice.findMany({ where: { date: { gte: startOfLastYear, lte: endOfLastYear } }, include: { items: true } });
-  const lastYearDirect = await prisma.directSale.findMany({ where: { date: { gte: startOfLastYear, lte: endOfLastYear } }, include: { items: true } });
+  const lastYearSales = await prisma.invoice.findMany({ where: { isDeleted: false, date: { gte: startOfLastYear, lte: endOfLastYear } }, include: { items: true } });
+  const lastYearDirect = await prisma.directSale.findMany({ where: { isDeleted: false, date: { gte: startOfLastYear, lte: endOfLastYear } }, include: { items: true } });
   const lastYearHist = await prisma.historicalRecord.findMany({ where: { date: { gte: startOfLastYear, lte: endOfLastYear } } });
 
   const tmTotalRevenue = thisMonthSales.reduce((a, b) => a + b.total, 0) + thisMonthDirect.reduce((a, b) => a + b.total, 0) + thisMonthHist.reduce((a, b) => a + b.sales, 0);
@@ -122,11 +122,11 @@ export async function getAdvancedBiData(startOfMonthStr: string, endOfMonthStr: 
 
   // --- Category Analytics ---
   const invoiceItemsWithProduct = await prisma.invoiceItem.findMany({
-    where: { invoice: { date: { gte: startOfMonth, lte: endOfMonth } } },
+    where: { invoice: { isDeleted: false, date: { gte: startOfMonth, lte: endOfMonth } } },
     include: { product: true }
   });
   const dsItemsWithProduct = await prisma.directSaleItem.findMany({
-    where: { directSale: { date: { gte: startOfMonth, lte: endOfMonth } } },
+    where: { directSale: { isDeleted: false, date: { gte: startOfMonth, lte: endOfMonth } } },
     include: { product: true }
   });
 
@@ -196,11 +196,11 @@ export async function getCashFlowAndRiskData() {
   thirtyDaysAgo.setHours(0, 0, 0, 0);
 
   const payments = await prisma.payment.findMany({
-    where: { date: { gte: thirtyDaysAgo } }
+    where: { isDeleted: false, date: { gte: thirtyDaysAgo } }
   });
 
   const expenses = await prisma.expense.findMany({
-    where: { date: { gte: thirtyDaysAgo } }
+    where: { isDeleted: false, date: { gte: thirtyDaysAgo } }
   });
 
   // Build daily cash flow map

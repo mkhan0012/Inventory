@@ -20,16 +20,18 @@ export async function getDashboardStats() {
 
   // Fetch all active invoices for all-time calculation
   const allInvoices = await prisma.invoice.findMany({
+    where: { isDeleted: false },
     include: { items: true }
   });
   
   const allDirectSales = await prisma.directSale.findMany({
+    where: { isDeleted: false },
     include: { items: true }
   });
 
   // Fetch all active purchases and expenses for all-time calculation
-  const allPurchases = await prisma.purchase.findMany();
-  const allExpenses = await prisma.expense.findMany();
+  const allPurchases = await prisma.purchase.findMany({ where: { isDeleted: false } });
+  const allExpenses = await prisma.expense.findMany({ where: { isDeleted: false } });
 
   const monthlyInvoices = allInvoices.filter(inv => inv.date >= startOfMonth);
   const dailyInvoices = allInvoices.filter(inv => inv.date >= startOfDay);
@@ -221,12 +223,14 @@ export async function getDashboardStats() {
   };
 
   const recentInvoices = await prisma.invoice.findMany({
+    where: { isDeleted: false },
     take: 5,
     orderBy: { createdAt: 'desc' },
     include: { customer: true }
   });
 
   const recentDirectSales = await prisma.directSale.findMany({
+    where: { isDeleted: false },
     take: 5,
     orderBy: { createdAt: 'desc' }
   });

@@ -39,7 +39,9 @@ const navGroups = [
       { name: 'Sales / Bills', path: '/sales', icon: Receipt },
       { name: 'Sales Returns', path: '/returns', icon: Receipt },
       { name: 'Purchases', path: '/purchases', icon: ShoppingCart, ownerOnly: true },
+      { name: 'Purchase Orders', path: '/purchase-orders', icon: ShoppingCart, ownerOnly: true },
       { name: 'Inventory', path: '/inventory', icon: Package },
+      { name: 'Stock Adjust.', path: '/inventory/adjustments', icon: Package, ownerOnly: true },
     ]
   },
   {

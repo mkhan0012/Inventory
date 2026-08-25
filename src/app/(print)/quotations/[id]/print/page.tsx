@@ -59,6 +59,8 @@ export default async function PrintQuotation({ params }: { params: Promise<{ id:
                 <tr>
                   <th>S.No</th>
                   <th>Item Description</th>
+                  <th className="text-center">HSN/SAC</th>
+                  <th className="text-center">GST %</th>
                   <th className="text-center">Qty</th>
                   <th className="text-right">Rate</th>
                   <th className="text-right">Amount</th>
@@ -69,6 +71,8 @@ export default async function PrintQuotation({ params }: { params: Promise<{ id:
                   <tr key={item.id}>
                     <td>{index + 1}</td>
                     <td>{item.product.name}</td>
+                    <td className="text-center">{item.product.hsnCode || '-'}</td>
+                    <td className="text-center">{item.product.taxRate ? `${item.product.taxRate}%` : '-'}</td>
                     <td className="text-center">{item.quantity}</td>
                     <td className="text-right">₹{item.rate.toFixed(2)}</td>
                     <td className="text-right">₹{item.amount.toFixed(2)}</td>
@@ -91,8 +95,12 @@ export default async function PrintQuotation({ params }: { params: Promise<{ id:
                 </div>
               )}
               <div className="total-row">
-                <span>Tax:</span>
-                <span>₹{quotation.tax.toFixed(2)}</span>
+                <span>CGST (Half):</span>
+                <span>₹{(quotation.tax / 2).toFixed(2)}</span>
+              </div>
+              <div className="total-row">
+                <span>SGST (Half):</span>
+                <span>₹{(quotation.tax / 2).toFixed(2)}</span>
               </div>
               <div className="total-row grand-total">
                 <span>Grand Total:</span>

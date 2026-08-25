@@ -94,6 +94,16 @@ export default function AddProductModal() {
                   <input name="price" type="number" step="0.01" required placeholder="0.00" />
                 </div>
               </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>HSN Code (Optional)</label>
+                  <input name="hsnCode" placeholder="e.g. 8412" />
+                </div>
+                <div className="form-group">
+                  <label>Tax Rate % (Optional)</label>
+                  <input name="taxRate" type="number" step="0.1" placeholder="18" />
+                </div>
+              </div>
               
               <div className="modal-footer">
                 <button type="button" className="btn-outline" onClick={() => setIsOpen(false)}>Cancel</button>

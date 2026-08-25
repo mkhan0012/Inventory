@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getQuotations() {
   return await prisma.quotation.findMany({
+    where: { isDeleted: false },
     include: {
       customer: true,
       items: { include: { product: true } }

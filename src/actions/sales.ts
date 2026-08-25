@@ -8,11 +8,12 @@ import { logActivity } from "./activity";
 export async function getInvoices(search?: string) {
   return await prisma.invoice.findMany({
     where: search ? {
+      isDeleted: false,
       OR: [
         { invoiceNo: { contains: search } },
         { customer: { name: { contains: search } } }
       ]
-    } : undefined,
+    } : { isDeleted: false },
     include: {
       customer: true,
       items: {
@@ -38,30 +39,12 @@ export async function createInvoice(data: {
   const invoice = await prisma.$transaction(async (tx) => {
     const productCache = new Map<string, number>();
 
-    // 1. Update stock
     for (const item of data.items) {
-      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, purchasePrice: true, name: true } });
-      if (!product) throw new Error(`Product not found.`);
-      productCache.set(product.id, product.purchasePrice);
-      
-      const updatedProduct = await tx.product.update({
-        where: { id: item.productId },
-        data: { stock: { decrement: item.quantity } }
-      });
-
-      if (updatedProduct.stock < 0) {
-        throw new Error(`Insufficient stock for ${updatedProduct.name}`);
-      }
-
-      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
-      
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { status }
-      });
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, purchasePrice: true } });
+      if (product) productCache.set(product.id, product.purchasePrice);
     }
 
-    // 2. Create Invoice
+    // 1. Create Invoice
     const newInvoice = await tx.invoice.create({
       data: {
         invoiceNo: `INV-${Date.now().toString().substring(7)}`,
@@ -83,6 +66,38 @@ export async function createInvoice(data: {
         }
       }
     });
+
+    // 2. Update stock
+    for (const item of data.items) {
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, name: true } });
+      if (!product) throw new Error(`Product not found.`);
+      
+      const updatedProduct = await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } }
+      });
+
+      if (updatedProduct.stock < 0) {
+        throw new Error(`Insufficient stock for ${updatedProduct.name}`);
+      }
+
+      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
+      
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { status }
+      });
+
+      await tx.stockLedger.create({
+        data: {
+          type: 'SALE',
+          quantity: -item.quantity,
+          balance: updatedProduct.stock,
+          referenceId: newInvoice.id,
+          productId: item.productId
+        }
+      });
+    }
 
     // 3. Update Customer & Check Credit Limit
     const dueAmountIncrement = data.status === 'DUE' ? total : 0;
@@ -192,10 +207,20 @@ export async function deleteInvoice(id: string) {
           where: { id: item.productId },
           data: { status }
         });
+
+        await tx.stockLedger.create({
+          data: {
+            type: 'ADJUSTMENT',
+            quantity: item.quantity,
+            balance: updatedProduct.stock,
+            referenceId: invoice.id,
+            productId: item.productId
+          }
+        });
       }
 
-      // Delete Invoice
-      await tx.invoice.delete({ where: { id } });
+      // Delete Invoice (Soft Delete)
+      await tx.invoice.update({ where: { id }, data: { isDeleted: true } });
 
       await logActivity(
         "Delete Invoice", 
@@ -216,8 +241,9 @@ export async function deleteInvoice(id: string) {
 export async function getDirectSales(search?: string) {
   const directSales = await prisma.directSale.findMany({
     where: search ? {
+      isDeleted: false,
       saleNo: { contains: search }
-    } : undefined,
+    } : { isDeleted: false },
     include: {
       items: {
         include: { product: true }
@@ -246,30 +272,12 @@ export async function createDirectSale(data: {
   const directSale = await prisma.$transaction(async (tx) => {
     const productCache = new Map<string, number>();
 
-    // 1. Update stock
     for (const item of data.items) {
-      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, purchasePrice: true, name: true } });
-      if (!product) throw new Error(`Product not found.`);
-      productCache.set(product.id, product.purchasePrice);
-      
-      const updatedProduct = await tx.product.update({
-        where: { id: item.productId },
-        data: { stock: { decrement: item.quantity } }
-      });
-
-      if (updatedProduct.stock < 0) {
-        throw new Error(`Insufficient stock for ${updatedProduct.name}`);
-      }
-
-      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
-      
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { status }
-      });
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, purchasePrice: true } });
+      if (product) productCache.set(product.id, product.purchasePrice);
     }
 
-    // 2. Create Direct Sale
+    // 1. Create Direct Sale
     const newDirectSale = await tx.directSale.create({
       data: {
         saleNo: `DS-${Date.now().toString().substring(7)}`,
@@ -289,6 +297,38 @@ export async function createDirectSale(data: {
         }
       }
     });
+
+    // 2. Update stock
+    for (const item of data.items) {
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true, name: true } });
+      if (!product) throw new Error(`Product not found.`);
+      
+      const updatedProduct = await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { decrement: item.quantity } }
+      });
+
+      if (updatedProduct.stock < 0) {
+        throw new Error(`Insufficient stock for ${updatedProduct.name}`);
+      }
+
+      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
+      
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { status }
+      });
+
+      await tx.stockLedger.create({
+        data: {
+          type: 'SALE',
+          quantity: -item.quantity,
+          balance: updatedProduct.stock,
+          referenceId: newDirectSale.id,
+          productId: item.productId
+        }
+      });
+    }
 
     return newDirectSale;
   });
@@ -332,10 +372,20 @@ export async function deleteDirectSale(id: string) {
           where: { id: item.productId },
           data: { status }
         });
+
+        await tx.stockLedger.create({
+          data: {
+            type: 'ADJUSTMENT',
+            quantity: item.quantity,
+            balance: updatedProduct.stock,
+            referenceId: directSale.id,
+            productId: item.productId
+          }
+        });
       }
 
-      // Delete Sale
-      await tx.directSale.delete({ where: { id } });
+      // Delete Sale (Soft Delete)
+      await tx.directSale.update({ where: { id }, data: { isDeleted: true } });
 
       await logActivity(
         "Delete Direct Sale", 

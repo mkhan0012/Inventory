@@ -4,6 +4,7 @@ import { Plus, X, Trash2, ScanLine, Sparkles } from 'lucide-react';
 import { createInvoice, getUpsellSuggestions } from '@/actions/sales';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
+import BarcodeScanner from './BarcodeScanner';
 import './AddProductModal.css';
 
 export default function CreateInvoiceModal({ customers, products }: { customers: any[], products: any[] }) {
@@ -16,6 +17,7 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
   const [date, setDate] = useState('');
   const [items, setItems] = useState<{ productId: string; quantity: number; rate: number }[]>([]);
   const [barcodeInput, setBarcodeInput] = useState('');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [createdInvoiceId, setCreatedInvoiceId] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<any[]>([]);
 
@@ -188,39 +190,44 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
                     </label>
                     <span style={{ fontSize: '11px', background: 'rgba(139,92,246,0.1)', color: '#8b5cf6', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>AUTO-DETECT</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '12px', background: 'var(--bg-card)', padding: '4px 12px', boxShadow: '0 0 0 4px rgba(139,92,246,0.05), inset 0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden' }}>
-                     <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'linear-gradient(to bottom, var(--primary), #8b5cf6)' }}></div>
-                     <input 
-                       type="text" 
-                       placeholder="Scan barcode or type exact product name + Enter to trigger AI match..." 
-                       value={barcodeInput} 
-                       onChange={e => setBarcodeInput(e.target.value)} 
-                       onKeyDown={(e) => {
-                         if (e.key === 'Enter') {
-                           e.preventDefault();
-                           const search = barcodeInput.toLowerCase().trim();
-                           const product = products.find(p => 
-                             (p.barcode && p.barcode.toLowerCase() === search) || 
-                             p.code.toLowerCase() === search ||
-                             p.name.toLowerCase() === search
-                           );
-                           if (product) {
-                             const existingIndex = items.findIndex(i => i.productId === product.id);
-                             if (existingIndex >= 0) {
-                               const newItems = [...items];
-                               newItems[existingIndex].quantity += 1;
-                               setItems(newItems);
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', border: '1px solid rgba(139,92,246,0.3)', borderRadius: '12px', background: 'var(--bg-card)', padding: '4px 12px', boxShadow: '0 0 0 4px rgba(139,92,246,0.05), inset 0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden' }}>
+                       <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'linear-gradient(to bottom, var(--primary), #8b5cf6)' }}></div>
+                       <input 
+                         type="text" 
+                         placeholder="Scan barcode or type exact product name + Enter to trigger AI match..." 
+                         value={barcodeInput} 
+                         onChange={e => setBarcodeInput(e.target.value)} 
+                         onKeyDown={(e) => {
+                           if (e.key === 'Enter') {
+                             e.preventDefault();
+                             const search = barcodeInput.toLowerCase().trim();
+                             const product = products.find(p => 
+                               (p.barcode && p.barcode.toLowerCase() === search) || 
+                               p.code.toLowerCase() === search ||
+                               p.name.toLowerCase() === search
+                             );
+                             if (product) {
+                               const existingIndex = items.findIndex(i => i.productId === product.id);
+                               if (existingIndex >= 0) {
+                                 const newItems = [...items];
+                                 newItems[existingIndex].quantity += 1;
+                                 setItems(newItems);
+                               } else {
+                                 setItems([...items, { productId: product.id, quantity: 1, rate: product.price }]);
+                               }
+                               setBarcodeInput('');
                              } else {
-                               setItems([...items, { productId: product.id, quantity: 1, rate: product.price }]);
+                               toast.error("AI couldn't find a match! Try searching manually.");
                              }
-                             setBarcodeInput('');
-                           } else {
-                             toast.error("AI couldn't find a match! Try searching manually.");
                            }
-                         }
-                       }}
-                       style={{ border: 'none', background: 'transparent', padding: '12px 12px 12px 16px', color: 'var(--text-main)', width: '100%', outline: 'none', fontSize: '14px', fontWeight: 500 }} 
-                     />
+                         }}
+                         style={{ border: 'none', background: 'transparent', padding: '12px 12px 12px 16px', color: 'var(--text-main)', width: '100%', outline: 'none', fontSize: '14px', fontWeight: 500 }} 
+                       />
+                    </div>
+                    <button type="button" onClick={() => setIsScannerOpen(true)} className="btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', borderRadius: '12px', height: '100%' }}>
+                      <Camera size={18} /> Open Camera
+                    </button>
                   </div>
               </div>
 
@@ -357,6 +364,29 @@ export default function CreateInvoiceModal({ customers, products }: { customers:
             )}
           </div>
         </div>
+      )}
+
+      {isScannerOpen && (
+        <BarcodeScanner
+          onClose={() => setIsScannerOpen(false)}
+          onScan={(barcode) => {
+            const product = products.find(p => p.barcode === barcode || p.code === barcode);
+            if (product) {
+              const existingIndex = items.findIndex(i => i.productId === product.id);
+              if (existingIndex >= 0) {
+                const newItems = [...items];
+                newItems[existingIndex].quantity += 1;
+                setItems(newItems);
+              } else {
+                setItems([...items, { productId: product.id, quantity: 1, rate: product.price }]);
+              }
+              toast.success(`Scanned: ${product.name}`);
+              setIsScannerOpen(false);
+            } else {
+              toast.error("Product with scanned barcode not found!");
+            }
+          }}
+        />
       )}
     </>
   );

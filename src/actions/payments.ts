@@ -5,11 +5,12 @@ import { revalidatePath } from "next/cache";
 export async function getPayments(search?: string) {
   return await prisma.payment.findMany({
     where: search ? {
+      isDeleted: false,
       OR: [
         { customer: { name: { contains: search, mode: 'insensitive' } } },
         { supplier: { name: { contains: search, mode: 'insensitive' } } },
       ]
-    } : undefined,
+    } : { isDeleted: false },
     include: {
       customer: true,
       supplier: true

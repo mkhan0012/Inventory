@@ -84,7 +84,9 @@ const productSchema = z.object({
   location: z.string().min(1, "Location is required"),
   unit: z.string().min(1, "Unit is required"),
   price: z.number().min(0.01, "Price must be at least 0.01"),
-  purchasePrice: z.number().min(0, "Purchase price cannot be negative")
+  purchasePrice: z.number().min(0, "Purchase price cannot be negative"),
+  hsnCode: z.string().optional(),
+  taxRate: z.number().optional()
 });
 
 export async function createProduct(data: {
@@ -96,6 +98,8 @@ export async function createProduct(data: {
   unit: string;
   price: number;
   purchasePrice: number;
+  hsnCode?: string;
+  taxRate?: number;
 }) {
   const result = productSchema.safeParse(data);
   if (!result.success) {
@@ -155,6 +159,8 @@ export async function updateProduct(id: string, data: {
   unit: string;
   price: number;
   purchasePrice: number;
+  hsnCode?: string;
+  taxRate?: number;
 }) {
   const result = productSchema.safeParse(data);
   if (!result.success) {

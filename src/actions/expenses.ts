@@ -5,11 +5,12 @@ import { revalidatePath } from "next/cache";
 export async function getExpenses(search?: string) {
   return await prisma.expense.findMany({
     where: search ? {
+      isDeleted: false,
       OR: [
         { description: { contains: search } },
         { category: { contains: search } }
       ]
-    } : undefined,
+    } : { isDeleted: false },
     orderBy: { date: 'desc' }
   });
 }
@@ -48,7 +49,7 @@ export async function updateExpense(id: string, data: { description: string; amo
 
 export async function deleteExpense(id: string) {
   try {
-    await prisma.expense.delete({ where: { id } });
+    await prisma.expense.update({ where: { id }, data: { isDeleted: true } });
     revalidatePath('/expenses');
     revalidatePath('/');
     return { success: true };
@@ -59,7 +60,7 @@ export async function deleteExpense(id: string) {
 
 export async function bulkDeleteExpenses(ids: string[]) {
   try {
-    await prisma.expense.deleteMany({ where: { id: { in: ids } } });
+    await prisma.expense.updateMany({ where: { id: { in: ids } }, data: { isDeleted: true } });
     revalidatePath('/expenses');
     revalidatePath('/');
     return { success: true };

@@ -8,11 +8,12 @@ import { logActivity } from "./activity";
 export async function getPurchases(search?: string) {
   return await prisma.purchase.findMany({
     where: search ? {
+      isDeleted: false,
       OR: [
         { purchaseNo: { contains: search } },
         { supplier: { name: { contains: search } } }
       ]
-    } : undefined,
+    } : { isDeleted: false },
     include: {
       supplier: true,
       items: { include: { product: true } }
@@ -30,24 +31,7 @@ export async function createPurchase(data: {
   const total = data.items.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
 
   const purchase = await prisma.$transaction(async (tx) => {
-    // 1. Update stock
-    for (const item of data.items) {
-      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true } });
-      if (!product) throw new Error("Product not found");
-      
-      const updatedProduct = await tx.product.update({
-        where: { id: item.productId },
-        data: { stock: { increment: item.quantity } }
-      });
-      
-      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { status }
-      });
-    }
-
-    // 2. Create Purchase
+    // 1. Create Purchase
     const newPurchase = await tx.purchase.create({
       data: {
         purchaseNo: `PUR-${Date.now().toString().substring(7)}`,
@@ -65,6 +49,33 @@ export async function createPurchase(data: {
         }
       }
     });
+
+    // 2. Update stock
+    for (const item of data.items) {
+      const product = await tx.product.findUnique({ where: { id: item.productId }, select: { id: true } });
+      if (!product) throw new Error("Product not found");
+      
+      const updatedProduct = await tx.product.update({
+        where: { id: item.productId },
+        data: { stock: { increment: item.quantity } }
+      });
+      
+      const status = updatedProduct.stock > 10 ? 'In Stock' : updatedProduct.stock > 0 ? 'Low Stock' : 'Out of Stock';
+      await tx.product.update({
+        where: { id: item.productId },
+        data: { status }
+      });
+
+      await tx.stockLedger.create({
+        data: {
+          type: 'PURCHASE',
+          quantity: item.quantity,
+          balance: updatedProduct.stock,
+          referenceId: newPurchase.id,
+          productId: item.productId
+        }
+      });
+    }
 
     // 3. Update Supplier
     const dueAmountIncrement = data.status === 'DUE' ? total : 0;
@@ -124,10 +135,20 @@ export async function deletePurchase(id: string) {
           where: { id: item.productId },
           data: { status }
         });
+
+        await tx.stockLedger.create({
+          data: {
+            type: 'ADJUSTMENT',
+            quantity: -item.quantity,
+            balance: updatedProduct.stock,
+            referenceId: purchase.id,
+            productId: item.productId
+          }
+        });
       }
 
-      // Delete Purchase
-      await tx.purchase.delete({ where: { id } });
+      // Delete Purchase (Soft Delete)
+      await tx.purchase.update({ where: { id }, data: { isDeleted: true } });
 
       await logActivity(
         "Delete Purchase", 
