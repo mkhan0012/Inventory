@@ -65,11 +65,18 @@
     width: 100%;
     min-width: 700px; /* Forces horizontal scroll on mobile */
   }
+  .modal-overlay {
+    align-items: flex-start !important;
+    padding: 16px;
+    overflow-y: auto;
+  }
   .modal-content {
-    width: 95% !important;
-    margin: 10px auto !important;
-    padding: 24px !important;
+    width: 100% !important;
+    margin: auto !important; /* This allows flex-start to work with margin auto */
+    padding: 20px !important;
     border-radius: 16px !important;
+    height: auto;
+    max-height: none !important;
   }
 }
 
