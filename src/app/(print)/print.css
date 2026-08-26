@@ -1,8 +1,8 @@
-/* Executive Bespoke Professional Invoice Styles */
+/* Modern Clean Invoice Styles */
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #111827; /* Charcoal */
+  color: #1f2937;
   margin: 0;
   padding: 0;
   background-color: #f3f4f6;
@@ -21,10 +21,12 @@ body {
   max-width: 100%;
   margin: 0 auto;
   background: #ffffff;
-  padding: 0 0 40px 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 0 0 50px 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   position: relative;
   box-sizing: border-box;
+  border-top: 8px solid #10b981; /* Emerald Green Accent */
+  border-radius: 4px;
 }
 
 .print-content {
@@ -32,83 +34,94 @@ body {
   z-index: 1;
 }
 
-/* Executive Header Block */
+.invoice-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.03;
+  width: 60%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Modern Header Block */
 .print-header-block {
-  background-color: #111827; /* Dark Charcoal */
-  color: #ffffff;
-  padding: 40px 50px;
+  padding: 40px 50px 20px;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Better alignment */
-  margin-bottom: 40px;
+  align-items: flex-start;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 30px;
 }
 
 .company-details {
   display: flex;
-  flex-direction: row; /* Fix alignment: Logo side-by-side with text */
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .company-logo {
-  height: 60px;
+  height: 50px;
   width: auto;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
 .shop-name {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 5px 0;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  color: #111827;
+  letter-spacing: -0.5px;
 }
 
 .shop-address, .shop-gst {
   margin: 0 0 4px 0;
   font-size: 13px;
-  color: #9ca3af;
+  color: #6b7280;
   line-height: 1.5;
 }
 
 .shop-gst {
-  color: #d1d5db;
+  color: #4b5563;
+  font-weight: 500;
+  margin-top: 4px;
 }
 
 .invoice-meta {
   text-align: right;
+  background: #f8fafc;
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 
 .invoice-title {
   margin: 0 0 15px 0;
-  color: #ffffff;
-  font-size: 32px;
-  font-weight: 300;
-  letter-spacing: 2px;
+  color: #10b981;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .meta-grid {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 8px 20px;
+  gap: 8px 15px;
   text-align: left;
 }
 
 .meta-label {
   font-size: 12px;
-  color: #9ca3af;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .meta-value {
-  font-size: 14px;
-  color: #ffffff;
-  font-weight: 600;
+  font-size: 13px;
+  color: #0f172a;
+  font-weight: 700;
   text-align: right;
 }
 
@@ -117,32 +130,32 @@ body {
   padding: 0 50px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
 }
 
 .bill-to h3 {
   margin: 0 0 10px 0;
   font-size: 12px;
-  color: #6b7280;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 700;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .customer-name {
-  margin: 0 0 5px 0;
-  color: #111827;
+  margin: 0 0 4px 0;
+  color: #0f172a;
   font-size: 18px;
   font-weight: 700;
 }
 
 .customer-phone {
   margin: 0;
-  color: #4b5563;
+  color: #64748b;
   font-size: 14px;
 }
 
-/* Executive Borderless Table */
+/* Modern Table */
 .table-wrapper {
   padding: 0 50px;
   margin-bottom: 40px;
@@ -150,39 +163,38 @@ body {
 
 .print-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .print-table th {
-  border-top: 2px solid #111827;
-  border-bottom: 2px solid #111827;
-  padding: 12px 10px;
-  color: #111827;
-  font-weight: 700;
-  text-transform: uppercase;
+  background-color: #f8fafc;
+  padding: 14px 12px;
+  color: #475569;
+  font-weight: 600;
   font-size: 12px;
-  letter-spacing: 1px;
-  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
+.print-table th:first-child { border-left: 1px solid #e2e8f0; border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.print-table th:last-child { border-right: 1px solid #e2e8f0; border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
 .print-table td {
-  padding: 14px 10px;
-  font-size: 14px;
-  color: #374151;
-  border-bottom: 1px dotted #d1d5db;
+  padding: 16px 12px;
+  font-size: 13px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .print-table tbody tr:last-child td {
-  border-bottom: 2px solid #111827;
+  border-bottom: none;
 }
 
-.text-right {
-  text-align: right !important;
-}
-
-.text-center {
-  text-align: center !important;
-}
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
 
 /* Summary Section */
 .summary-section {
@@ -190,11 +202,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
   page-break-inside: avoid;
 }
 
-/* Fallback for when there's no amount-in-words on the left */
 .summary-section:has(> .print-totals:only-child) {
   justify-content: flex-end;
 }
@@ -205,58 +216,61 @@ body {
 }
 
 .amount-in-words h4 {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 11px;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin: 0 0 8px 0;
 }
 
 .amount-in-words p {
-  font-size: 14px;
-  color: #111827;
-  font-weight: 600;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
   line-height: 1.5;
-  background: #f9fafb;
-  padding: 15px;
-  border-left: 3px solid #1e40af;
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .print-totals {
-  width: 300px;
-  margin-left: auto; /* Fixes alignment for purchases/quotations */
+  width: 320px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  margin-left: auto;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
-  padding: 12px 10px;
-  font-size: 14px;
-  color: #4b5563;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.total-row:last-child {
-  border-bottom: none;
+  padding: 8px 0;
+  font-size: 13px;
+  color: #64748b;
 }
 
 .total-row span:last-child {
-  color: #111827;
+  color: #334155;
   font-weight: 600;
 }
 
 .grand-total {
   font-size: 18px;
-  color: #1e40af !important;
+  color: #0f172a !important;
   font-weight: 800;
-  border-top: 2px solid #111827;
-  border-bottom: 2px solid #111827;
-  background-color: transparent;
-  margin-top: 5px;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 2px dashed #cbd5e1;
 }
 
 .grand-total span {
-  color: #1e40af !important;
+  color: #10b981 !important;
+}
+
+.grand-total span:first-child {
+  color: #0f172a !important;
 }
 
 /* Footer */
@@ -265,40 +279,38 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 40px;
+  margin-top: 20px;
   page-break-inside: avoid;
 }
 
 .terms-section h4 {
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 11px;
+  color: #94a3b8;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin: 0 0 8px 0;
 }
 
 .terms-section ul {
   margin: 0;
   padding-left: 15px;
-  font-size: 12px;
-  color: #4b5563;
+  font-size: 11px;
+  color: #64748b;
   line-height: 1.6;
 }
 
 .signatory {
   text-align: center;
-  width: 200px;
+  width: 180px;
 }
 
 .signature-line {
-  border-top: 1px solid #111827;
-  margin-top: 50px;
-  padding-top: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-top: 1px solid #cbd5e1;
+  margin-top: 60px;
+  padding-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
 }
 
 /* Actions Bar (Web View Only) */
@@ -307,49 +319,64 @@ body {
   gap: 15px;
   justify-content: center;
   margin-top: 50px;
-  padding-top: 30px;
-  border-top: 1px dashed #e5e7eb;
+  padding: 20px 50px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0 0 4px 4px;
 }
 
 .action-btn {
-  padding: 12px 24px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  padding: 10px 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   background: #ffffff;
-  color: #374151;
+  color: #475569;
   transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .action-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.whatsapp-btn {
+  color: #10b981;
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+
+.whatsapp-btn:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
 }
 
 .print-btn {
-  background: #111827;
+  background: #0f172a;
   color: #ffffff;
-  border-color: #111827;
+  border-color: #0f172a;
 }
 
 .print-btn:hover {
-  background: #1f2937;
-  border-color: #1f2937;
+  background: #1e293b;
+  border-color: #1e293b;
+  color: #ffffff;
 }
 
-/* Print Media Query - Foolproof 1-Page Guarantee & Alignment */
+/* Print Media Query */
 @media print {
   @page {
     size: A4;
-    margin: 5mm; /* Minimal margins */
+    margin: 5mm;
   }
 
-  /* Completely strip any height/min-height constraints that cause 2-page blank overflows */
   body, html {
     background: #ffffff;
     -webkit-print-color-adjust: exact !important;
@@ -357,7 +384,7 @@ body {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    height: auto !important; /* DO NOT use 100% or 100vh here */
+    height: auto !important;
     overflow: visible !important;
   }
 
@@ -377,27 +404,25 @@ body {
     width: 100% !important;
     max-width: 100% !important;
     border: none !important;
+    border-top: 8px solid #10b981 !important;
     height: auto !important;
     overflow: visible !important;
     
-    /* Foolproof Scale adjustment: 
-       If content is slightly too big, this ensures it scales down to fit the A4 page perfectly */
     transform: scale(0.96);
     transform-origin: top center;
   }
 
-  /* Tighter Spacing to Prevent Spillage */
-  .print-header-block {
-    padding: 20px !important;
-    margin-bottom: 20px !important;
-  }
-  
-  .info-section, .table-wrapper, .summary-section, .print-footer {
-    padding: 0 20px !important;
-    margin-bottom: 20px !important;
+  .print-header-block,
+  .info-section,
+  .table-wrapper,
+  .summary-section,
+  .print-footer {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
   }
 
-  .no-print {
+  .actions-bar {
     display: none !important;
   }
 }
+

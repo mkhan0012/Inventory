@@ -24,7 +24,7 @@
 }
 
 .drawer-content .modal-form {
-  padding: 20px 24px;
+  padding: 24px;
   overflow-y: auto;
   flex: 1;
 }
@@ -170,7 +170,8 @@
   border-top: 1px solid var(--border);
 }
 
-.modal-footer .btn-outline {
+.modal-footer .btn-outline,
+.drawer-footer .btn-outline {
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: 500;
@@ -180,13 +181,15 @@
   transition: all 0.2s;
 }
 
-.modal-footer .btn-outline:hover {
+.modal-footer .btn-outline:hover,
+.drawer-footer .btn-outline:hover {
   background: var(--bg-main);
   color: var(--text-main);
   border-color: var(--border);
 }
 
-.modal-footer .btn-primary {
+.modal-footer .btn-primary,
+.drawer-footer .btn-primary {
   padding: 10px 24px;
   border-radius: 8px;
   font-weight: 500;
@@ -197,12 +200,14 @@
   transition: all 0.2s ease;
 }
 
-.modal-footer .btn-primary:hover {
+.modal-footer .btn-primary:hover,
+.drawer-footer .btn-primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(41, 98, 255, 0.3);
 }
 
-.modal-footer .btn-primary:active {
+.modal-footer .btn-primary:active,
+.drawer-footer .btn-primary:active {
   transform: translateY(1px);
 }
 
@@ -276,4 +281,16 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-footer {
+  margin-left: -24px !important;
+  margin-right: -24px !important;
+  margin-bottom: -24px !important;
 }
