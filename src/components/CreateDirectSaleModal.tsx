@@ -205,7 +205,7 @@ export default function CreateDirectSaleModal({ products }: { products: any[] })
                           <option value="">-- Select Product --</option>
                           {products.map(p => (
                             <option key={p.id} value={p.id}>
-                              {p.name} (Stock: {p.stock})
+                              [{p.category}] {p.name} (Stock: {p.stock})
                             </option>
                           ))}
                         </select>

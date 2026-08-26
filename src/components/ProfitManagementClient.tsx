@@ -248,18 +248,19 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
           <div className="pm-card pm-form-card">
             <h2>Add New Allocation</h2>
             <form onSubmit={handleAdd} className="pm-form">
-              <div className="pm-form-group">
-                <label>Description (e.g. Rent, Investment)</label>
+              <div className="pm-form-group" style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-main)', marginBottom: '8px', display: 'block' }}>Description (e.g. Rent, Investment)</label>
                 <input 
                   type="text" 
                   value={desc} 
                   onChange={(e) => setDesc(e.target.value)}
                   placeholder="Where did the money go?"
                   required
+                  style={{ padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', width: '100%', outline: 'none' }}
                 />
               </div>
-              <div className="pm-form-group">
-                <label>Amount (₹)</label>
+              <div className="pm-form-group" style={{ marginBottom: '24px' }}>
+                <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-main)', marginBottom: '8px', display: 'block' }}>Amount (₹)</label>
                 <input 
                   type="number" 
                   step="0.01"
@@ -267,9 +268,10 @@ export default function ProfitManagementClient({ initialMonth, initialYear, prof
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
                   required
+                  style={{ padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', width: '100%', outline: 'none' }}
                 />
               </div>
-              <button type="submit" className="pm-submit-btn" disabled={isSubmitting}>
+              <button type="submit" className="pm-submit-btn" disabled={isSubmitting} style={{ padding: '12px 24px', borderRadius: '8px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', color: 'white', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: 500 }}>
                 {isSubmitting ? 'Adding...' : <><Plus size={18} /> Add Allocation</>}
               </button>
             </form>
