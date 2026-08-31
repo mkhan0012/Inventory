@@ -12,6 +12,7 @@ interface Customer {
   phone: string | null;
   totalPurchases: number;
   dueAmount: number;
+  dueThisMonth: number;
 }
 
 interface CustomersClientProps {
@@ -61,7 +62,8 @@ export default function CustomersClient({ customers, isOwner }: CustomersClientP
       "Name": c.name,
       "Phone": c.phone || 'N/A',
       "Total Purchases": c.totalPurchases,
-      "Due Amount": c.dueAmount
+      "Due This Month": c.dueThisMonth,
+      "Total Due Amount": c.dueAmount
     }));
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -101,14 +103,15 @@ export default function CustomersClient({ customers, isOwner }: CustomersClientP
               <th>Name</th>
               <th>Phone</th>
               <th>Total Purchases</th>
-              <th>Due Amount</th>
+              <th>Due This Month</th>
+              <th>Total Due</th>
               {isOwner && <th className="desktop-only text-right">Actions</th>}
             </tr>
           </thead>
           <tbody>
             {customers.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: '60px 20px', textAlign: 'center' }}>
+                <td colSpan={8} style={{ padding: '60px 20px', textAlign: 'center' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                     <Users size={48} color="var(--border)" style={{ marginBottom: '16px', opacity: 0.5 }} />
                     <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-main)' }}>No Customers Found</span>
@@ -130,6 +133,11 @@ export default function CustomersClient({ customers, isOwner }: CustomersClientP
                 <td className="font-medium">{customer.name}</td>
                 <td>{customer.phone || 'N/A'}</td>
                 <td>₹{customer.totalPurchases.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td>
+                  <span style={{ color: customer.dueThisMonth > 0 ? 'var(--danger)' : 'var(--text-main)', fontWeight: 500 }}>
+                    ₹{customer.dueThisMonth.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  </span>
+                </td>
                 <td>
                   <span style={{ color: customer.dueAmount > 0 ? 'var(--danger)' : 'var(--text-main)', fontWeight: 500 }}>
                     ₹{customer.dueAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}

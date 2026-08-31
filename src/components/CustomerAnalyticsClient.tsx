@@ -32,7 +32,8 @@ export default function CustomerAnalyticsClient({ initialData }: Props) {
     "Lifetime Revenue": c.totalRevenue,
     "Lifetime Profit": c.totalProfit,
     "Margin %": c.marginPercent.toFixed(2) + '%',
-    "Outstanding Due": c.dueAmount,
+    "Due This Month": c.dueThisMonth,
+    "Total Outstanding": c.dueAmount,
     "Last Purchase": c.lastPurchaseDate ? new Date(c.lastPurchaseDate).toLocaleDateString() : 'Never',
     "Segment": c.segment
   }));
@@ -81,14 +82,14 @@ export default function CustomerAnalyticsClient({ initialData }: Props) {
           iconBg="rgba(139,92,246,0.1)" 
         />
         <StatCard 
-          title="At Risk / Dormant" 
-          numericValue={atRiskCount} 
-          prefix=""
+          title="Total Due This Month" 
+          numericValue={initialData.reduce((acc, c) => acc + c.dueThisMonth, 0)} 
+          prefix="₹"
           decimals={0}
-          trend="Needs attention" 
-          trendUp={atRiskCount === 0} 
-          icon={<AlertTriangle size={24} color={atRiskCount > 0 ? "#ef4444" : "#10b981"} />} 
-          iconBg={atRiskCount > 0 ? "rgba(239,68,68,0.1)" : "rgba(16,185,129,0.1)"} 
+          trend="Current Month" 
+          trendUp={false} 
+          icon={<AlertTriangle size={24} color="#ef4444" />} 
+          iconBg="rgba(239,68,68,0.1)" 
         />
       </div>
 
@@ -117,7 +118,8 @@ export default function CustomerAnalyticsClient({ initialData }: Props) {
                 <th style={{ textAlign: 'right' }}>Lifetime Revenue</th>
                 <th style={{ textAlign: 'right' }}>Lifetime Profit</th>
                 <th style={{ textAlign: 'right' }}>Avg. Margin</th>
-                <th style={{ textAlign: 'right' }}>Outstanding</th>
+                <th style={{ textAlign: 'right' }}>Due This Month</th>
+                <th style={{ textAlign: 'right' }}>Total Outstanding</th>
                 <th style={{ textAlign: 'right' }}>Last Purchase</th>
               </tr>
             </thead>
@@ -135,6 +137,9 @@ export default function CustomerAnalyticsClient({ initialData }: Props) {
                     ₹{c.totalProfit.toLocaleString('en-IN', {maximumFractionDigits:0})}
                   </td>
                   <td style={{ textAlign: 'right' }}>{c.marginPercent.toFixed(1)}%</td>
+                  <td style={{ textAlign: 'right', color: c.dueThisMonth > 0 ? 'var(--danger)' : 'inherit', fontWeight: c.dueThisMonth > 0 ? 600 : 400 }}>
+                    ₹{c.dueThisMonth.toLocaleString('en-IN', {maximumFractionDigits:0})}
+                  </td>
                   <td style={{ textAlign: 'right', color: c.dueAmount > 0 ? 'var(--danger)' : 'inherit', fontWeight: c.dueAmount > 0 ? 600 : 400 }}>
                     ₹{c.dueAmount.toLocaleString('en-IN', {maximumFractionDigits:0})}
                   </td>

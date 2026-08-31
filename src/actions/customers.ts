@@ -6,6 +6,9 @@ import { authOptions } from "@/lib/authOptions";
 import { logActivity } from "./activity";
 
 export async function getCustomers(search?: string) {
+  const now = new Date();
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
   const customers = await prisma.customer.findMany({
     where: search ? {
       OR: [
@@ -13,13 +16,28 @@ export async function getCustomers(search?: string) {
         { phone: { contains: search } }
       ]
     } : undefined,
+    include: {
+      invoices: {
+        where: {
+          status: 'DUE',
+          date: {
+            gte: firstDayOfMonth
+          }
+        },
+        select: { total: true }
+      }
+    },
     orderBy: { createdAt: 'desc' }
   });
-  return customers.map(c => ({
-    ...c,
-    createdAt: c.createdAt.toISOString(),
-    updatedAt: c.updatedAt.toISOString()
-  }));
+  return customers.map(c => {
+    const dueThisMonth = c.invoices.reduce((sum, inv) => sum + inv.total, 0);
+    return {
+      ...c,
+      dueThisMonth,
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt.toISOString()
+    };
+  });
 }
 
 import { z } from "zod";

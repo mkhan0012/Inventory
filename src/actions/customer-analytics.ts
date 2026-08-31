@@ -9,6 +9,7 @@ export type CustomerAnalyticsItem = {
   totalProfit: number;
   marginPercent: number;
   dueAmount: number;
+  dueThisMonth: number;
   lastPurchaseDate: Date | null;
   purchaseCount: number;
   segment: 'VIP' | 'ACTIVE' | 'AT_RISK' | 'DORMANT' | 'NEW';
@@ -32,6 +33,7 @@ export async function getCustomerAnalytics(): Promise<CustomerAnalyticsItem[]> {
     let totalCogs = 0;
     let lastPurchaseDate: Date | null = null;
     let purchaseCount = customer.invoices.length;
+    let dueThisMonth = 0;
 
     for (const invoice of customer.invoices) {
       totalRevenue += invoice.total;
@@ -42,6 +44,14 @@ export async function getCustomerAnalytics(): Promise<CustomerAnalyticsItem[]> {
 
       if (!lastPurchaseDate || invoice.date > lastPurchaseDate) {
         lastPurchaseDate = invoice.date;
+      }
+
+      if (
+        invoice.status === 'DUE' &&
+        invoice.date.getMonth() === now.getMonth() &&
+        invoice.date.getFullYear() === now.getFullYear()
+      ) {
+        dueThisMonth += invoice.total;
       }
     }
 
@@ -79,6 +89,7 @@ export async function getCustomerAnalytics(): Promise<CustomerAnalyticsItem[]> {
       totalProfit,
       marginPercent,
       dueAmount: customer.dueAmount,
+      dueThisMonth,
       lastPurchaseDate,
       purchaseCount,
       segment
